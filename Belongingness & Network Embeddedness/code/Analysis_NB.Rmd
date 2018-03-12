@@ -1,0 +1,3928 @@
+---
+title: "R Notebook for Network & belongingness Paper"
+output:
+  pdf_document:
+    toc: yes
+  html_notebook:
+    toc: yes
+    toc_float:
+      collapsed: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float:
+      collapsed: yes
+---
+
+#Introduction
+
+#Clear Environment
+```{r}
+rm(list = ls(all.names = TRUE))
+```
+
+#Load Libraries
+```{r, message = FALSE}
+#install.packages("CTT")
+#install.packages("GGally")
+#install.packages("ggplot2")
+#install.packages("lattice")
+#install.packages("gridExtra")
+#install.packages("igraph")
+#install.packages("dplyr")
+#install.packages("tidyr")
+#install.packages("igraph")
+#install.packages("statnet")
+
+library(CTT)
+library(GGally)
+library(ggplot2)
+library(lattice)
+library(gridExtra)
+library(reshape)
+library(igraph)
+library(tidyverse)
+```
+
+#setwd & load data
+```{r, message = FALSE, warning = FALSE}
+setwd("T:/Research folders/CCWTG/Analyses/Data for Stats Dept/FINAL DATA")
+
+#elmk <- read_csv("CC_edgelist.csv") 
+#saveRDS(elmk,"cc_edgelist.rds")
+elmk <- readRDS("cc_edgelist.rds")
+youth_att <- read_csv("Mentee_Attributes.csv")
+staff_att <- read_csv("Staff_Attributes_Final.csv")
+```
+
+#Format Edgelist
+```{r}
+elmk <- elmk %>% 
+  filter(Receiver_Missing == 0,
+         Sender_missing == 0, 
+         Sender_Final_ID != Receiver_Final_ID) %>% 
+  mutate(sn1 = ifelse((sn1 == 1 & sn2 == 0), NA, sn1), #marking NA for nominated, but weight = 0
+         sn2 = ifelse(is.na(sn1), NA, sn2)) %>% 
+  select(-Receiver_Missing, -Sender_missing)
+```
+
+#Format Attributes
+```{r}
+
+youth_att <- youth_att %>% 
+  mutate(Final_ID = final_ID, 
+         role1 = Role, 
+         night1 = tolower(night),
+         night2 =NA,
+         role2 = NA,
+         mentee = NA
+         ) %>% 
+  select(Final_ID, semester, night1, night2, mfcond, role1, role2, room, gender, mentee, impnotes, date_dropped, no_start)
+
+staff_att <- staff_att %>% 
+  mutate(date_dropped = NA,
+         no_start = NA,
+         Final_ID = FInal_ID) %>% 
+  select(Final_ID, semester, night1, night2, mfcond, role1, role2, room, gender, mentee, impnotes, date_dropped, no_start)
+
+staff_youth_att <- rbind(staff_att, youth_att)
+
+staff_youth_att <- staff_youth_att %>% 
+    #Easier to work with numbers
+  mutate(role_num = ifelse(role1 == "mentee", 0, NA),
+         role_num = ifelse(role1 == "mentor", 1, role_num),
+         role_num = ifelse(role1 == "mentor coach", 2, role_num),
+         role_num = ifelse(role1 == "lead mentor coach", 3, role_num),
+         role_num = ifelse(role1 == "instructor", 4, role_num),
+         role_num = ifelse(role1 == "Instructor", 4, role_num),
+         
+         role1 = ifelse(role1 == "Instructor", "instructor", role1),
+         #Set role colors
+         role_col = ifelse(role_num == 0, "orange", NA),
+         role_col = ifelse(role_num == 1, "green", role_col),
+         role_col = ifelse(role_num == 2, "dodgerblue", role_col),
+         role_col = ifelse(role_num == 3, "red", role_col),
+         role_col = ifelse(role_num == 4, "grey50", role_col)
+         )
+```
+
+
+#Create General Graphs
+##F15
+```{r}
+temp <- elmk %>% filter(semester == "F15")
+
+mon <- temp %>% filter(night == "monday")
+tue <- temp %>% filter(night == "tuesday")
+wed <- temp %>% filter(night == "wednesday")
+thu <- temp %>% filter(night == "thursday")
+
+sem <- list(mon = mon, 
+            tue = tue, 
+            wed = wed, 
+            thu = thu)
+
+rm(mon);rm(tue);rm(wed);rm(thu)
+
+
+```
+
+**Summary**
+```{r}
+
+
+sem$mon <- group_by(sem$mon, survnum)
+sem$tue <- group_by(sem$tue, survnum)
+sem$wed <- group_by(sem$wed, survnum)
+sem$thu <- group_by(sem$thu, survnum)
+
+summarize(sem$mon, day = "mon", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$mon))*100)
+summarize(sem$tue, day = "tue", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$tue))*100)
+summarize(sem$wed, day = "wed", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$wed))*100)
+summarize(sem$thu, day = "thu", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$thu))*100)
+
+sem$mon <- ungroup(sem$mon)
+sem$tue <- ungroup(sem$tue)
+sem$wed <- ungroup(sem$wed)
+sem$thu <- ungroup(sem$thu)
+```
+
+**Monday**
+```{r}
+
+temp_night <- temp %>% filter(night == "monday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create Monday List**
+```{r}
+monday <- list(edgelists = day, graphs = graphs)
+rm(day);rm(graphs)
+```
+
+
+**Tuesday**
+```{r}
+
+temp_night <- temp %>% filter(night == "tuesday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+tuesday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+**Wednesday**
+```{r}
+
+temp_night <- temp %>% filter(night == "wednesday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+wednesday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+**Thursday**
+```{r}
+
+temp_night <- temp %>% filter(night == "thursday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+
+**Create List**
+```{r}
+thursday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+###Plot Graphs
+```{r, warning = FALSE, fig.width = 20, fig.height=20, echo = FALSE}
+
+par(mfrow=c(5,4)) # To plot two plots side-by-side
+#Week 1
+plot(monday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g1),
+     main = "Monday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g1),
+     main = "Tuesday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g1),
+     main = "Wednesday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g1),
+     main = "Thursday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+#Week 3
+plot(monday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g2),
+     main = "Monday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g2),
+     main = "Tuesday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g2),
+     main = "Wednesday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g2),
+     main = "Thursday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+#Week 6
+plot(monday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g3),
+     main = "Monday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g3),
+     main = "Tuesday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g3),
+     main = "Wednesday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g3),
+     main = "Thursday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+#Week 9
+plot(monday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g4),
+     main = "Monday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g4),
+     main = "Tuesday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g4),
+     main = "Wednesday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g4),
+     main = "Thursday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+#Week 11
+plot(monday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g5),
+     main = "Monday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+plot(tuesday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g5),
+     main = "Tuesday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g5),
+     main = "Wednesday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g5),
+     main = "Thursday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+```
+
+
+**Create Semester List**
+```{r}
+F15 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
+rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+rm(temp)
+```
+
+##S16
+```{r}
+temp <- elmk %>% filter(semester == "S16")
+
+mon <- temp %>% filter(night == "monday")
+tue <- temp %>% filter(night == "tuesday")
+wed <- temp %>% filter(night == "wednesday")
+thu <- temp %>% filter(night == "thursday")
+
+sem <- list(mon = mon, 
+            tue = tue, 
+            wed = wed, 
+            thu = thu)
+
+rm(mon);rm(tue);rm(wed);rm(thu)
+
+
+```
+
+**Summary**
+
+```{r}
+
+
+sem$mon <- group_by(sem$mon, survnum)
+sem$tue <- group_by(sem$tue, survnum)
+sem$wed <- group_by(sem$wed, survnum)
+sem$thu <- group_by(sem$thu, survnum)
+
+summarize(sem$mon, day = "mon", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$mon))*100)
+summarize(sem$tue, day = "tue", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$tue))*100)
+summarize(sem$wed, day = "wed", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$wed))*100)
+summarize(sem$thu, day = "thu", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$thu))*100)
+
+sem$mon <- ungroup(sem$mon)
+sem$tue <- ungroup(sem$tue)
+sem$wed <- ungroup(sem$wed)
+sem$thu <- ungroup(sem$thu)
+```
+
+**Monday**
+```{r}
+
+temp_night <- temp %>% filter(night == "monday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+**Create List**
+```{r}
+monday <- list(edgelists = day, graphs = graphs)
+rm(day);rm(graphs)
+```
+
+
+**Tuesday**
+```{r}
+
+temp_night <- temp %>% filter(night == "tuesday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+tuesday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+**Wednesday**
+```{r}
+
+temp_night <- temp %>% filter(night == "wednesday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+wednesday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+**Thursday**
+```{r}
+
+temp_night <- temp %>% filter(night == "thursday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+thursday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+###Plot Graphs
+```{r, warning = FALSE, fig.width = 20, fig.height=20, echo = FALSE}
+
+par(mfrow=c(5,4)) # To plot two plots side-by-side
+#Week 1
+plot(monday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g1),
+     main = "Monday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g1),
+     main = "Tuesday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g1),
+     main = "Wednesday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g1),
+     main = "Thursday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+#Week 3
+plot(monday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g2),
+     main = "Monday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g2),
+     main = "Tuesday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g2),
+     main = "Wednesday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g2),
+     main = "Thursday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+#Week 6
+plot(monday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g3),
+     main = "Monday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g3),
+     main = "Tuesday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g3),
+     main = "Wednesday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g3),
+     main = "Thursday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+#Week 9
+plot(monday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g4),
+     main = "Monday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g4),
+     main = "Tuesday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g4),
+     main = "Wednesday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g4),
+     main = "Thursday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+#Week 11
+plot(monday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g5),
+     main = "Monday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+plot(tuesday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g5),
+     main = "Tuesday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g5),
+     main = "Wednesday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g5),
+     main = "Thursday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+```
+
+
+**Create Semester List**
+```{r}
+S16 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
+rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+rm(temp)
+```
+
+
+##F16
+```{r}
+temp <- elmk %>% filter(semester == "F16")
+
+mon <- temp %>% filter(night == "monday")
+tue <- temp %>% filter(night == "tuesday")
+wed <- temp %>% filter(night == "wednesday")
+thu <- temp %>% filter(night == "thursday")
+
+sem <- list(mon = mon, 
+            tue = tue, 
+            wed = wed, 
+            thu = thu)
+
+rm(mon);rm(tue);rm(wed);rm(thu)
+
+
+```
+
+**Summary**
+```{r}
+
+
+sem$mon <- group_by(sem$mon, survnum)
+sem$tue <- group_by(sem$tue, survnum)
+sem$wed <- group_by(sem$wed, survnum)
+sem$thu <- group_by(sem$thu, survnum)
+
+summarize(sem$mon, day = "mon", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$mon))*100)
+summarize(sem$tue, day = "tue", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$tue))*100)
+summarize(sem$wed, day = "wed", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$wed))*100)
+summarize(sem$thu, day = "thu", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$thu))*100)
+
+sem$mon <- ungroup(sem$mon)
+sem$tue <- ungroup(sem$tue)
+sem$wed <- ungroup(sem$wed)
+sem$thu <- ungroup(sem$thu)
+```
+
+**Monday**
+```{r}
+
+temp_night <- temp %>% filter(night == "monday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+monday <- list(edgelists = day, graphs = graphs)
+rm(day);rm(graphs)
+```
+
+**Tuesday**
+```{r}
+
+temp_night <- temp %>% filter(night == "tuesday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+tuesday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+**Wednesday**
+```{r}
+
+temp_night <- temp %>% filter(night == "wednesday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+wednesday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+**Thursday**
+```{r}
+
+temp_night <- temp %>% filter(night == "thursday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+thursday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+###Plot Graphs
+```{r, warning = FALSE, fig.width = 20, fig.height=20, echo = FALSE}
+
+par(mfrow=c(5,4)) # To plot two plots side-by-side
+#Week 1
+plot(monday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g1),
+     main = "Monday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g1),
+     main = "Tuesday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g1),
+     main = "Wednesday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g1),
+     main = "Thursday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+#Week 3
+plot(monday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g2),
+     main = "Monday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g2),
+     main = "Tuesday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g2),
+     main = "Wednesday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g2),
+     main = "Thursday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+#Week 6
+plot(monday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g3),
+     main = "Monday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g3),
+     main = "Tuesday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g3),
+     main = "Wednesday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g3),
+     main = "Thursday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+#Week 9
+plot(monday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g4),
+     main = "Monday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g4),
+     main = "Tuesday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g4),
+     main = "Wednesday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g4),
+     main = "Thursday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+#Week 11
+plot(monday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g5),
+     main = "Monday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+plot(tuesday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g5),
+     main = "Tuesday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g5),
+     main = "Wednesday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g5),
+     main = "Thursday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+```
+
+
+
+**Create Semester List**
+```{r}
+F16 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
+rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+rm(temp)
+```
+
+
+##S17
+```{r}
+temp <- elmk %>% filter(semester == "S17")
+
+mon <- temp %>% filter(night == "monday")
+tue <- temp %>% filter(night == "tuesday")
+wed <- temp %>% filter(night == "wednesday")
+thu <- temp %>% filter(night == "thursday")
+
+sem <- list(mon = mon, 
+            tue = tue, 
+            wed = wed, 
+            thu = thu)
+
+rm(mon);rm(tue);rm(wed);rm(thu)
+
+
+```
+
+**Summary**
+
+```{r}
+
+
+sem$mon <- group_by(sem$mon, survnum)
+sem$tue <- group_by(sem$tue, survnum)
+sem$wed <- group_by(sem$wed, survnum)
+sem$thu <- group_by(sem$thu, survnum)
+
+summarize(sem$mon, day = "mon", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$mon))*100)
+summarize(sem$tue, day = "tue", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$tue))*100)
+summarize(sem$wed, day = "wed", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$wed))*100)
+summarize(sem$thu, day = "thu", n = length(unique(Sender_Final_ID)), tie_count = sum(sn1, na.rm = TRUE), tie_prop = (tie_count/nrow(sem$thu))*100)
+
+sem$mon <- ungroup(sem$mon)
+sem$tue <- ungroup(sem$tue)
+sem$wed <- ungroup(sem$wed)
+sem$thu <- ungroup(sem$thu)
+```
+
+**Monday**
+```{r}
+
+temp_night <- temp %>% filter(night == "monday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+monday <- list(edgelists = day, graphs = graphs)
+rm(day);rm(graphs)
+```
+
+
+**Tuesday**
+```{r}
+
+temp_night <- temp %>% filter(night == "tuesday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+tuesday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+**Wednesday**
+```{r}
+
+temp_night <- temp %>% filter(night == "wednesday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+wednesday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+**Thursday**
+```{r}
+
+temp_night <- temp %>% filter(night == "thursday")
+
+#Surv_1
+surv_1 <- temp_night %>% 
+  filter(survnum == 1) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates1 <- surv_1 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_1 <- surv_1 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 2
+surv_2 <- temp_night %>% 
+  filter(survnum == 2) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates2 <- surv_2 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_2 <- surv_2 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 3
+surv_3 <- temp_night %>% 
+  filter(survnum == 3) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates3 <- surv_3 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_3 <- surv_3 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 4
+surv_4 <- temp_night %>% 
+  filter(survnum == 4) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates4 <- surv_4 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_4 <- surv_4 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+#Surv 5
+surv_5 <- temp_night %>% 
+  filter(survnum == 5) %>% 
+  mutate(Receiver_Final_ID = ifelse(is.na(sn1), NA, Receiver_Final_ID)) #%>% 
+#Getting isolates
+isolates5 <- surv_5 %>% 
+  mutate(sn1 = ifelse(is.na(sn1), 0, sn1)) %>% 
+  group_by(Sender_Final_ID) %>% 
+  summarize(isolate = sum(sn1)) %>% 
+  filter(isolate < 1) %>% 
+  select(Sender_Final_ID)
+surv_5 <- surv_5 %>% 
+   select(Sender_Final_ID, Receiver_Final_ID) %>% filter(!(is.na(Receiver_Final_ID)))
+
+day <- list(sur1 = surv_1, 
+            sur2 = surv_2, 
+            sur3 = surv_3, 
+            sur4 = surv_4,
+            sur5 = surv_5,
+            iso1 = isolates1,
+            iso2 = isolates2,
+            iso3 = isolates3,
+            iso4 = isolates4,
+            iso5 = isolates5)
+
+rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
+rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
+rm(temp_night)
+
+```
+
+**General Graphs**
+```{r, warning = FALSE}
+sur1 <- as.matrix(day$sur1)
+sur2 <- as.matrix(day$sur2)
+sur3 <- as.matrix(day$sur3)
+sur4 <- as.matrix(day$sur4)
+sur5 <- as.matrix(day$sur5)
+
+
+# Convert friends matrix to an igraph object
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+
+#Add staff Attribute  & colors
+
+V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
+V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
+
+
+graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
+
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+
+
+rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
+rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+```
+
+**Create List**
+```{r}
+thursday <- list(edgelists = day, graphs = graphs)
+rm(day); rm(graphs)
+```
+
+
+###Plot Graphs
+```{r, warning = FALSE, fig.width = 20, fig.height=20, echo = FALSE}
+
+par(mfrow=c(5,4)) # To plot two plots side-by-side
+#Week 1
+plot(monday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g1),
+     main = "Monday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g1),
+     main = "Tuesday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g1),
+     main = "Wednesday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g1,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g1),
+     main = "Thursday - Week 1")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+#Week 3
+plot(monday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g2),
+     main = "Monday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g2),
+     main = "Tuesday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g2),
+     main = "Wednesday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g2,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g2),
+     main = "Thursday - Week 3")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+#Week 6
+plot(monday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g3),
+     main = "Monday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g3),
+     main = "Tuesday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g3),
+     main = "Wednesday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g3,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g3),
+     main = "Thursday - Week 6")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+#Week 9
+plot(monday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g4),
+     main = "Monday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(tuesday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g4),
+     main = "Tuesday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g4),
+     main = "Wednesday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g4,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g4),
+     main = "Thursday - Week 9")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+#Week 11
+plot(monday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(monday$graphs$g5),
+     main = "Monday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+
+plot(tuesday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(tuesday$graphs$g5),
+     main = "Tuesday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(wednesday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(wednesday$graphs$g5),
+     main = "Wednesday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+plot(thursday$graphs$g5,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(thursday$graphs$g5),
+     main = "Thursday - Week 11")
+legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+
+```
+
+
+**Create Semester List**
+```{r}
+S17 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
+rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+rm(temp)
+```
+
+
+#Combine Semesters to list
+```{r}
+ALL <- list(F15 = F15, S16 = S16, F16 = F16, S17 = S17)
+rm(F15);rm(S16);rm(F16);rm(S17)
+```
+
+#Examine Cliques
+##F15
+```{r, warning = FALSE, fig.width = 20, fig.height=20, echo=FALSE}
+
+#Monday
+g1 <- ALL$F15$monday$graphs$g1
+g2 <- ALL$F15$monday$graphs$g2
+g3 <- ALL$F15$monday$graphs$g3
+g4 <- ALL$F15$monday$graphs$g4
+g5 <- ALL$F15$monday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+monday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+#Tuesday
+g1 <- ALL$F15$tuesday$graphs$g1
+g2 <- ALL$F15$tuesday$graphs$g2
+g3 <- ALL$F15$tuesday$graphs$g3
+g4 <- ALL$F15$tuesday$graphs$g4
+g5 <- ALL$F15$tuesday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+tuesday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+
+#Wednesday
+g1 <- ALL$F15$wednesday$graphs$g1
+g2 <- ALL$F15$wednesday$graphs$g2
+g3 <- ALL$F15$wednesday$graphs$g3
+g4 <- ALL$F15$wednesday$graphs$g4
+g5 <- ALL$F15$wednesday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+wednesday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+
+#Thursday
+g1 <- ALL$F15$thursday$graphs$g1
+g2 <- ALL$F15$thursday$graphs$g2
+g3 <- ALL$F15$thursday$graphs$g3
+g4 <- ALL$F15$thursday$graphs$g4
+g5 <- ALL$F15$thursday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+thursday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+par(mfrow=c(5,4))
+plot(monday$surv1, main =    "week 1 - Monday")
+plot(tuesday$surv1, main =   "week 1 - Tuesday")
+plot(wednesday$surv1, main = "week 1 - Wednesday")
+plot(thursday$surv1, main =  "week 1 -Thursday")
+
+#par(mfrow=c(4,1))
+plot(monday$surv2, main =    "week 3 - Monday")
+plot(tuesday$surv2, main =   "week 3 - Tuesday")
+plot(wednesday$surv2, main = "week 3 - Wednesday")
+plot(thursday$surv2, main =  "week 3 -Thursday")
+
+#par(mfrow=c(4,1))
+plot(monday$surv3, main =    "week 6 - Monday")
+plot(tuesday$surv3, main =   "week 6 - Tuesday")
+plot(wednesday$surv3, main = "week 6 - Wednesday")
+plot(thursday$surv3, main =  "week 6 -Thursday")
+
+
+#par(mfrow=c(4,1))
+plot(monday$surv4, main =    "week 9 - Monday")
+plot(tuesday$surv4, main =   "week 9 - Tuesday")
+plot(wednesday$surv4, main = "week 9 - Wednesday")
+plot(thursday$surv4, main =  "week 9 -Thursday")
+
+
+#par(mfrow=c(4,1))
+plot(monday$surv5, main =    "week 11 - Monday")
+plot(tuesday$surv5, main =   "week 11 - Tuesday")
+plot(wednesday$surv5, main = "week 11 - Wednesday")
+plot(thursday$surv5, main =  "week 11 -Thursday")
+
+F15 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
+rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+```
+
+##S16
+```{r, warning = FALSE, fig.width = 20, fig.height=20, echo=FALSE}
+
+#Monday
+g1 <- ALL$S16$monday$graphs$g1
+g2 <- ALL$S16$monday$graphs$g2
+g3 <- ALL$S16$monday$graphs$g3
+g4 <- ALL$S16$monday$graphs$g4
+g5 <- ALL$S16$monday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+monday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+#Tuesday
+g1 <- ALL$S16$tuesday$graphs$g1
+g2 <- ALL$S16$tuesday$graphs$g2
+g3 <- ALL$S16$tuesday$graphs$g3
+g4 <- ALL$S16$tuesday$graphs$g4
+g5 <- ALL$S16$tuesday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+tuesday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+
+#Wednesday
+g1 <- ALL$S16$wednesday$graphs$g1
+g2 <- ALL$S16$wednesday$graphs$g2
+g3 <- ALL$S16$wednesday$graphs$g3
+g4 <- ALL$S16$wednesday$graphs$g4
+g5 <- ALL$S16$wednesday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+wednesday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+
+#Thursday
+g1 <- ALL$S16$thursday$graphs$g1
+g2 <- ALL$S16$thursday$graphs$g2
+g3 <- ALL$S16$thursday$graphs$g3
+g4 <- ALL$S16$thursday$graphs$g4
+g5 <- ALL$S16$thursday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+thursday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+par(mfrow=c(5,4))
+plot(monday$surv1, main =    "week 1 - Monday")
+plot(tuesday$surv1, main =   "week 1 - Tuesday")
+plot(wednesday$surv1, main = "week 1 - Wednesday")
+plot(thursday$surv1, main =  "week 1 -Thursday")
+
+#par(mfrow=c(4,1))
+plot(monday$surv2, main =    "week 3 - Monday")
+plot(tuesday$surv2, main =   "week 3 - Tuesday")
+plot(wednesday$surv2, main = "week 3 - Wednesday")
+plot(thursday$surv2, main =  "week 3 -Thursday")
+
+#par(mfrow=c(4,1))
+plot(monday$surv3, main =    "week 6 - Monday")
+plot(tuesday$surv3, main =   "week 6 - Tuesday")
+plot(wednesday$surv3, main = "week 6 - Wednesday")
+plot(thursday$surv3, main =  "week 6 -Thursday")
+
+
+#par(mfrow=c(4,1))
+plot(monday$surv4, main =    "week 9 - Monday")
+plot(tuesday$surv4, main =   "week 9 - Tuesday")
+plot(wednesday$surv4, main = "week 9 - Wednesday")
+plot(thursday$surv4, main =  "week 9 -Thursday")
+
+
+#par(mfrow=c(4,1))
+plot(monday$surv5, main =    "week 11 - Monday")
+plot(tuesday$surv5, main =   "week 11 - Tuesday")
+plot(wednesday$surv5, main = "week 11 - Wednesday")
+plot(thursday$surv5, main =  "week 11 -Thursday")
+
+
+S16<- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
+rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+```
+
+
+
+##F16
+```{r, warning = FALSE, fig.width = 20, fig.height=20, echo=FALSE}
+
+#Monday
+g1 <- ALL$F16$monday$graphs$g1
+g2 <- ALL$F16$monday$graphs$g2
+g3 <- ALL$F16$monday$graphs$g3
+g4 <- ALL$F16$monday$graphs$g4
+g5 <- ALL$F16$monday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+monday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+#Tuesday
+g1 <- ALL$F16$tuesday$graphs$g1
+g2 <- ALL$F16$tuesday$graphs$g2
+g3 <- ALL$F16$tuesday$graphs$g3
+g4 <- ALL$F16$tuesday$graphs$g4
+g5 <- ALL$F16$tuesday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+tuesday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+
+#Wednesday
+g1 <- ALL$F16$wednesday$graphs$g1
+g2 <- ALL$F16$wednesday$graphs$g2
+g3 <- ALL$F16$wednesday$graphs$g3
+g4 <- ALL$F16$wednesday$graphs$g4
+g5 <- ALL$F16$wednesday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+wednesday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+
+#Thursday
+g1 <- ALL$F16$thursday$graphs$g1
+g2 <- ALL$F16$thursday$graphs$g2
+g3 <- ALL$F16$thursday$graphs$g3
+g4 <- ALL$F16$thursday$graphs$g4
+g5 <- ALL$F16$thursday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+thursday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+par(mfrow=c(5,4))
+plot(monday$surv1, main =    "week 1 - Monday")
+plot(tuesday$surv1, main =   "week 1 - Tuesday")
+plot(wednesday$surv1, main = "week 1 - Wednesday")
+plot(thursday$surv1, main =  "week 1 -Thursday")
+
+#par(mfrow=c(4,1))
+plot(monday$surv2, main =    "week 3 - Monday")
+plot(tuesday$surv2, main =   "week 3 - Tuesday")
+plot(wednesday$surv2, main = "week 3 - Wednesday")
+plot(thursday$surv2, main =  "week 3 -Thursday")
+
+#par(mfrow=c(4,1))
+plot(monday$surv3, main =    "week 6 - Monday")
+plot(tuesday$surv3, main =   "week 6 - Tuesday")
+plot(wednesday$surv3, main = "week 6 - Wednesday")
+plot(thursday$surv3, main =  "week 6 -Thursday")
+
+
+#par(mfrow=c(4,1))
+plot(monday$surv4, main =    "week 9 - Monday")
+plot(tuesday$surv4, main =   "week 9 - Tuesday")
+plot(wednesday$surv4, main = "week 9 - Wednesday")
+plot(thursday$surv4, main =  "week 9 -Thursday")
+
+
+#par(mfrow=c(4,1))
+plot(monday$surv5, main =    "week 11 - Monday")
+plot(tuesday$surv5, main =   "week 11 - Tuesday")
+plot(wednesday$surv5, main = "week 11 - Wednesday")
+plot(thursday$surv5, main =  "week 11 -Thursday")
+
+F16 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
+rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+```
+
+
+
+
+##S17
+```{r, warning = FALSE, fig.width = 20, fig.height=20, echo=FALSE}
+
+#Monday
+g1 <- ALL$S17$monday$graphs$g1
+g2 <- ALL$S17$monday$graphs$g2
+g3 <- ALL$S17$monday$graphs$g3
+g4 <- ALL$S17$monday$graphs$g4
+g5 <- ALL$S17$monday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+monday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+#Tuesday
+g1 <- ALL$S17$tuesday$graphs$g1
+g2 <- ALL$S17$tuesday$graphs$g2
+g3 <- ALL$S17$tuesday$graphs$g3
+g4 <- ALL$S17$tuesday$graphs$g4
+g5 <- ALL$S17$tuesday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+tuesday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+
+#Wednesday
+g1 <- ALL$S17$wednesday$graphs$g1
+g2 <- ALL$S17$wednesday$graphs$g2
+g3 <- ALL$S17$wednesday$graphs$g3
+g4 <- ALL$S17$wednesday$graphs$g4
+g5 <- ALL$S17$wednesday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+wednesday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+
+#Thursday
+g1 <- ALL$S17$thursday$graphs$g1
+g2 <- ALL$S17$thursday$graphs$g2
+g3 <- ALL$S17$thursday$graphs$g3
+g4 <- ALL$S17$thursday$graphs$g4
+g5 <- ALL$S17$thursday$graphs$g5
+
+
+lc1 <- largest_cliques(g1) 
+gs1 <- as.undirected(induced.subgraph(g1, lc1[[1]]))
+
+lc1 <- largest_cliques(g2) 
+gs2 <- as.undirected(induced.subgraph(g2, lc1[[1]]))
+
+lc1 <- largest_cliques(g3) 
+gs3 <- as.undirected(induced.subgraph(g3, lc1[[1]]))
+
+lc1 <- largest_cliques(g4) 
+gs4 <- as.undirected(induced.subgraph(g4, lc1[[1]]))
+
+lc1 <- largest_cliques(g5) 
+gs5 <- as.undirected(induced.subgraph(g5, lc1[[1]]))
+
+thursday <- list(surv1 = gs1, surv2 = gs2, surv3 = gs3, surv4 = gs4, surv5 = gs5)
+
+rm(g1);rm(g2);rm(g3);rm(g4);rm(g5);
+rm(gs1);rm(gs2);rm(gs3);rm(gs4);rm(gs5)
+
+par(mfrow=c(5,4))
+plot(monday$surv1, main =    "week 1 - Monday")
+plot(tuesday$surv1, main =   "week 1 - Tuesday")
+plot(wednesday$surv1, main = "week 1 - Wednesday")
+plot(thursday$surv1, main =  "week 1 -Thursday")
+
+#par(mfrow=c(4,1))
+plot(monday$surv2, main =    "week 3 - Monday")
+plot(tuesday$surv2, main =   "week 3 - Tuesday")
+plot(wednesday$surv2, main = "week 3 - Wednesday")
+plot(thursday$surv2, main =  "week 3 -Thursday")
+
+#par(mfrow=c(4,1))
+plot(monday$surv3, main =    "week 6 - Monday")
+plot(tuesday$surv3, main =   "week 6 - Tuesday")
+plot(wednesday$surv3, main = "week 6 - Wednesday")
+plot(thursday$surv3, main =  "week 6 -Thursday")
+
+
+#par(mfrow=c(4,1))
+plot(monday$surv4, main =    "week 9 - Monday")
+plot(tuesday$surv4, main =   "week 9 - Tuesday")
+plot(wednesday$surv4, main = "week 9 - Wednesday")
+plot(thursday$surv4, main =  "week 9 -Thursday")
+
+
+#par(mfrow=c(4,1))
+plot(monday$surv5, main =    "week 11 - Monday")
+plot(tuesday$surv5, main =   "week 11 - Tuesday")
+plot(wednesday$surv5, main = "week 11 - Wednesday")
+plot(thursday$surv5, main =  "week 11 -Thursday")
+
+S17 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
+rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+```
+##Combine Cliques
+```{r}
+cliques <- list(F15 = F15, S16 = S16, F16 = F16, S17 = S17)
+rm(F15);rm(S16);rm(F16);rm(S17)
+```
+
