@@ -1,0 +1,1431 @@
+Mplus VERSION 7.11
+MUTHEN & MUTHEN
+03/13/2018   2:16 PM
+
+INPUT INSTRUCTIONS
+
+  Title: Logistic Regression
+  Data:
+    File is T:/Research folders/CCWTG/Analyses/Papers/Dropout/MPlus/Mplus_log.csv ;
+  Variable:	
+    Names are
+      	ID     income risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7
+          risk_8 risk_9 risk_10 risk_11 risk_12 risk_13 risk_14 risk_15 risk_16
+          risk_17 risk_18 risk_19 risk_20 risk_21 risk_22 risk_23 risk_24
+           risk_25 risk_26
+          risk_27 risk_28 risk_29 risk_30 risk_31 risk_32 male room age
+          eth sem_n drop
+          Env_ri Econ_ad fam_st Pr_diff In_Ri Ac_cha prob_b  M_Hea;
+
+    	USEVARIABLES ARE risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7 risk_8
+      risk_9 risk_10 risk_11 risk_12 risk_13 risk_14 risk_15 risk_16
+      risk_17 risk_18 risk_19 risk_20 risk_21 risk_22 risk_23
+       risk_25 risk_26 risk_27 risk_28 risk_30 risk_31 risk_32 risk_29 risk_24;
+     ! male room age eth sem_n drop;
+
+  	CATEGORICAL ARE risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7
+      risk_8 risk_9 risk_10 risk_11 risk_12 risk_13
+      risk_14 risk_15 risk_16 risk_17 risk_18 risk_19 risk_20
+      risk_21 risk_22 risk_23 risk_25 risk_26 risk_27
+       risk_28 risk_30 risk_31 risk_32 risk_29 risk_24;
+       ! male room eth sem_n drop ;
+
+  ! Removed items 24 & 29 because there were not many people who chose and caused a lot of m
+
+  !item 24 = child is learning esl"
+  ! Item 29 = child is involved in a gang.
+  ! These 2 items don't quite characterize our population.
+
+  	Missing = all(-1234) ;
+
+  !Question for Kim: I don't understand how to incorporate control variables
+
+  !Item 24 = "This child is learning english as a second language"
+
+  !Analysis: 	ESTIMATOR = MLR ;
+
+  MODEL: 	
+  	eco_ri      BY risk_1 - risk_7; 	! = economic risk scale
+  	fam_str     BY risk_8 - risk_18;	! = Family Stress
+  	peer_dif    BY risk_19 - risk_20;	! = Peer difficulties
+
+  env_risk BY eco_ri fam_str peer_dif;	! = Top 3 subscales to make environmental risk
+
+  	ac_cha      BY risk_21 - risk_23 risk_24;	! = Academic Challenges
+  	prob_be     BY risk_25 - risk_28 risk_29 risk_30;	! = Problem Behavior
+  	men_he      BY risk_31 - risk_32;	! = Mental Health
+
+  In_risk BY ac_cha prob_be men_he;	! = Top 3 subscales to make individual risk
+
+  Risk BY In_risk env_risk	;	    ! = Overall risk (Individual & Environmental risk)
+
+   !drop ON Risk				        ! Now regressing drop on our risk variable. Do I regressing on a
+
+
+  !Analysis:
+   ! ESTIMATOR = MLR ;
+
+
+  !MODEL:
+
+  !env BY risk_1 - risk_20;
+
+  !ind BY risk_21 - risk_32;
+
+  !RISK by env ind;
+
+
+  Output:
+    sampstat standardized modindices;
+
+
+
+
+
+
+
+
+*** WARNING
+  Input line exceeded 90 characters. Some input may be truncated.
+  ! Removed items 24 & 29 because there were not many people who chose and caused a lot of mi
+*** WARNING
+  Input line exceeded 90 characters. Some input may be truncated.
+   !drop ON Risk				        ! Now regressing drop on our risk variable. Do I regressing on al
+   2 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Logistic Regression
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                         458
+
+Number of dependent variables                                   32
+Number of independent variables                                  0
+Number of continuous latent variables                            9
+
+Observed dependent variables
+
+  Binary and ordered categorical (ordinal)
+   RISK_1      RISK_2      RISK_3      RISK_4      RISK_5      RISK_6
+   RISK_7      RISK_8      RISK_9      RISK_10     RISK_11     RISK_12
+   RISK_13     RISK_14     RISK_15     RISK_16     RISK_17     RISK_18
+   RISK_19     RISK_20     RISK_21     RISK_22     RISK_23     RISK_25
+   RISK_26     RISK_27     RISK_28     RISK_30     RISK_31     RISK_32
+   RISK_29     RISK_24
+
+Continuous latent variables
+   ECO_RI      FAM_STR     PEER_DIF    ENV_RISK    AC_CHA      PROB_BE
+   MEN_HE      IN_RISK     RISK
+
+
+Estimator                                                    WLSMV
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+Parameterization                                             DELTA
+
+Input data file(s)
+  T:/Research folders/CCWTG/Analyses/Papers/Dropout/MPlus/Mplus_log.csv
+
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns             7
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              RISK_1        RISK_2        RISK_3        RISK_4        RISK_5
+              ________      ________      ________      ________      ________
+ RISK_1         1.000
+ RISK_2         1.000         1.000
+ RISK_3         1.000         1.000         1.000
+ RISK_4         1.000         1.000         1.000         1.000
+ RISK_5         1.000         1.000         1.000         1.000         1.000
+ RISK_6         0.996         0.996         0.996         0.996         0.996
+ RISK_7         0.998         0.998         0.998         0.998         0.998
+ RISK_8         0.998         0.998         0.998         0.998         0.998
+ RISK_9         1.000         1.000         1.000         1.000         1.000
+ RISK_10        1.000         1.000         1.000         1.000         1.000
+ RISK_11        1.000         1.000         1.000         1.000         1.000
+ RISK_12        1.000         1.000         1.000         1.000         1.000
+ RISK_13        1.000         1.000         1.000         1.000         1.000
+ RISK_14        1.000         1.000         1.000         1.000         1.000
+ RISK_15        0.998         0.998         0.998         0.998         0.998
+ RISK_16        1.000         1.000         1.000         1.000         1.000
+ RISK_17        1.000         1.000         1.000         1.000         1.000
+ RISK_18        0.993         0.993         0.993         0.993         0.993
+ RISK_19        0.998         0.998         0.998         0.998         0.998
+ RISK_20        0.998         0.998         0.998         0.998         0.998
+ RISK_21        1.000         1.000         1.000         1.000         1.000
+ RISK_22        0.998         0.998         0.998         0.998         0.998
+ RISK_23        1.000         1.000         1.000         1.000         1.000
+ RISK_25        0.998         0.998         0.998         0.998         0.998
+ RISK_26        1.000         1.000         1.000         1.000         1.000
+ RISK_27        1.000         1.000         1.000         1.000         1.000
+ RISK_28        1.000         1.000         1.000         1.000         1.000
+ RISK_30        0.998         0.998         0.998         0.998         0.998
+ RISK_31        1.000         1.000         1.000         1.000         1.000
+ RISK_32        1.000         1.000         1.000         1.000         1.000
+ RISK_29        1.000         1.000         1.000         1.000         1.000
+ RISK_24        1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              RISK_6        RISK_7        RISK_8        RISK_9        RISK_10
+              ________      ________      ________      ________      ________
+ RISK_6         0.996
+ RISK_7         0.996         0.998
+ RISK_8         0.996         0.998         0.998
+ RISK_9         0.996         0.998         0.998         1.000
+ RISK_10        0.996         0.998         0.998         1.000         1.000
+ RISK_11        0.996         0.998         0.998         1.000         1.000
+ RISK_12        0.996         0.998         0.998         1.000         1.000
+ RISK_13        0.996         0.998         0.998         1.000         1.000
+ RISK_14        0.996         0.998         0.998         1.000         1.000
+ RISK_15        0.996         0.996         0.996         0.998         0.998
+ RISK_16        0.996         0.998         0.998         1.000         1.000
+ RISK_17        0.996         0.998         0.998         1.000         1.000
+ RISK_18        0.989         0.991         0.991         0.993         0.993
+ RISK_19        0.996         0.996         0.996         0.998         0.998
+ RISK_20        0.993         0.996         0.996         0.998         0.998
+ RISK_21        0.996         0.998         0.998         1.000         1.000
+ RISK_22        0.993         0.996         0.996         0.998         0.998
+ RISK_23        0.996         0.998         0.998         1.000         1.000
+ RISK_25        0.993         0.996         0.996         0.998         0.998
+ RISK_26        0.996         0.998         0.998         1.000         1.000
+ RISK_27        0.996         0.998         0.998         1.000         1.000
+ RISK_28        0.996         0.998         0.998         1.000         1.000
+ RISK_30        0.993         0.996         0.996         0.998         0.998
+ RISK_31        0.996         0.998         0.998         1.000         1.000
+ RISK_32        0.996         0.998         0.998         1.000         1.000
+ RISK_29        0.996         0.998         0.998         1.000         1.000
+ RISK_24        0.996         0.998         0.998         1.000         1.000
+
+
+           Covariance Coverage
+              RISK_11       RISK_12       RISK_13       RISK_14       RISK_15
+              ________      ________      ________      ________      ________
+ RISK_11        1.000
+ RISK_12        1.000         1.000
+ RISK_13        1.000         1.000         1.000
+ RISK_14        1.000         1.000         1.000         1.000
+ RISK_15        0.998         0.998         0.998         0.998         0.998
+ RISK_16        1.000         1.000         1.000         1.000         0.998
+ RISK_17        1.000         1.000         1.000         1.000         0.998
+ RISK_18        0.993         0.993         0.993         0.993         0.991
+ RISK_19        0.998         0.998         0.998         0.998         0.998
+ RISK_20        0.998         0.998         0.998         0.998         0.996
+ RISK_21        1.000         1.000         1.000         1.000         0.998
+ RISK_22        0.998         0.998         0.998         0.998         0.996
+ RISK_23        1.000         1.000         1.000         1.000         0.998
+ RISK_25        0.998         0.998         0.998         0.998         0.996
+ RISK_26        1.000         1.000         1.000         1.000         0.998
+ RISK_27        1.000         1.000         1.000         1.000         0.998
+ RISK_28        1.000         1.000         1.000         1.000         0.998
+ RISK_30        0.998         0.998         0.998         0.998         0.996
+ RISK_31        1.000         1.000         1.000         1.000         0.998
+ RISK_32        1.000         1.000         1.000         1.000         0.998
+ RISK_29        1.000         1.000         1.000         1.000         0.998
+ RISK_24        1.000         1.000         1.000         1.000         0.998
+
+
+           Covariance Coverage
+              RISK_16       RISK_17       RISK_18       RISK_19       RISK_20
+              ________      ________      ________      ________      ________
+ RISK_16        1.000
+ RISK_17        1.000         1.000
+ RISK_18        0.993         0.993         0.993
+ RISK_19        0.998         0.998         0.991         0.998
+ RISK_20        0.998         0.998         0.991         0.996         0.998
+ RISK_21        1.000         1.000         0.993         0.998         0.998
+ RISK_22        0.998         0.998         0.991         0.996         0.996
+ RISK_23        1.000         1.000         0.993         0.998         0.998
+ RISK_25        0.998         0.998         0.991         0.996         0.996
+ RISK_26        1.000         1.000         0.993         0.998         0.998
+ RISK_27        1.000         1.000         0.993         0.998         0.998
+ RISK_28        1.000         1.000         0.993         0.998         0.998
+ RISK_30        0.998         0.998         0.991         0.996         0.998
+ RISK_31        1.000         1.000         0.993         0.998         0.998
+ RISK_32        1.000         1.000         0.993         0.998         0.998
+ RISK_29        1.000         1.000         0.993         0.998         0.998
+ RISK_24        1.000         1.000         0.993         0.998         0.998
+
+
+           Covariance Coverage
+              RISK_21       RISK_22       RISK_23       RISK_25       RISK_26
+              ________      ________      ________      ________      ________
+ RISK_21        1.000
+ RISK_22        0.998         0.998
+ RISK_23        1.000         0.998         1.000
+ RISK_25        0.998         0.996         0.998         0.998
+ RISK_26        1.000         0.998         1.000         0.998         1.000
+ RISK_27        1.000         0.998         1.000         0.998         1.000
+ RISK_28        1.000         0.998         1.000         0.998         1.000
+ RISK_30        0.998         0.996         0.998         0.996         0.998
+ RISK_31        1.000         0.998         1.000         0.998         1.000
+ RISK_32        1.000         0.998         1.000         0.998         1.000
+ RISK_29        1.000         0.998         1.000         0.998         1.000
+ RISK_24        1.000         0.998         1.000         0.998         1.000
+
+
+           Covariance Coverage
+              RISK_27       RISK_28       RISK_30       RISK_31       RISK_32
+              ________      ________      ________      ________      ________
+ RISK_27        1.000
+ RISK_28        1.000         1.000
+ RISK_30        0.998         0.998         0.998
+ RISK_31        1.000         1.000         0.998         1.000
+ RISK_32        1.000         1.000         0.998         1.000         1.000
+ RISK_29        1.000         1.000         0.998         1.000         1.000
+ RISK_24        1.000         1.000         0.998         1.000         1.000
+
+
+           Covariance Coverage
+              RISK_29       RISK_24
+              ________      ________
+ RISK_29        1.000
+ RISK_24        1.000         1.000
+
+
+UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES
+
+    RISK_1
+      Category 1    0.884      405.000
+      Category 2    0.116       53.000
+    RISK_2
+      Category 1    0.950      435.000
+      Category 2    0.050       23.000
+    RISK_3
+      Category 1    0.718      329.000
+      Category 2    0.282      129.000
+    RISK_4
+      Category 1    0.917      420.000
+      Category 2    0.083       38.000
+    RISK_5
+      Category 1    0.814      373.000
+      Category 2    0.186       85.000
+    RISK_6
+      Category 1    0.779      355.000
+      Category 2    0.221      101.000
+    RISK_7
+      Category 1    0.716      327.000
+      Category 2    0.284      130.000
+    RISK_8
+      Category 1    0.963      440.000
+      Category 2    0.037       17.000
+    RISK_9
+      Category 1    0.926      424.000
+      Category 2    0.074       34.000
+    RISK_10
+      Category 1    0.782      358.000
+      Category 2    0.218      100.000
+    RISK_11
+      Category 1    0.845      387.000
+      Category 2    0.155       71.000
+    RISK_12
+      Category 1    0.631      289.000
+      Category 2    0.369      169.000
+    RISK_13
+      Category 1    0.858      393.000
+      Category 2    0.142       65.000
+    RISK_14
+      Category 1    0.921      422.000
+      Category 2    0.079       36.000
+    RISK_15
+      Category 1    0.729      333.000
+      Category 2    0.271      124.000
+    RISK_16
+      Category 1    0.821      376.000
+      Category 2    0.179       82.000
+    RISK_17
+      Category 1    0.889      407.000
+      Category 2    0.111       51.000
+    RISK_18
+      Category 1    0.624      284.000
+      Category 2    0.376      171.000
+    RISK_19
+      Category 1    0.678      310.000
+      Category 2    0.322      147.000
+    RISK_20
+      Category 1    0.514      235.000
+      Category 2    0.486      222.000
+    RISK_21
+      Category 1    0.465      213.000
+      Category 2    0.535      245.000
+    RISK_22
+      Category 1    0.556      254.000
+      Category 2    0.444      203.000
+    RISK_23
+      Category 1    0.668      306.000
+      Category 2    0.332      152.000
+    RISK_25
+      Category 1    0.761      348.000
+      Category 2    0.239      109.000
+    RISK_26
+      Category 1    0.852      390.000
+      Category 2    0.148       68.000
+    RISK_27
+      Category 1    0.779      357.000
+      Category 2    0.221      101.000
+    RISK_28
+      Category 1    0.941      431.000
+      Category 2    0.059       27.000
+    RISK_30
+      Category 1    0.893      408.000
+      Category 2    0.107       49.000
+    RISK_31
+      Category 1    0.559      256.000
+      Category 2    0.441      202.000
+    RISK_32
+      Category 1    0.576      264.000
+      Category 2    0.424      194.000
+    RISK_29
+      Category 1    0.989      453.000
+      Category 2    0.011        5.000
+    RISK_24
+      Category 1    0.950      435.000
+      Category 2    0.050       23.000
+
+
+SAMPLE STATISTICS
+
+
+     ESTIMATED SAMPLE STATISTICS
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              RISK_1$1      RISK_2$1      RISK_3$1      RISK_4$1      RISK_5$1
+              ________      ________      ________      ________      ________
+      1         1.197         1.643         0.578         1.385         0.894
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              RISK_6$1      RISK_7$1      RISK_8$1      RISK_9$1      RISK_10$
+              ________      ________      ________      ________      ________
+      1         0.767         0.570         1.784         1.445         0.778
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              RISK_11$      RISK_12$      RISK_13$      RISK_14$      RISK_15$
+              ________      ________      ________      ________      ________
+      1         1.015         0.335         1.072         1.415         0.609
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              RISK_16$      RISK_17$      RISK_18$      RISK_19$      RISK_20$
+              ________      ________      ________      ________      ________
+      1         0.919         1.219         0.316         0.463         0.036
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              RISK_21$      RISK_22$      RISK_23$      RISK_25$      RISK_26$
+              ________      ________      ________      ________      ________
+      1        -0.088         0.140         0.435         0.711         1.043
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              RISK_27$      RISK_28$      RISK_30$      RISK_31$      RISK_32$
+              ________      ________      ________      ________      ________
+      1         0.770         1.564         1.241         0.148         0.193
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              RISK_29$      RISK_24$
+              ________      ________
+      1         2.293         1.643
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              RISK_1        RISK_2        RISK_3        RISK_4        RISK_5
+              ________      ________      ________      ________      ________
+ RISK_1
+ RISK_2         0.460
+ RISK_3         0.035         0.453
+ RISK_4         0.167         0.309         0.244
+ RISK_5         0.087         0.249         0.333         0.189
+ RISK_6         0.481         0.126         0.349         0.313         0.671
+ RISK_7         0.378         0.144         0.440         0.275         0.517
+ RISK_8         0.004         0.538        -0.263         0.092        -0.016
+ RISK_9         0.146         0.415        -0.027         0.186         0.039
+ RISK_10       -0.291         0.191         0.124         0.123        -0.102
+ RISK_11       -0.231         0.311         0.080         0.117        -0.006
+ RISK_12        0.321         0.188         0.142         0.355         0.471
+ RISK_13        0.157         0.448         0.208        -0.025         0.034
+ RISK_14        0.061         0.146         0.079         0.091         0.070
+ RISK_15        0.159         0.371         0.115         0.071         0.078
+ RISK_16       -0.021         0.262         0.252         0.159        -0.007
+ RISK_17        0.209         0.293         0.485         0.380         0.281
+ RISK_18        0.284         0.066         0.193         0.190         0.086
+ RISK_19       -0.023         0.199         0.150         0.107         0.068
+ RISK_20       -0.049         0.097         0.119         0.185        -0.129
+ RISK_21       -0.150        -0.069         0.081         0.133         0.073
+ RISK_22       -0.160         0.042         0.141         0.112        -0.057
+ RISK_23       -0.082         0.185         0.194         0.271         0.040
+ RISK_25       -0.324        -0.034        -0.016         0.282         0.120
+ RISK_26       -0.043         0.051        -0.004         0.358        -0.022
+ RISK_27       -0.150         0.244         0.097         0.351         0.034
+ RISK_28       -0.121         0.102         0.074         0.259        -0.157
+ RISK_30       -0.111         0.369         0.107         0.359        -0.051
+ RISK_31       -0.011         0.046         0.100         0.009        -0.156
+ RISK_32       -0.042         0.277         0.039         0.069        -0.063
+ RISK_29       -0.032         0.141        -0.253         0.439        -0.142
+ RISK_24        0.281        -0.170        -0.097         0.012         0.125
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              RISK_6        RISK_7        RISK_8        RISK_9        RISK_10
+              ________      ________      ________      ________      ________
+ RISK_7         0.761
+ RISK_8         0.021        -0.069
+ RISK_9         0.024         0.103         0.860
+ RISK_10       -0.161         0.076         0.508         0.482
+ RISK_11        0.008         0.074         0.495         0.429         0.780
+ RISK_12        0.515         0.432        -0.260        -0.108         0.041
+ RISK_13        0.142         0.151         0.732         0.498         0.389
+ RISK_14        0.050         0.116         0.333         0.203         0.382
+ RISK_15       -0.010         0.169         0.311         0.080         0.327
+ RISK_16        0.130         0.203         0.389         0.157         0.188
+ RISK_17        0.326         0.429         0.014        -0.069         0.070
+ RISK_18        0.265         0.388         0.383         0.126         0.289
+ RISK_19        0.009        -0.121         0.309         0.245         0.138
+ RISK_20       -0.024        -0.246        -0.227         0.019        -0.011
+ RISK_21        0.126         0.005        -0.075        -0.163        -0.009
+ RISK_22       -0.001        -0.145        -0.039         0.113        -0.018
+ RISK_23        0.111         0.169        -0.130        -0.056        -0.066
+ RISK_25       -0.029         0.060        -0.099         0.091         0.330
+ RISK_26       -0.034        -0.126         0.052        -0.003         0.097
+ RISK_27       -0.009         0.027         0.105         0.076         0.165
+ RISK_28       -0.135         0.170         0.308         0.292         0.277
+ RISK_30        0.005         0.036        -0.142         0.232         0.088
+ RISK_31       -0.142        -0.101        -0.103         0.117         0.147
+ RISK_32       -0.071        -0.248         0.190         0.179         0.106
+ RISK_29       -0.187        -0.102         0.200         0.063         0.385
+ RISK_24        0.397         0.087        -0.109         0.042        -0.262
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              RISK_11       RISK_12       RISK_13       RISK_14       RISK_15
+              ________      ________      ________      ________      ________
+ RISK_12        0.318
+ RISK_13        0.423         0.175
+ RISK_14        0.365         0.465         0.314
+ RISK_15        0.296         0.128         0.203         0.362
+ RISK_16        0.313         0.167         0.383         0.350         0.230
+ RISK_17        0.217         0.267         0.457         0.073         0.169
+ RISK_18        0.460         0.218         0.148         0.050         0.048
+ RISK_19        0.104         0.032         0.209        -0.067        -0.016
+ RISK_20        0.081        -0.023         0.059         0.056         0.068
+ RISK_21        0.070        -0.165         0.104        -0.047        -0.041
+ RISK_22        0.021         0.035         0.028        -0.153         0.013
+ RISK_23        0.204         0.046         0.038         0.002         0.001
+ RISK_25        0.295        -0.062         0.244         0.066         0.070
+ RISK_26        0.162        -0.078         0.094         0.153        -0.013
+ RISK_27        0.209         0.014         0.202         0.098         0.142
+ RISK_28        0.353        -0.048         0.278         0.100         0.457
+ RISK_30        0.153        -0.097        -0.053        -0.074         0.225
+ RISK_31        0.039        -0.067         0.082        -0.110         0.250
+ RISK_32        0.091        -0.068         0.182        -0.126         0.073
+ RISK_29        0.066         0.031        -0.078         0.225         0.136
+ RISK_24       -0.160        -0.146        -0.135         0.325        -0.155
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              RISK_16       RISK_17       RISK_18       RISK_19       RISK_20
+              ________      ________      ________      ________      ________
+ RISK_17        0.229
+ RISK_18        0.052         0.420
+ RISK_19        0.038         0.051        -0.017
+ RISK_20        0.212         0.035        -0.104         0.272
+ RISK_21       -0.039        -0.066         0.097        -0.043         0.226
+ RISK_22        0.054         0.068        -0.103         0.289         0.432
+ RISK_23        0.041         0.184         0.099        -0.078         0.146
+ RISK_25       -0.099         0.101        -0.089        -0.139        -0.139
+ RISK_26       -0.006         0.113        -0.030         0.106         0.258
+ RISK_27        0.026         0.267         0.028         0.071         0.054
+ RISK_28        0.078         0.301         0.158         0.210         0.088
+ RISK_30       -0.137         0.192        -0.043         0.168         0.244
+ RISK_31        0.205        -0.014        -0.023         0.184         0.359
+ RISK_32        0.048        -0.047        -0.076         0.239         0.366
+ RISK_29       -0.134         0.146        -0.340         0.269        -0.082
+ RISK_24       -0.097         0.047         0.180         0.146         0.044
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              RISK_21       RISK_22       RISK_23       RISK_25       RISK_26
+              ________      ________      ________      ________      ________
+ RISK_22        0.243
+ RISK_23        0.470         0.203
+ RISK_25        0.352         0.031         0.397
+ RISK_26        0.305         0.207         0.302         0.479
+ RISK_27        0.186         0.132         0.297         0.620         0.635
+ RISK_28        0.322         0.186         0.461         0.661         0.415
+ RISK_30        0.333         0.391         0.058         0.282         0.595
+ RISK_31        0.234         0.372         0.269         0.213         0.235
+ RISK_32        0.115         0.561         0.116         0.195         0.240
+ RISK_29        0.414         0.354         0.258         0.543         0.482
+ RISK_24       -0.069        -0.177         0.021        -0.034         0.325
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              RISK_27       RISK_28       RISK_30       RISK_31       RISK_32
+              ________      ________      ________      ________      ________
+ RISK_28        0.571
+ RISK_30        0.287         0.521
+ RISK_31        0.138         0.427         0.308
+ RISK_32        0.296         0.212         0.271         0.478
+ RISK_29        0.562         0.510         0.382         0.357         0.372
+ RISK_24       -0.005        -0.070         0.058         0.046        -0.273
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              RISK_29       RISK_24
+              ________      ________
+ RISK_24        0.141
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_1 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_2 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_3 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_5 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_6 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_8 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_9 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_13 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_16 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_18 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_29 AND RISK_21 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_24 AND RISK_2 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_24 AND RISK_8 HAS AN EMPTY CELL.
+
+     WARNING:  THE BIVARIATE TABLE OF RISK_24 AND RISK_29 HAS AN EMPTY CELL.
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     WARNING:  THE LATENT VARIABLE COVARIANCE MATRIX (PSI) IS NOT POSITIVE
+     DEFINITE.  THIS COULD INDICATE A NEGATIVE VARIANCE/RESIDUAL VARIANCE FOR A
+     LATENT VARIABLE, A CORRELATION GREATER OR EQUAL TO ONE BETWEEN TWO LATENT
+     VARIABLES, OR A LINEAR DEPENDENCY AMONG MORE THAN TWO LATENT VARIABLES.
+     CHECK THE TECH4 OUTPUT FOR MORE INFORMATION.
+     PROBLEM INVOLVING VARIABLE FAM_STR.
+
+
+     THE STANDARD ERRORS OF THE MODEL PARAMETER ESTIMATES COULD NOT BE
+     COMPUTED.  THE MODEL MAY NOT BE IDENTIFIED.  CHECK YOUR MODEL.
+     PROBLEM INVOLVING PARAMETER 72.
+
+     THE CONDITION NUMBER IS      -0.136D-17.
+
+
+
+MODEL RESULTS
+
+                    Estimate
+
+ ECO_RI   BY
+    RISK_1             1.000
+    RISK_2             1.471
+    RISK_3             1.272
+    RISK_4             1.105
+    RISK_5             1.550
+    RISK_6             2.120
+    RISK_7             2.028
+
+ FAM_STR  BY
+    RISK_8             1.000
+    RISK_9             0.782
+    RISK_10            0.776
+    RISK_11            0.918
+    RISK_12            0.451
+    RISK_13            0.739
+    RISK_14            0.516
+    RISK_15            0.428
+    RISK_16            0.455
+    RISK_17            0.583
+    RISK_18            0.480
+
+ PEER_DIF BY
+    RISK_19            1.000
+    RISK_20            0.409
+
+ AC_CHA   BY
+    RISK_21            1.000
+    RISK_22            0.959
+    RISK_23            1.046
+    RISK_24            0.029
+
+ PROB_BE  BY
+    RISK_25            1.000
+    RISK_26            1.016
+    RISK_27            1.025
+    RISK_28            1.156
+    RISK_29            1.000
+    RISK_30            0.851
+
+ MEN_HE   BY
+    RISK_31            1.000
+    RISK_32            1.039
+
+ ENV_RISK BY
+    ECO_RI             1.000
+    FAM_STR            6.191
+    PEER_DIF           1.193
+
+ IN_RISK  BY
+    AC_CHA             1.000
+    PROB_BE            1.027
+    MEN_HE             0.958
+
+ RISK     BY
+    IN_RISK            1.000
+    ENV_RISK           0.230
+
+ Thresholds
+    RISK_1$1           1.197
+    RISK_2$1           1.643
+    RISK_3$1           0.578
+    RISK_4$1           1.385
+    RISK_5$1           0.894
+    RISK_6$1           0.767
+    RISK_7$1           0.570
+    RISK_8$1           1.784
+    RISK_9$1           1.445
+    RISK_10$1          0.778
+    RISK_11$1          1.015
+    RISK_12$1          0.335
+    RISK_13$1          1.072
+    RISK_14$1          1.415
+    RISK_15$1          0.609
+    RISK_16$1          0.919
+    RISK_17$1          1.219
+    RISK_18$1          0.316
+    RISK_19$1          0.463
+    RISK_20$1          0.036
+    RISK_21$1         -0.088
+    RISK_22$1          0.140
+    RISK_23$1          0.435
+    RISK_25$1          0.711
+    RISK_26$1          1.043
+    RISK_27$1          0.770
+    RISK_28$1          1.564
+    RISK_30$1          1.241
+    RISK_31$1          0.148
+    RISK_32$1          0.193
+    RISK_29$1          2.293
+    RISK_24$1          1.643
+
+ Variances
+    RISK               0.070
+
+ Residual Variances
+    ECO_RI             0.144
+    FAM_STR           -0.076
+    PEER_DIF           0.634
+    ENV_RISK           0.019
+    AC_CHA             0.045
+    PROB_BE            0.238
+    MEN_HE             0.208
+    IN_RISK            0.205
+
+
+STANDARDIZED MODEL RESULTS
+
+                      StdYX       StdY        Std
+                    Estimate   Estimate   Estimate
+
+ ECO_RI   BY
+    RISK_1             0.409      0.409      0.409
+    RISK_2             0.602      0.602      0.602
+    RISK_3             0.520      0.520      0.520
+    RISK_4             0.452      0.452      0.452
+    RISK_5             0.634      0.634      0.634
+    RISK_6             0.867      0.867      0.867
+    RISK_7             0.830      0.830      0.830
+
+ FAM_STR  BY
+    RISK_8             0.901      0.901      0.901
+    RISK_9             0.704      0.704      0.704
+    RISK_10            0.699      0.699      0.699
+    RISK_11            0.827      0.827      0.827
+    RISK_12            0.406      0.406      0.406
+    RISK_13            0.666      0.666      0.666
+    RISK_14            0.465      0.465      0.465
+    RISK_15            0.385      0.385      0.385
+    RISK_16            0.410      0.410      0.410
+    RISK_17            0.525      0.525      0.525
+    RISK_18            0.432      0.432      0.432
+
+ PEER_DIF BY
+    RISK_19            0.816      0.816      0.816
+    RISK_20            0.334      0.334      0.334
+
+ AC_CHA   BY
+    RISK_21            0.565      0.565      0.565
+    RISK_22            0.542      0.542      0.542
+    RISK_23            0.591      0.591      0.591
+    RISK_24            0.016      0.016      0.016
+
+ PROB_BE  BY
+    RISK_25            0.726      0.726      0.726
+    RISK_26            0.738      0.738      0.738
+    RISK_27            0.745      0.745      0.745
+    RISK_28            0.840      0.840      0.840
+    RISK_29            0.726      0.726      0.726
+    RISK_30            0.618      0.618      0.618
+
+ MEN_HE   BY
+    RISK_31            0.678      0.678      0.678
+    RISK_32            0.705      0.705      0.705
+
+ ENV_RISK BY
+    ECO_RI             0.372      0.372      0.372
+    FAM_STR            1.046      1.046      1.046
+    PEER_DIF           0.222      0.222      0.222
+
+ IN_RISK  BY
+    AC_CHA             0.927      0.927      0.927
+    PROB_BE            0.741      0.741      0.741
+    MEN_HE             0.740      0.740      0.740
+
+ RISK     BY
+    IN_RISK            0.504      0.504      0.504
+    ENV_RISK           0.400      0.400      0.400
+
+ Thresholds
+    RISK_1$1           1.197      1.197      1.197
+    RISK_2$1           1.643      1.643      1.643
+    RISK_3$1           0.578      0.578      0.578
+    RISK_4$1           1.385      1.385      1.385
+    RISK_5$1           0.894      0.894      0.894
+    RISK_6$1           0.767      0.767      0.767
+    RISK_7$1           0.570      0.570      0.570
+    RISK_8$1           1.784      1.784      1.784
+    RISK_9$1           1.445      1.445      1.445
+    RISK_10$1          0.778      0.778      0.778
+    RISK_11$1          1.015      1.015      1.015
+    RISK_12$1          0.335      0.335      0.335
+    RISK_13$1          1.072      1.072      1.072
+    RISK_14$1          1.415      1.415      1.415
+    RISK_15$1          0.609      0.609      0.609
+    RISK_16$1          0.919      0.919      0.919
+    RISK_17$1          1.219      1.219      1.219
+    RISK_18$1          0.316      0.316      0.316
+    RISK_19$1          0.463      0.463      0.463
+    RISK_20$1          0.036      0.036      0.036
+    RISK_21$1         -0.088     -0.088     -0.088
+    RISK_22$1          0.140      0.140      0.140
+    RISK_23$1          0.435      0.435      0.435
+    RISK_25$1          0.711      0.711      0.711
+    RISK_26$1          1.043      1.043      1.043
+    RISK_27$1          0.770      0.770      0.770
+    RISK_28$1          1.564      1.564      1.564
+    RISK_30$1          1.241      1.241      1.241
+    RISK_31$1          0.148      0.148      0.148
+    RISK_32$1          0.193      0.193      0.193
+    RISK_29$1          2.293      2.293      2.293
+    RISK_24$1          1.643      1.643      1.643
+
+ Variances
+    RISK               1.000      1.000      1.000
+
+ Residual Variances
+    ECO_RI             0.862      0.862      0.862
+    FAM_STR           -0.094    999.000    999.000
+    PEER_DIF           0.951      0.951      0.951
+    ENV_RISK           0.840      0.840      0.840
+    AC_CHA             0.141      0.141      0.141
+    PROB_BE            0.451      0.451      0.451
+    MEN_HE             0.452      0.452      0.452
+    IN_RISK            0.746      0.746      0.746
+
+
+MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES
+
+     eco_ri BY risk_1@1;
+     eco_ri BY risk_2*1.47066;
+     eco_ri BY risk_3*1.27216;
+     eco_ri BY risk_4*1.10472;
+     eco_ri BY risk_5*1.54970;
+     eco_ri BY risk_6*2.12050;
+     eco_ri BY risk_7*2.02794;
+     fam_str BY risk_8@1;
+     fam_str BY risk_9*0.78162;
+     fam_str BY risk_10*0.77567;
+     fam_str BY risk_11*0.91792;
+     fam_str BY risk_12*0.45123;
+     fam_str BY risk_13*0.73912;
+     fam_str BY risk_14*0.51585;
+     fam_str BY risk_15*0.42794;
+     fam_str BY risk_16*0.45536;
+     fam_str BY risk_17*0.58333;
+     fam_str BY risk_18*0.47986;
+     peer_dif BY risk_19@1;
+     peer_dif BY risk_20*0.40875;
+     ac_cha BY risk_21@1;
+     ac_cha BY risk_22*0.95852;
+     ac_cha BY risk_23*1.04586;
+     ac_cha BY risk_24*0.02892;
+     prob_be BY risk_25@1;
+     prob_be BY risk_26*1.01571;
+     prob_be BY risk_27*1.02516;
+     prob_be BY risk_28*1.15591;
+     prob_be BY risk_29*0.99965;
+     prob_be BY risk_30*0.85133;
+     men_he BY risk_31@1;
+     men_he BY risk_32*1.03934;
+
+     env_risk BY eco_ri@1;
+     env_risk BY fam_str*6.19086;
+     env_risk BY peer_dif*1.19312;
+     in_risk BY ac_cha@1;
+     in_risk BY prob_be*1.02678;
+     in_risk BY men_he*0.95763;
+     risk BY in_risk@1;
+     risk BY env_risk*0.23031;
+
+     [ risk_1$1*1.19666 ];
+     [ risk_2$1*1.64274 ];
+     [ risk_3$1*0.57792 ];
+     [ risk_4$1*1.38537 ];
+     [ risk_5$1*0.89427 ];
+     [ risk_6$1*0.76717 ];
+     [ risk_7$1*0.56963 ];
+     [ risk_8$1*1.78416 ];
+     [ risk_9$1*1.44495 ];
+     [ risk_10$1*0.77781 ];
+     [ risk_11$1*1.01513 ];
+     [ risk_12$1*0.33451 ];
+     [ risk_13$1*1.07173 ];
+     [ risk_14$1*1.41453 ];
+     [ risk_15$1*0.60878 ];
+     [ risk_16$1*0.91903 ];
+     [ risk_17$1*1.21936 ];
+     [ risk_18$1*0.31647 ];
+     [ risk_19$1*0.46305 ];
+     [ risk_20$1*0.03566 ];
+     [ risk_21$1*-0.08768 ];
+     [ risk_22$1*0.14033 ];
+     [ risk_23$1*0.43473 ];
+     [ risk_25$1*0.71110 ];
+     [ risk_26$1*1.04301 ];
+     [ risk_27$1*0.77042 ];
+     [ risk_28$1*1.56363 ];
+     [ risk_30$1*1.24144 ];
+     [ risk_31$1*0.14831 ];
+     [ risk_32$1*0.19274 ];
+     [ risk_29$1*2.29324 ];
+     [ risk_24$1*1.64274 ];
+
+     eco_ri*0.14419;
+     fam_str*-0.07610;
+     peer_dif*0.63350;
+     env_risk*0.01944;
+     ac_cha*0.04522;
+     prob_be*0.23807;
+     men_he*0.20793;
+     in_risk*0.20467;
+     risk*0.06986;
+
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION
+
+
+           TAU
+              RISK_1$1      RISK_2$1      RISK_3$1      RISK_4$1      RISK_5$1
+              ________      ________      ________      ________      ________
+      1           1             2             3             4             5
+
+
+           TAU
+              RISK_6$1      RISK_7$1      RISK_8$1      RISK_9$1      RISK_10$
+              ________      ________      ________      ________      ________
+      1           6             7             8             9            10
+
+
+           TAU
+              RISK_11$      RISK_12$      RISK_13$      RISK_14$      RISK_15$
+              ________      ________      ________      ________      ________
+      1          11            12            13            14            15
+
+
+           TAU
+              RISK_16$      RISK_17$      RISK_18$      RISK_19$      RISK_20$
+              ________      ________      ________      ________      ________
+      1          16            17            18            19            20
+
+
+           TAU
+              RISK_21$      RISK_22$      RISK_23$      RISK_25$      RISK_26$
+              ________      ________      ________      ________      ________
+      1          21            22            23            24            25
+
+
+           TAU
+              RISK_27$      RISK_28$      RISK_30$      RISK_31$      RISK_32$
+              ________      ________      ________      ________      ________
+      1          26            27            28            29            30
+
+
+           TAU
+              RISK_29$      RISK_24$
+              ________      ________
+      1          31            32
+
+
+           NU
+              RISK_1        RISK_2        RISK_3        RISK_4        RISK_5
+              ________      ________      ________      ________      ________
+      1           0             0             0             0             0
+
+
+           NU
+              RISK_6        RISK_7        RISK_8        RISK_9        RISK_10
+              ________      ________      ________      ________      ________
+      1           0             0             0             0             0
+
+
+           NU
+              RISK_11       RISK_12       RISK_13       RISK_14       RISK_15
+              ________      ________      ________      ________      ________
+      1           0             0             0             0             0
+
+
+           NU
+              RISK_16       RISK_17       RISK_18       RISK_19       RISK_20
+              ________      ________      ________      ________      ________
+      1           0             0             0             0             0
+
+
+           NU
+              RISK_21       RISK_22       RISK_23       RISK_25       RISK_26
+              ________      ________      ________      ________      ________
+      1           0             0             0             0             0
+
+
+           NU
+              RISK_27       RISK_28       RISK_30       RISK_31       RISK_32
+              ________      ________      ________      ________      ________
+      1           0             0             0             0             0
+
+
+           NU
+              RISK_29       RISK_24
+              ________      ________
+      1           0             0
+
+
+           LAMBDA
+              ECO_RI        FAM_STR       PEER_DIF      ENV_RISK      AC_CHA
+              ________      ________      ________      ________      ________
+ RISK_1             0             0             0             0             0
+ RISK_2            33             0             0             0             0
+ RISK_3            34             0             0             0             0
+ RISK_4            35             0             0             0             0
+ RISK_5            36             0             0             0             0
+ RISK_6            37             0             0             0             0
+ RISK_7            38             0             0             0             0
+ RISK_8             0             0             0             0             0
+ RISK_9             0            39             0             0             0
+ RISK_10            0            40             0             0             0
+ RISK_11            0            41             0             0             0
+ RISK_12            0            42             0             0             0
+ RISK_13            0            43             0             0             0
+ RISK_14            0            44             0             0             0
+ RISK_15            0            45             0             0             0
+ RISK_16            0            46             0             0             0
+ RISK_17            0            47             0             0             0
+ RISK_18            0            48             0             0             0
+ RISK_19            0             0             0             0             0
+ RISK_20            0             0            49             0             0
+ RISK_21            0             0             0             0             0
+ RISK_22            0             0             0             0            50
+ RISK_23            0             0             0             0            51
+ RISK_25            0             0             0             0             0
+ RISK_26            0             0             0             0             0
+ RISK_27            0             0             0             0             0
+ RISK_28            0             0             0             0             0
+ RISK_30            0             0             0             0             0
+ RISK_31            0             0             0             0             0
+ RISK_32            0             0             0             0             0
+ RISK_29            0             0             0             0             0
+ RISK_24            0             0             0             0            58
+
+
+           LAMBDA
+              PROB_BE       MEN_HE        IN_RISK       RISK
+              ________      ________      ________      ________
+ RISK_1             0             0             0             0
+ RISK_2             0             0             0             0
+ RISK_3             0             0             0             0
+ RISK_4             0             0             0             0
+ RISK_5             0             0             0             0
+ RISK_6             0             0             0             0
+ RISK_7             0             0             0             0
+ RISK_8             0             0             0             0
+ RISK_9             0             0             0             0
+ RISK_10            0             0             0             0
+ RISK_11            0             0             0             0
+ RISK_12            0             0             0             0
+ RISK_13            0             0             0             0
+ RISK_14            0             0             0             0
+ RISK_15            0             0             0             0
+ RISK_16            0             0             0             0
+ RISK_17            0             0             0             0
+ RISK_18            0             0             0             0
+ RISK_19            0             0             0             0
+ RISK_20            0             0             0             0
+ RISK_21            0             0             0             0
+ RISK_22            0             0             0             0
+ RISK_23            0             0             0             0
+ RISK_25            0             0             0             0
+ RISK_26           52             0             0             0
+ RISK_27           53             0             0             0
+ RISK_28           54             0             0             0
+ RISK_30           55             0             0             0
+ RISK_31            0             0             0             0
+ RISK_32            0            56             0             0
+ RISK_29           57             0             0             0
+ RISK_24            0             0             0             0
+
+
+           ALPHA
+              ECO_RI        FAM_STR       PEER_DIF      ENV_RISK      AC_CHA
+              ________      ________      ________      ________      ________
+      1           0             0             0             0             0
+
+
+           ALPHA
+              PROB_BE       MEN_HE        IN_RISK       RISK
+              ________      ________      ________      ________
+      1           0             0             0             0
+
+
+           BETA
+              ECO_RI        FAM_STR       PEER_DIF      ENV_RISK      AC_CHA
+              ________      ________      ________      ________      ________
+ ECO_RI             0             0             0             0             0
+ FAM_STR            0             0             0            59             0
+ PEER_DIF           0             0             0            60             0
+ ENV_RISK           0             0             0             0             0
+ AC_CHA             0             0             0             0             0
+ PROB_BE            0             0             0             0             0
+ MEN_HE             0             0             0             0             0
+ IN_RISK            0             0             0             0             0
+ RISK               0             0             0             0             0
+
+
+           BETA
+              PROB_BE       MEN_HE        IN_RISK       RISK
+              ________      ________      ________      ________
+ ECO_RI             0             0             0             0
+ FAM_STR            0             0             0             0
+ PEER_DIF           0             0             0             0
+ ENV_RISK           0             0             0            61
+ AC_CHA             0             0             0             0
+ PROB_BE            0             0            62             0
+ MEN_HE             0             0            63             0
+ IN_RISK            0             0             0             0
+ RISK               0             0             0             0
+
+
+           PSI
+              ECO_RI        FAM_STR       PEER_DIF      ENV_RISK      AC_CHA
+              ________      ________      ________      ________      ________
+ ECO_RI            64
+ FAM_STR            0            65
+ PEER_DIF           0             0            66
+ ENV_RISK           0             0             0            67
+ AC_CHA             0             0             0             0            68
+ PROB_BE            0             0             0             0             0
+ MEN_HE             0             0             0             0             0
+ IN_RISK            0             0             0             0             0
+ RISK               0             0             0             0             0
+
+
+           PSI
+              PROB_BE       MEN_HE        IN_RISK       RISK
+              ________      ________      ________      ________
+ PROB_BE           69
+ MEN_HE             0            70
+ IN_RISK            0             0            71
+ RISK               0             0             0            72
+
+
+     STARTING VALUES
+
+
+           TAU
+              RISK_1$1      RISK_2$1      RISK_3$1      RISK_4$1      RISK_5$1
+              ________      ________      ________      ________      ________
+      1         1.197         1.643         0.578         1.385         0.894
+
+
+           TAU
+              RISK_6$1      RISK_7$1      RISK_8$1      RISK_9$1      RISK_10$
+              ________      ________      ________      ________      ________
+      1         0.767         0.570         1.784         1.445         0.778
+
+
+           TAU
+              RISK_11$      RISK_12$      RISK_13$      RISK_14$      RISK_15$
+              ________      ________      ________      ________      ________
+      1         1.015         0.335         1.072         1.415         0.609
+
+
+           TAU
+              RISK_16$      RISK_17$      RISK_18$      RISK_19$      RISK_20$
+              ________      ________      ________      ________      ________
+      1         0.919         1.219         0.316         0.463         0.036
+
+
+           TAU
+              RISK_21$      RISK_22$      RISK_23$      RISK_25$      RISK_26$
+              ________      ________      ________      ________      ________
+      1        -0.088         0.140         0.435         0.711         1.043
+
+
+           TAU
+              RISK_27$      RISK_28$      RISK_30$      RISK_31$      RISK_32$
+              ________      ________      ________      ________      ________
+      1         0.770         1.564         1.241         0.148         0.193
+
+
+           TAU
+              RISK_29$      RISK_24$
+              ________      ________
+      1         2.293         1.643
+
+
+           NU
+              RISK_1        RISK_2        RISK_3        RISK_4        RISK_5
+              ________      ________      ________      ________      ________
+      1         0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              RISK_6        RISK_7        RISK_8        RISK_9        RISK_10
+              ________      ________      ________      ________      ________
+      1         0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              RISK_11       RISK_12       RISK_13       RISK_14       RISK_15
+              ________      ________      ________      ________      ________
+      1         0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              RISK_16       RISK_17       RISK_18       RISK_19       RISK_20
+              ________      ________      ________      ________      ________
+      1         0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              RISK_21       RISK_22       RISK_23       RISK_25       RISK_26
+              ________      ________      ________      ________      ________
+      1         0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              RISK_27       RISK_28       RISK_30       RISK_31       RISK_32
+              ________      ________      ________      ________      ________
+      1         0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              RISK_29       RISK_24
+              ________      ________
+      1         0.000         0.000
+
+
+           LAMBDA
+              ECO_RI        FAM_STR       PEER_DIF      ENV_RISK      AC_CHA
+              ________      ________      ________      ________      ________
+ RISK_1         1.000         0.000         0.000         0.000         0.000
+ RISK_2        -0.138         0.000         0.000         0.000         0.000
+ RISK_3         0.526         0.000         0.000         0.000         0.000
+ RISK_4         0.422         0.000         0.000         0.000         0.000
+ RISK_5         0.711         0.000         0.000         0.000         0.000
+ RISK_6         0.457         0.000         0.000         0.000         0.000
+ RISK_7         0.461         0.000         0.000         0.000         0.000
+ RISK_8         0.000         1.000         0.000         0.000         0.000
+ RISK_9         0.000         0.560         0.000         0.000         0.000
+ RISK_10        0.000         0.491         0.000         0.000         0.000
+ RISK_11        0.000         0.375         0.000         0.000         0.000
+ RISK_12        0.000         0.018         0.000         0.000         0.000
+ RISK_13        0.000         0.427         0.000         0.000         0.000
+ RISK_14        0.000         0.161         0.000         0.000         0.000
+ RISK_15        0.000         0.121         0.000         0.000         0.000
+ RISK_16        0.000         0.244         0.000         0.000         0.000
+ RISK_17        0.000         0.197         0.000         0.000         0.000
+ RISK_18        0.000         0.053         0.000         0.000         0.000
+ RISK_19        0.000         0.000         1.000         0.000         0.000
+ RISK_20        0.000         0.000         0.272         0.000         0.000
+ RISK_21        0.000         0.000         0.000         0.000         1.000
+ RISK_22        0.000         0.000         0.000         0.000         0.484
+ RISK_23        0.000         0.000         0.000         0.000         0.799
+ RISK_25        0.000         0.000         0.000         0.000         0.000
+ RISK_26        0.000         0.000         0.000         0.000         0.000
+ RISK_27        0.000         0.000         0.000         0.000         0.000
+ RISK_28        0.000         0.000         0.000         0.000         0.000
+ RISK_30        0.000         0.000         0.000         0.000         0.000
+ RISK_31        0.000         0.000         0.000         0.000         0.000
+ RISK_32        0.000         0.000         0.000         0.000         0.000
+ RISK_29        0.000         0.000         0.000         0.000         0.000
+ RISK_24        0.000         0.000         0.000         0.000        -0.074
+
+
+           LAMBDA
+              PROB_BE       MEN_HE        IN_RISK       RISK
+              ________      ________      ________      ________
+ RISK_1         0.000         0.000         0.000         0.000
+ RISK_2         0.000         0.000         0.000         0.000
+ RISK_3         0.000         0.000         0.000         0.000
+ RISK_4         0.000         0.000         0.000         0.000
+ RISK_5         0.000         0.000         0.000         0.000
+ RISK_6         0.000         0.000         0.000         0.000
+ RISK_7         0.000         0.000         0.000         0.000
+ RISK_8         0.000         0.000         0.000         0.000
+ RISK_9         0.000         0.000         0.000         0.000
+ RISK_10        0.000         0.000         0.000         0.000
+ RISK_11        0.000         0.000         0.000         0.000
+ RISK_12        0.000         0.000         0.000         0.000
+ RISK_13        0.000         0.000         0.000         0.000
+ RISK_14        0.000         0.000         0.000         0.000
+ RISK_15        0.000         0.000         0.000         0.000
+ RISK_16        0.000         0.000         0.000         0.000
+ RISK_17        0.000         0.000         0.000         0.000
+ RISK_18        0.000         0.000         0.000         0.000
+ RISK_19        0.000         0.000         0.000         0.000
+ RISK_20        0.000         0.000         0.000         0.000
+ RISK_21        0.000         0.000         0.000         0.000
+ RISK_22        0.000         0.000         0.000         0.000
+ RISK_23        0.000         0.000         0.000         0.000
+ RISK_25        1.000         0.000         0.000         0.000
+ RISK_26        0.717         0.000         0.000         0.000
+ RISK_27        0.998         0.000         0.000         0.000
+ RISK_28        0.931         0.000         0.000         0.000
+ RISK_30        0.711         0.000         0.000         0.000
+ RISK_31        0.000         1.000         0.000         0.000
+ RISK_32        0.000         0.478         0.000         0.000
+ RISK_29        0.791         0.000         0.000         0.000
+ RISK_24        0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              ECO_RI        FAM_STR       PEER_DIF      ENV_RISK      AC_CHA
+              ________      ________      ________      ________      ________
+      1         0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              PROB_BE       MEN_HE        IN_RISK       RISK
+              ________      ________      ________      ________
+      1         0.000         0.000         0.000         0.000
+
+
+           BETA
+              ECO_RI        FAM_STR       PEER_DIF      ENV_RISK      AC_CHA
+              ________      ________      ________      ________      ________
+ ECO_RI         0.000         0.000         0.000         1.000         0.000
+ FAM_STR        0.000         0.000         0.000         1.000         0.000
+ PEER_DIF       0.000         0.000         0.000         1.000         0.000
+ ENV_RISK       0.000         0.000         0.000         0.000         0.000
+ AC_CHA         0.000         0.000         0.000         0.000         0.000
+ PROB_BE        0.000         0.000         0.000         0.000         0.000
+ MEN_HE         0.000         0.000         0.000         0.000         0.000
+ IN_RISK        0.000         0.000         0.000         0.000         0.000
+ RISK           0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              PROB_BE       MEN_HE        IN_RISK       RISK
+              ________      ________      ________      ________
+ ECO_RI         0.000         0.000         0.000         0.000
+ FAM_STR        0.000         0.000         0.000         0.000
+ PEER_DIF       0.000         0.000         0.000         0.000
+ ENV_RISK       0.000         0.000         0.000         1.000
+ AC_CHA         0.000         0.000         1.000         0.000
+ PROB_BE        0.000         0.000         1.000         0.000
+ MEN_HE         0.000         0.000         1.000         0.000
+ IN_RISK        0.000         0.000         0.000         1.000
+ RISK           0.000         0.000         0.000         0.000
+
+
+           PSI
+              ECO_RI        FAM_STR       PEER_DIF      ENV_RISK      AC_CHA
+              ________      ________      ________      ________      ________
+ ECO_RI         0.050
+ FAM_STR        0.000         0.050
+ PEER_DIF       0.000         0.000         0.050
+ ENV_RISK       0.000         0.000         0.000         0.050
+ AC_CHA         0.000         0.000         0.000         0.000         0.050
+ PROB_BE        0.000         0.000         0.000         0.000         0.000
+ MEN_HE         0.000         0.000         0.000         0.000         0.000
+ IN_RISK        0.000         0.000         0.000         0.000         0.000
+ RISK           0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              PROB_BE       MEN_HE        IN_RISK       RISK
+              ________      ________      ________      ________
+ PROB_BE        0.050
+ MEN_HE         0.000         0.050
+ IN_RISK        0.000         0.000         0.050
+ RISK           0.000         0.000         0.000         0.050
+
+
+DIAGRAM INFORMATION
+
+  Use View Diagram under the Diagram menu in the Mplus Editor to view the diagram.
+  If running Mplus from the Mplus Diagrammer, the diagram opens automatically.
+
+  Diagram output
+    t:\research folders\ccwtg\analyses\papers\dropout\mplus\log_reg.dgm
+
+     Beginning Time:  14:16:45
+        Ending Time:  14:16:46
+       Elapsed Time:  00:00:01
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2013 Muthen & Muthen

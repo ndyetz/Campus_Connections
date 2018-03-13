@@ -1,0 +1,262 @@
+VERSION 1.1.0
+INPUT
+TITLE:
+ Logistic Regression
+DATA:
+  File is T:/Research folders/CCWTG/Analyses/Papers/Dropout/MPlus/Mplus_log.csv ;
+VARIABLE:
+  Names are
+     ID     income risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7
+        risk_8 risk_9 risk_10 risk_11 risk_12 risk_13 risk_14 risk_15 risk_16
+        risk_17 risk_18 risk_19 risk_20 risk_21 risk_22 risk_23 risk_24
+         risk_25 risk_26
+        risk_27 risk_28 risk_29 risk_30 risk_31 risk_32 male room age
+        eth sem_n drop
+        Env_ri Econ_ad fam_st Pr_diff In_Ri Ac_cha prob_b  M_Hea;
+   USEVARIABLES ARE risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7 risk_8
+    risk_9 risk_10 risk_11 risk_12 risk_13 risk_14 risk_15 risk_16
+    risk_17 risk_18 risk_19 risk_20 risk_21 risk_22 risk_23
+     risk_25 risk_26 risk_27 risk_28 risk_30 risk_31 risk_32 risk_29 risk_24;
+ CATEGORICAL ARE risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7
+    risk_8 risk_9 risk_10 risk_11 risk_12 risk_13
+    risk_14 risk_15 risk_16 risk_17 risk_18 risk_19 risk_20
+    risk_21 risk_22 risk_23 risk_25 risk_26 risk_27
+     risk_28 risk_30 risk_31 risk_32 risk_29 risk_24;
+ Missing = all(-1234) ;
+OUTPUT:
+  sampstat standardized modindices;
+MODEL:
+ eco_ri      BY risk_1 - risk_7;
+ fam_str     BY risk_8 - risk_18;
+ peer_dif    BY risk_19 - risk_20;
+env_risk BY eco_ri fam_str peer_dif;
+ ac_cha      BY risk_21 - risk_23 risk_24;
+ prob_be     BY risk_25 - risk_28 risk_29 risk_30;
+ men_he      BY risk_31 - risk_32;
+In_risk BY ac_cha prob_be men_he;
+Risk BY In_risk env_risk ;
+INPUT_END
+1
+1
+1
+1
+WLSMV
+1
+GENERAL
+0
+32
+9
+0
+risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7 risk_8 risk_9 risk_10 risk_11 risk_12 risk_13 risk_14 risk_15 risk_16 risk_17 risk_18 risk_19 risk_20 risk_21 risk_22 risk_23 risk_25 risk_26 risk_27 risk_28 risk_30 risk_31 risk_32 risk_29 risk_24 eco_ri fam_str peer_dif env_risk ac_cha prob_be men_he in_risk risk
+3
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 2 2 2 1 2 2 2 1 0
+0
+6
+eco_ri
+risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7
+fam_str
+risk_8 risk_9 risk_10 risk_11 risk_12 risk_13 risk_14 risk_15 risk_16 risk_17 risk_18
+peer_dif
+risk_19 risk_20
+ac_cha
+risk_21 risk_22 risk_23 risk_24
+prob_be
+risk_25 risk_26 risk_27 risk_28 risk_29 risk_30
+men_he
+risk_31 risk_32
+1 1 eco_ri risk_1    1.000
+1 1 eco_ri risk_2    1.471
+1 1 eco_ri risk_3    1.272
+1 1 eco_ri risk_4    1.105
+1 1 eco_ri risk_5    1.550
+1 1 eco_ri risk_6    2.120
+1 1 eco_ri risk_7    2.028
+1 1 fam_str risk_8    1.000
+1 1 fam_str risk_9    0.782
+1 1 fam_str risk_10    0.776
+1 1 fam_str risk_11    0.918
+1 1 fam_str risk_12    0.451
+1 1 fam_str risk_13    0.739
+1 1 fam_str risk_14    0.516
+1 1 fam_str risk_15    0.428
+1 1 fam_str risk_16    0.455
+1 1 fam_str risk_17    0.583
+1 1 fam_str risk_18    0.480
+1 1 peer_dif risk_19    1.000
+1 1 peer_dif risk_20    0.409
+1 1 ac_cha risk_21    1.000
+1 1 ac_cha risk_22    0.959
+1 1 ac_cha risk_23    1.046
+1 1 ac_cha risk_24    0.029
+1 1 prob_be risk_25    1.000
+1 1 prob_be risk_26    1.016
+1 1 prob_be risk_27    1.025
+1 1 prob_be risk_28    1.156
+1 1 prob_be risk_29    1.000
+1 1 prob_be risk_30    0.851
+1 1 men_he risk_31    1.000
+1 1 men_he risk_32    1.039
+1 1 env_risk eco_ri    1.000
+1 1 env_risk fam_str    6.191
+1 1 env_risk peer_dif    1.193
+1 1 in_risk ac_cha    1.000
+1 1 in_risk prob_be    1.027
+1 1 in_risk men_he    0.958
+1 1 risk in_risk    1.000
+1 1 risk env_risk    0.230
+4 1 eco_ri    0.144
+4 1 fam_str   -0.076
+4 1 peer_dif    0.634
+4 1 env_risk    0.019
+4 1 ac_cha    0.045
+4 1 prob_be    0.238
+4 1 men_he    0.208
+4 1 in_risk    0.205
+5 1 risk    0.070
+11 1 eco_ri risk_1    0.409
+11 1 eco_ri risk_2    0.602
+11 1 eco_ri risk_3    0.520
+11 1 eco_ri risk_4    0.452
+11 1 eco_ri risk_5    0.634
+11 1 eco_ri risk_6    0.867
+11 1 eco_ri risk_7    0.830
+11 1 fam_str risk_8    0.901
+11 1 fam_str risk_9    0.704
+11 1 fam_str risk_10    0.699
+11 1 fam_str risk_11    0.827
+11 1 fam_str risk_12    0.406
+11 1 fam_str risk_13    0.666
+11 1 fam_str risk_14    0.465
+11 1 fam_str risk_15    0.385
+11 1 fam_str risk_16    0.410
+11 1 fam_str risk_17    0.525
+11 1 fam_str risk_18    0.432
+11 1 peer_dif risk_19    0.816
+11 1 peer_dif risk_20    0.334
+11 1 ac_cha risk_21    0.565
+11 1 ac_cha risk_22    0.542
+11 1 ac_cha risk_23    0.591
+11 1 ac_cha risk_24    0.016
+11 1 prob_be risk_25    0.726
+11 1 prob_be risk_26    0.738
+11 1 prob_be risk_27    0.745
+11 1 prob_be risk_28    0.840
+11 1 prob_be risk_29    0.726
+11 1 prob_be risk_30    0.618
+11 1 men_he risk_31    0.678
+11 1 men_he risk_32    0.705
+11 1 env_risk eco_ri    0.372
+11 1 env_risk fam_str    1.046
+11 1 env_risk peer_dif    0.222
+11 1 in_risk ac_cha    0.927
+11 1 in_risk prob_be    0.741
+11 1 in_risk men_he    0.740
+11 1 risk in_risk    0.504
+11 1 risk env_risk    0.400
+14 1 eco_ri    0.862
+14 1 fam_str   -0.094
+14 1 peer_dif    0.951
+14 1 env_risk    0.840
+14 1 ac_cha    0.141
+14 1 prob_be    0.451
+14 1 men_he    0.452
+14 1 in_risk    0.746
+15 1 risk    1.000
+21 1 eco_ri risk_1    0.409
+21 1 eco_ri risk_2    0.602
+21 1 eco_ri risk_3    0.520
+21 1 eco_ri risk_4    0.452
+21 1 eco_ri risk_5    0.634
+21 1 eco_ri risk_6    0.867
+21 1 eco_ri risk_7    0.830
+21 1 fam_str risk_8    0.901
+21 1 fam_str risk_9    0.704
+21 1 fam_str risk_10    0.699
+21 1 fam_str risk_11    0.827
+21 1 fam_str risk_12    0.406
+21 1 fam_str risk_13    0.666
+21 1 fam_str risk_14    0.465
+21 1 fam_str risk_15    0.385
+21 1 fam_str risk_16    0.410
+21 1 fam_str risk_17    0.525
+21 1 fam_str risk_18    0.432
+21 1 peer_dif risk_19    0.816
+21 1 peer_dif risk_20    0.334
+21 1 ac_cha risk_21    0.565
+21 1 ac_cha risk_22    0.542
+21 1 ac_cha risk_23    0.591
+21 1 ac_cha risk_24    0.016
+21 1 prob_be risk_25    0.726
+21 1 prob_be risk_26    0.738
+21 1 prob_be risk_27    0.745
+21 1 prob_be risk_28    0.840
+21 1 prob_be risk_29    0.726
+21 1 prob_be risk_30    0.618
+21 1 men_he risk_31    0.678
+21 1 men_he risk_32    0.705
+21 1 env_risk eco_ri    0.372
+21 1 env_risk fam_str    1.046
+21 1 env_risk peer_dif    0.222
+21 1 in_risk ac_cha    0.927
+21 1 in_risk prob_be    0.741
+21 1 in_risk men_he    0.740
+21 1 risk in_risk    0.504
+21 1 risk env_risk    0.400
+24 1 eco_ri    0.862
+24 1 fam_str  999.000
+24 1 peer_dif    0.951
+24 1 env_risk    0.840
+24 1 ac_cha    0.141
+24 1 prob_be    0.451
+24 1 men_he    0.452
+24 1 in_risk    0.746
+25 1 risk    1.000
+31 1 eco_ri risk_1    0.409
+31 1 eco_ri risk_2    0.602
+31 1 eco_ri risk_3    0.520
+31 1 eco_ri risk_4    0.452
+31 1 eco_ri risk_5    0.634
+31 1 eco_ri risk_6    0.867
+31 1 eco_ri risk_7    0.830
+31 1 fam_str risk_8    0.901
+31 1 fam_str risk_9    0.704
+31 1 fam_str risk_10    0.699
+31 1 fam_str risk_11    0.827
+31 1 fam_str risk_12    0.406
+31 1 fam_str risk_13    0.666
+31 1 fam_str risk_14    0.465
+31 1 fam_str risk_15    0.385
+31 1 fam_str risk_16    0.410
+31 1 fam_str risk_17    0.525
+31 1 fam_str risk_18    0.432
+31 1 peer_dif risk_19    0.816
+31 1 peer_dif risk_20    0.334
+31 1 ac_cha risk_21    0.565
+31 1 ac_cha risk_22    0.542
+31 1 ac_cha risk_23    0.591
+31 1 ac_cha risk_24    0.016
+31 1 prob_be risk_25    0.726
+31 1 prob_be risk_26    0.738
+31 1 prob_be risk_27    0.745
+31 1 prob_be risk_28    0.840
+31 1 prob_be risk_29    0.726
+31 1 prob_be risk_30    0.618
+31 1 men_he risk_31    0.678
+31 1 men_he risk_32    0.705
+31 1 env_risk eco_ri    0.372
+31 1 env_risk fam_str    1.046
+31 1 env_risk peer_dif    0.222
+31 1 in_risk ac_cha    0.927
+31 1 in_risk prob_be    0.741
+31 1 in_risk men_he    0.740
+31 1 risk in_risk    0.504
+31 1 risk env_risk    0.400
+34 1 eco_ri    0.862
+34 1 fam_str  999.000
+34 1 peer_dif    0.951
+34 1 env_risk    0.840
+34 1 ac_cha    0.141
+34 1 prob_be    0.451
+34 1 men_he    0.452
+34 1 in_risk    0.746
+35 1 risk    1.000

@@ -1,0 +1,204 @@
+---
+title: 'R Notebook: Predictors of Dropout'
+output:
+  pdf_document:
+    toc: yes
+  html_notebook:
+    toc: yes
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+---
+#clear environment
+```{r}
+rm(list = ls(all.names = TRUE))
+```
+
+
+#Load library
+```{r}
+#install.packages("lavaan")
+#install.packages("xtable")
+#install.packages("kableExtra")
+#install.packages("semPlot")
+
+library(tidyverse)
+library(lavaan)
+library(GGally)
+library(xtable)
+library("kableExtra")
+library(knitr)
+library(semPlot)
+```
+
+#Load Data
+```{r, message = FALSE}
+att  <-   read_csv("R_pois.csv")
+drop <-   read_csv("R_log.csv")
+```
+
+#Subset items
+```{r}
+sem_items <- drop %>% 
+  select(risk_1:risk_32)
+
+items <- c("risk_1","risk_2","risk_3","risk_4","risk_5","risk_6","risk_7","risk_8","risk_9","risk_10","risk_11","risk_12","risk_13","risk_14","risk_15","risk_16","risk_17","risk_18","risk_19","risk_20","risk_21","risk_22","risk_23","risk_24","risk_25","risk_26","risk_27","risk_28","risk_29","risk_30","risk_31", "risk_32")
+```
+
+#Frequency table
+```{r}
+#Count responses: plyr::count
+count_all <- map(sem_items, plyr::count)
+
+#COnvert to datframe
+count_all <-  as.data.frame(count_all)
+
+#Get necessary info
+count_all <- count_all %>% 
+  mutate(selection = ifelse(risk_1.x == 1, "yes", NA),
+         selection = ifelse(risk_1.x == 0, "no", selection)) %>% 
+  select(selection, ends_with(".freq"))
+
+count_all 
+```
+
+
+#Item corrlations
+```{r rows.print=32}
+
+cor <- round(cor(sem_items, use = "pairwise.complete.obs") ,2)
+
+upper<-cor
+upper[upper.tri(cor)]<-""
+upper<-as.data.frame(upper)
+
+
+kable(upper, "html", full_width = T)
+
+
+#kable(upper, "html") %>%
+#  kable_styling(full_width = T, position = "left") # <- nicer chart but only works whenknit to html. 
+
+```
+
+
+#Confirmatory Factor Analyses
+##Models
+```{r}
+eco_risk <- "eco_risk  =~ risk_1 + risk_2 + risk_3 + risk_4 + risk_5 + risk_6 + risk_7"
+fam_str  <- "fam_str   =~ risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_ 18"
+peer_dif <- "peer_dif  =~ risk_19 + risk_20"
+
+aca_cha  <- "aca_cha   =~ risk_21 + risk_22 + risk_23"    
+prob_be  <- "prob_be   =~ risk_25 + risk_26 + risk_27 + risk_28  + risk_30  #+ risk_29"
+men_he   <- "men_he    =~ risk_31 + risk_ 32"                            
+```
+
+##Economic Risk
+```{r}
+cfa <- cfa(eco_risk, data = sem_items)
+summary(cfa, fit.measures = TRUE)
+rm(cfa)
+```
+
+##Family structure
+```{r}
+cfa <- cfa(fam_str, data = sem_items)
+summary(cfa, fit.measures = TRUE)
+rm(cfa)
+```
+
+##Peer difficulties
+```{r}
+cfa <- cfa(peer_dif, data = sem_items)
+summary(cfa, fit.measures = TRUE)
+rm(cfa)
+```
+
+
+##Academic Challenges
+```{r}
+cfa <- cfa(aca_cha, data = sem_items)
+summary(cfa, fit.measures = TRUE)
+rm(cfa)
+```
+
+##Problem Behavior
+```{r}
+cfa <- cfa(prob_be, data = sem_items)
+summary(cfa, fit.measures = TRUE)
+rm(cfa)
+```
+
+##Mental Health Challenges
+```{r}
+cfa <- cfa(men_he, data = sem_items)
+summary(cfa, fit.measures = TRUE)
+rm(cfa)
+```
+
+#SEM
+##Models
+Current problems with model convergence when idnetifying the overall environmental & individual risk factors scale. 
+I will also take all items loaded onto the environmental & individual risk factors scale. This will be model 2.
+```{r}
+
+model1 <- "
+       #Environmental risk factors
+          eco_risk  =~ risk_1 + risk_2 + risk_3 + risk_4 + risk_5 + risk_6 + risk_7
+          fam_str   =~ risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_ 18
+          peer_dif  =~ risk_19 + risk_20
+          
+        #Individual Risk factors
+          aca_cha   =~ risk_21 + risk_22 + risk_23                        #+risk_24
+          prob_be   =~ risk_25 + risk_26 + risk_27 + risk_28  + risk_30   #+ risk_29
+          men_he    =~ risk_31 + risk_ 32
+
+        #env_risk =~ eco_risk + fam_str + peer_dif    
+        #ind_risk =~ aca_cha + prob_be + men_he
+
+        #risk =~ env_risk + ind_risk
+"
+
+model2 <- "
+       #Environmental risk factors
+          env_risk =~ risk_1 + risk_2 + risk_3 + risk_4 + risk_5 + risk_6 + risk_7 +
+          risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_ 18 +
+          risk_19 + risk_20
+  
+          
+        #Individual Risk factors
+         ind_risk   =~ risk_21 + risk_22 + risk_23 +                        #+risk_24
+          risk_25 + risk_26 + risk_27 + risk_28  + risk_30 +   #+ risk_29
+          risk_31 + risk_ 32
+
+       # risk =~ env_risk + ind_risk
+"
+```
+
+###Fit Model 1
+```{r}
+fit <-sem(model1, sem_items)
+summary(fit, fit.measures =TRUE)
+
+```
+
+
+###Fit model 2
+```{r}
+fit2 <-sem(model2, sem_items)
+summary(fit2, fit.measures =TRUE)
+```
+
+##Diagrams
+##Model 1
+```{r, fig.width= 20, fig.height= 20}
+
+semPaths(fit, "std", title = FALSE, curvePivot = TRUE)
+```
+##Model 2
+```{r, fig.width= 20, fig.height= 20}
+semPaths(fit2, "std", title = FALSE, curvePivot = TRUE)
+```

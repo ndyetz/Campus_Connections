@@ -1,0 +1,37 @@
+Title: Logistic Regression
+Data:
+  File is T:/Research folders/CCWTG/Analyses/Papers/Dropout/MPlus/Mplus_log.csv ;
+Variable:	
+  Names are
+    	ID     income risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7 risk_8 risk_9 risk_10 risk_11 risk_12 risk_13 risk_14 risk_15 risk_16 risk_17 risk_18 risk_19 risk_20 risk_21 risk_22 risk_23 risk_24 risk_25 risk_26 risk_27 risk_28 risk_29 risk_30 risk_31 risk_32 male room age eth sem_n drop  Env_ri Econ_ad fam_st Pr_diff In_Ri Ac_cha prob_b  M_Hea;
+  	USEVARIABLES ARE risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7 risk_8 risk_9 risk_10 risk_11 risk_12 risk_13 risk_14 risk_15 risk_16 risk_17 risk_18 risk_19 risk_20 risk_21 risk_22 risk_23 risk_24 risk_25 risk_26 risk_27 risk_28 risk_29 risk_30 risk_31 risk_32 male room age eth sem_n drop;
+	CATEGORICAL ARE risk_1 risk_2 risk_3 risk_4 risk_5 risk_6 risk_7 risk_8 risk_9 risk_10 risk_11 risk_12 risk_13 risk_14 risk_15 risk_16 risk_17 risk_18 risk_19 risk_20 risk_21 risk_22 risk_23 risk_24 risk_25 risk_26 risk_27 risk_28 risk_29 risk_30 risk_31 risk_32 male room eth sem_n drop;
+	Missing = all(-1234) ;
+
+!Question for Kim: I don't understand how to incorporate control variables
+
+
+Analysis: 	ESTIMATOR = MLR ;
+
+MODEL: 	
+	eco_ri BY risk_1 - risk_7; 	! = economic risk scale
+	fam_str BY risk_8 - risk_18;	! = Family Stress
+	peer_di BY risk_19 - risk_20;	! = Peer difficulties
+	
+env_risk BY eco_ri fam_str peer_dif;	! = Top 3 subscales to make environmental risk
+	
+	ac_cha BY risk_21 - risk_24;	! = Academic Challenges
+	prob_be BY risk_25 - risk_30;	! = Problem Behavior
+	men_he BY risk_31 - risk_32;	! = Mental Health
+
+In_risk BY ac_cha prob_be men_he;	! = Top 3 subscales to make individual risk
+
+Risk BY In_risk env_risk;		! = Overall risk (Individual & Environmental risk)
+
+drop ON Risk				!Now regressing drop on our risk variable. Do I regressing on all subscales too?
+
+
+Analysis: 
+  Type = ESTIMATOR = MLR ;
+Output:
+  sampstat;

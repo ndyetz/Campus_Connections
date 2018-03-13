@@ -1,0 +1,3 @@
+"0","sem_items <- drop %>% "
+"0","  select(risk_1:risk_32)"
+"0","items <- c(""risk_1"",""risk_2"",""risk_3"",""risk_4"",""risk_5"",""risk_6"",""risk_7"",""risk_8"",""risk_9"",""risk_10"",""risk_11"",""risk_12"",""risk_13"",""risk_14"",""risk_15"",""risk_16"",""risk_17"",""risk_18"",""risk_19"",""risk_20"",""risk_21"",""risk_22"",""risk_23"",""risk_24"",""risk_25"",""risk_26"",""risk_27"",""risk_28"",""risk_29"",""risk_30"",""risk_31"", ""risk_32"")"
