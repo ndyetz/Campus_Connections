@@ -3,12 +3,12 @@ title: "R Notebook for Network & belongingness Paper"
 output:
   pdf_document:
     toc: yes
-  html_document:
-    df_print: paged
+  html_notebook:
     toc: yes
     toc_float:
       collapsed: yes
-  html_notebook:
+  html_document:
+    df_print: paged
     toc: yes
     toc_float:
       collapsed: yes
@@ -746,34 +746,45 @@ rm(day); rm(graphs)
 ###Plot Graphs
 ```{r, warning = FALSE, fig.width = 20, fig.height=20}
 
-par(mfrow=c(5,4)) # To plot two plots side-by-side
+#Set chart image
+par(mfrow=c(4,5)) 
 
-   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
-  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
-my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+#Monday Graphs
+
+   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend   
+   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   
+#Tuesday Graphs
+   
+  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend  
+  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  
+#Wednesday Graphs 
+   
+  my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-
-
-   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- 
-   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- 
-   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  
+#Plot With purrr::walk()
+  #walk(.x = monday$graphs, .f = my_sn_g, title = "Monday");my_leg(role, color)
+  #walk(.x = tuesday$graphs, .f = my_sn_g, title = "Tuesday");my_leg(role, color)
+  #walk(.x =wednesday$graphs, .f = my_sn_g, title = "Wednesday");my_leg(role, color)
+  #walk(.x = thursday$graphs, .f = my_sn_g, title = "Thursday");my_leg(role, color)
 ```
 
 
@@ -1398,34 +1409,45 @@ rm(day); rm(graphs)
 ###Plot Graphs
 ```{r, warning = FALSE, fig.width = 20, fig.height=20}
 
-par(mfrow=c(5,4)) # To plot two plots side-by-side
+#Set chart image
+par(mfrow=c(4,5)) 
 
-   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
-  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
-my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+#Monday Graphs
+
+   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend   
+   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   
+#Tuesday Graphs
+   
+  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend  
+  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  
+#Wednesday Graphs 
+   
+  my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-
-
-   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- 
-   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- 
-   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  
+#Plot With purrr::walk()
+  #walk(.x = monday$graphs, .f = my_sn_g, title = "Monday");my_leg(role, color)
+  #walk(.x = tuesday$graphs, .f = my_sn_g, title = "Tuesday");my_leg(role, color)
+  #walk(.x =wednesday$graphs, .f = my_sn_g, title = "Wednesday");my_leg(role, color)
+  #walk(.x = thursday$graphs, .f = my_sn_g, title = "Thursday");my_leg(role, color)
 ```
 
 
@@ -2048,34 +2070,45 @@ rm(day); rm(graphs)
 ###Plot Graphs
 ```{r, warning = FALSE, fig.width = 20, fig.height=20}
 
-par(mfrow=c(5,4)) # To plot two plots side-by-side
+#Set chart image
+par(mfrow=c(4,5)) 
 
-   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
-  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
-my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+#Monday Graphs
+
+   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend   
+   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   
+#Tuesday Graphs
+   
+  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend  
+  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  
+#Wednesday Graphs 
+   
+  my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-
-
-   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- 
-   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- 
-   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  
+#Plot With purrr::walk()
+  #walk(.x = monday$graphs, .f = my_sn_g, title = "Monday");my_leg(role, color)
+  #walk(.x = tuesday$graphs, .f = my_sn_g, title = "Tuesday");my_leg(role, color)
+  #walk(.x =wednesday$graphs, .f = my_sn_g, title = "Wednesday");my_leg(role, color)
+  #walk(.x = thursday$graphs, .f = my_sn_g, title = "Thursday");my_leg(role, color)
 ```
 
 
@@ -2702,34 +2735,45 @@ rm(day); rm(graphs)
 ###Plot Graphs
 ```{r, warning = FALSE, fig.width = 20, fig.height=20}
 
-par(mfrow=c(5,4)) # To plot two plots side-by-side
+#Set chart image
+par(mfrow=c(4,5)) 
 
-   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
-  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
-my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+#Monday Graphs
+
+   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend   
+   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+   
+#Tuesday Graphs
+   
+  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend  
+  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  
+#Wednesday Graphs 
+   
+  my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-
-
-   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- 
-   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- 
-   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
-my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
- my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9")  ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11") ; my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  
+#Plot With purrr::walk()
+  #walk(.x = monday$graphs, .f = my_sn_g, title = "Monday");my_leg(role, color)
+  #walk(.x = tuesday$graphs, .f = my_sn_g, title = "Tuesday");my_leg(role, color)
+  #walk(.x =wednesday$graphs, .f = my_sn_g, title = "Wednesday");my_leg(role, color)
+  #walk(.x = thursday$graphs, .f = my_sn_g, title = "Thursday");my_leg(role, color)
 ```
 
 
