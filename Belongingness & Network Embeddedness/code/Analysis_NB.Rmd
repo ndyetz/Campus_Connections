@@ -3,12 +3,12 @@ title: "R Notebook for Network & belongingness Paper"
 output:
   pdf_document:
     toc: yes
-  html_notebook:
+  html_document:
+    df_print: paged
     toc: yes
     toc_float:
       collapsed: yes
-  html_document:
-    df_print: paged
+  html_notebook:
     toc: yes
     toc_float:
       collapsed: yes
@@ -104,6 +104,31 @@ staff_youth_att <- staff_youth_att %>%
          role_col = ifelse(role_num == 3, "red", role_col),
          role_col = ifelse(role_num == 4, "grey50", role_col)
          )
+```
+
+
+#Create Useful Functions
+```{r}
+#use this function to create plots Adjust here if necessary.
+
+my_sn_g <- function(g, title = "", vertex.label = NA, vertex.size = 10, edge.color = "black", edge.arrow.size = 0.05, layout = layout_nicely){
+  plot(g,
+     vertex.label = NA, 
+     vertex.size = 10,
+     edge.color = 'black',
+     edge.arrow.size = 0.05,
+     layout = layout_nicely(g),
+     main = title)
+}
+
+#function to make legend creation cleaner
+#Create vectors of attributes colors & corresponding colors
+my_leg <- function(att, colors) {
+  legend("bottomright", legend=att  , col = colors , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+}
+
+
+
 ```
 
 
@@ -249,34 +274,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create Monday List**
@@ -388,34 +417,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -527,34 +560,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -665,34 +702,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 
@@ -703,197 +744,36 @@ rm(day); rm(graphs)
 ```
 
 ###Plot Graphs
-```{r, warning = FALSE, fig.width = 20, fig.height=20, echo = FALSE}
+```{r, warning = FALSE, fig.width = 20, fig.height=20}
 
 par(mfrow=c(5,4)) # To plot two plots side-by-side
-#Week 1
-plot(monday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g1),
-     main = "Monday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
 
-plot(tuesday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g1),
-     main = "Tuesday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g1),
-     main = "Wednesday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g1),
-     main = "Thursday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-#Week 3
-plot(monday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g2),
-     main = "Monday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g2),
-     main = "Tuesday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g2),
-     main = "Wednesday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g2),
-     main = "Thursday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-#Week 6
-plot(monday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g3),
-     main = "Monday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g3),
-     main = "Tuesday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g3),
-     main = "Wednesday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g3),
-     main = "Thursday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-#Week 9
-plot(monday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g4),
-     main = "Monday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g4),
-     main = "Tuesday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g4),
-     main = "Wednesday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g4),
-     main = "Thursday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-#Week 11
-plot(monday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g5),
-     main = "Monday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-
-plot(tuesday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g5),
-     main = "Tuesday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g5),
-     main = "Wednesday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g5),
-     main = "Thursday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
+   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ 
+   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ 
+   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 ```
 
 
@@ -1046,34 +926,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 **Create List**
 ```{r}
@@ -1184,34 +1068,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -1323,34 +1211,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -1462,34 +1354,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -1500,197 +1396,36 @@ rm(day); rm(graphs)
 
 
 ###Plot Graphs
-```{r, warning = FALSE, fig.width = 20, fig.height=20, echo = FALSE}
+```{r, warning = FALSE, fig.width = 20, fig.height=20}
 
 par(mfrow=c(5,4)) # To plot two plots side-by-side
-#Week 1
-plot(monday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g1),
-     main = "Monday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
 
-plot(tuesday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g1),
-     main = "Tuesday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g1),
-     main = "Wednesday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g1),
-     main = "Thursday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-#Week 3
-plot(monday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g2),
-     main = "Monday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g2),
-     main = "Tuesday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g2),
-     main = "Wednesday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g2),
-     main = "Thursday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-#Week 6
-plot(monday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g3),
-     main = "Monday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g3),
-     main = "Tuesday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g3),
-     main = "Wednesday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g3),
-     main = "Thursday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-#Week 9
-plot(monday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g4),
-     main = "Monday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g4),
-     main = "Tuesday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g4),
-     main = "Wednesday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g4),
-     main = "Thursday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-#Week 11
-plot(monday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g5),
-     main = "Monday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-
-plot(tuesday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g5),
-     main = "Tuesday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g5),
-     main = "Wednesday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g5),
-     main = "Thursday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
+   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ 
+   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ 
+   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 ```
 
 
@@ -1843,34 +1578,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -1981,34 +1720,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -2120,34 +1863,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -2258,34 +2005,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -2295,197 +2046,36 @@ rm(day); rm(graphs)
 ```
 
 ###Plot Graphs
-```{r, warning = FALSE, fig.width = 20, fig.height=20, echo = FALSE}
+```{r, warning = FALSE, fig.width = 20, fig.height=20}
 
 par(mfrow=c(5,4)) # To plot two plots side-by-side
-#Week 1
-plot(monday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g1),
-     main = "Monday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
 
-plot(tuesday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g1),
-     main = "Tuesday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g1),
-     main = "Wednesday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g1),
-     main = "Thursday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-#Week 3
-plot(monday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g2),
-     main = "Monday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g2),
-     main = "Tuesday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g2),
-     main = "Wednesday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g2),
-     main = "Thursday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-#Week 6
-plot(monday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g3),
-     main = "Monday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g3),
-     main = "Tuesday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g3),
-     main = "Wednesday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g3),
-     main = "Thursday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-#Week 9
-plot(monday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g4),
-     main = "Monday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g4),
-     main = "Tuesday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g4),
-     main = "Wednesday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g4),
-     main = "Thursday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-#Week 11
-plot(monday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g5),
-     main = "Monday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-
-plot(tuesday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g5),
-     main = "Tuesday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g5),
-     main = "Wednesday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g5),
-     main = "Thursday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
+   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ 
+   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ 
+   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 ```
 
 
@@ -2640,34 +2230,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -2778,34 +2372,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -2917,34 +2515,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -3056,34 +2658,38 @@ sur5 <- as.matrix(day$sur5)
 
 
 # Convert friends matrix to an igraph object
-g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) 
-g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) 
-g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) 
-g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) 
-g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) 
+g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
+g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
+g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
+g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
+g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
-#Add staff Attribute  & colors
+#Add staff Role Attribute  
 
 V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
 V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
 V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
 V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)] 
 V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)] 
 
+#Add role colors
+
+V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
+V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
+V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
+V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
+V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
 
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
 
+#For Legend roles & corresponding colors
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
+ 
 ```
 
 **Create List**
@@ -3094,197 +2700,36 @@ rm(day); rm(graphs)
 
 
 ###Plot Graphs
-```{r, warning = FALSE, fig.width = 20, fig.height=20, echo = FALSE}
+```{r, warning = FALSE, fig.width = 20, fig.height=20}
 
 par(mfrow=c(5,4)) # To plot two plots side-by-side
-#Week 1
-plot(monday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g1),
-     main = "Monday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
 
-plot(tuesday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g1),
-     main = "Tuesday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g1),
-     main = "Wednesday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g1,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g1),
-     main = "Thursday - Week 1")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+   my_sn_g(monday$graphs$g1,      title = "Monday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+  my_sn_g(tuesday$graphs$g1,     title = "Tuesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend 
+my_sn_g(wednesday$graphs$g1,   title = "Wednesday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g1,    title = "Thursday - Week 1");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-#Week 3
-plot(monday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g2),
-     main = "Monday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g2),
-     main = "Tuesday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g2),
-     main = "Wednesday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g2,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g2),
-     main = "Thursday - Week 3")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-#Week 6
-plot(monday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g3),
-     main = "Monday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g3),
-     main = "Tuesday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g3),
-     main = "Wednesday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g3,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g3),
-     main = "Thursday - Week 6")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
+   my_sn_g(monday$graphs$g2,      title = "Monday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g2,     title = "Tuesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g2,   title = "Wednesday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g2,    title = "Thursday - Week 3");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 
 
-#Week 9
-plot(monday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g4),
-     main = "Monday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(tuesday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g4),
-     main = "Tuesday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g4),
-     main = "Wednesday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g4,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g4),
-     main = "Thursday - Week 9")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-#Week 11
-plot(monday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(monday$graphs$g5),
-     main = "Monday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-
-plot(tuesday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(tuesday$graphs$g5),
-     main = "Tuesday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(wednesday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(wednesday$graphs$g5),
-     main = "Wednesday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
-plot(thursday$graphs$g5,
-     vertex.label = NA, 
-     vertex.size = 10,
-     edge.color = 'black',
-     edge.arrow.size = 0.05,
-     layout = layout_nicely(thursday$graphs$g5),
-     main = "Thursday - Week 11")
-legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
-
+   my_sn_g(monday$graphs$g3,      title = "Monday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g3,     title = "Tuesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g3,   title = "Wednesday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g3,    title = "Thursday - Week 6");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ 
+   my_sn_g(monday$graphs$g4,      title = "Monday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g4,     title = "Tuesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g4,   title = "Wednesday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g4,    title = "Thursday - Week 9");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ 
+   my_sn_g(monday$graphs$g5,      title = "Monday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+  my_sn_g(tuesday$graphs$g5,     title = "Tuesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+my_sn_g(wednesday$graphs$g5,   title = "Wednesday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
+ my_sn_g(thursday$graphs$g5,    title = "Thursday - Week 11");my_leg(att = role, colors = color) #Social Network Graph ; Legend
 ```
 
 
