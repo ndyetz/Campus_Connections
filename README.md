@@ -8,9 +8,9 @@ Student mentors spend four hours once a week with their mentee in a group settin
 
 The program aims to prevent delinquency and recidivism, while addressing relevant correlates (e.g., substance use) and promoting important protective factors (e.g., academic success). If you are interested bringing Campus Connections to your community, please contact Ton Zimmerman at: <Toni.Zimmerman@ColoState.edu>. 
 
-This project was funded by the [William T. Grant Foundation](http://wtgrantfoundation.org/) as part of a 3 year data collection project focused on understanding hwo to better improve outcomes of at-risk adolescents. This project was focused on understanding and evaluating the differences between a "family" based mentorship style and the classic dyadic one-on-one mentorship family style. More information on the mentorship based family style may be read [here](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/files/Understanding%20the%20experience%20of%20Mentor%20Families%20in%20therapeutic%20youth%20mentoring.pdf). 
+This project was funded by the [William T. Grant Foundation](http://wtgrantfoundation.org/) as part of a 3 year data collection project in an effort to better improve outcomes of at-risk adolescents. This project is focused on understanding and evaluating the differences between a "family" based mentorship style and the classic dyadic one-on-one mentorship family style. More information on the family-based mentorship style may be read [here](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/files/Understanding%20the%20experience%20of%20Mentor%20Families%20in%20therapeutic%20youth%20mentoring.pdf). 
 
-This repository is managed by Neil Yetz, MPH and the code works directly with the William T. Grant funded data collection which began in the Fall of 2015 and is set to finish (for a total of 3 years, 6 semesters) in the Spring of 2018. 
+This repository is managed by Neil Yetz, MPH and the code works directly with the William T. Grant funded data collection which began in the Fall of 2015 and is set to finish (for a total of 3 years, 6 semesters) at the end of the Spring of 2018 semester. 
 
 Please send questions and correspondences regarding the code and output in this repository to Neil Yetz, MPH at <ndyetz@gmail.com>.
 
