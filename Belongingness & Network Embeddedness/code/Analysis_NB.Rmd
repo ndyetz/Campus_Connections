@@ -3,18 +3,24 @@ title: "R Notebook for Network & belongingness Paper"
 output:
   pdf_document:
     toc: yes
-  html_notebook:
-    toc: yes
-    toc_float:
-      collapsed: yes
   html_document:
     df_print: paged
     toc: yes
     toc_float:
       collapsed: yes
+  html_notebook:
+    toc: yes
+    toc_float:
+      collapsed: yes
+author: By Neil Yetz, MPH
 ---
+<center>
+![](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/images/302671_CampusConnections-logo.png)
+</center>
 
 #Introduction
+This Document was last updated on `r format(Sys.time(), "%B %d, %Y")`. This document is associated with the [Campus Connections](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/) Social Network Data. Please set the correct working directories in the [setwd & load data](#ref) section of this notebook. When run successfully, all network graphs, separated by semester and night with role attributes will be outputted and saved as a .RDS file into the MERGEALL folder of WTG. If you have any questions concerning this document, please send an email to Neil Yetz at <neil.yetz@colostate.edu>.
+
 
 #Clear Environment
 ```{r}
@@ -44,7 +50,7 @@ library(igraph)
 library(tidyverse)
 ```
 
-#setwd & load data
+#setwd & load data {#ref}
 ```{r, message = FALSE, warning = FALSE}
 setwd("T:/Research folders/CCWTG/Analyses/Data for Stats Dept/FINAL DATA")
 
@@ -82,33 +88,36 @@ youth_att <- youth_att %>%
 staff_att <- staff_att %>% 
   mutate(date_dropped = NA,
          no_start = NA,
-         Final_ID = FInal_ID) %>% 
+         Final_ID = FInal_ID) %>%  
   select(Final_ID, semester, night1, night2, mfcond, role1, role2, room, gender, mentee, impnotes, date_dropped, no_start)
 
 staff_youth_att <- rbind(staff_att, youth_att)
 
 staff_youth_att <- staff_youth_att %>% 
-    #Easier to work with numbers
-  mutate(role_num = ifelse(role1 == "mentee", 0, NA),
-         role_num = ifelse(role1 == "mentor", 1, role_num),
-         role_num = ifelse(role1 == "mentor coach", 2, role_num),
-         role_num = ifelse(role1 == "lead mentor coach", 3, role_num),
-         role_num = ifelse(role1 == "instructor", 4, role_num),
-         role_num = ifelse(role1 == "Instructor", 4, role_num),
-         
-         role1 = ifelse(role1 == "Instructor", "instructor", role1),
+    #lowercase all
+  mutate(role1 = tolower(role1),
+         role2 = tolower(role2),
+         night1 = tolower(night1),
+         night2 = tolower(night2),
          #Set role colors
-         role_col = ifelse(role_num == 0, "orange", NA),
-         role_col = ifelse(role_num == 1, "green", role_col),
-         role_col = ifelse(role_num == 2, "dodgerblue", role_col),
-         role_col = ifelse(role_num == 3, "red", role_col),
-         role_col = ifelse(role_num == 4, "grey50", role_col)
+         role_col = ifelse(role1 == "mentee", "orange", NA),
+         role_col = ifelse(role1 == "mentor", "green", role_col),
+         role_col = ifelse(role1 == "mentor coach", "dodgerblue", role_col),
+         role_col = ifelse(role1 == "lead mentor coach", "red", role_col),
+         role_col = ifelse(role1 == "instructor", "grey50", role_col),
+         
+         role_col2 = ifelse(role2 == "mentee", "orange", NA),
+         role_col2 = ifelse(role2 == "mentor", "green", role_col2),
+         role_col2 = ifelse(role2 == "mentor coach", "dodgerblue", role_col2),
+         role_col2 = ifelse(role2 == "lead mentor coach", "red", role_col2),
+         role_col2 = ifelse(role2 == "instructor", "grey50", role_col2)
          )
 ```
 
 
 #Create Useful Functions
 ```{r}
+
 #use this function to create plots Adjust here if necessary.
 
 my_sn_g <- function(g, title = "", vertex.label = NA, vertex.size = 10, edge.color = "black", edge.arrow.size = 0.05, layout = layout_nicely){
@@ -127,10 +136,14 @@ my_leg <- function(att, colors) {
   legend("bottomright", legend=att  , col = colors , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(-0.06, 0))
 }
 
-
-
 ```
 
+#Set Legend
+```{r}
+#For Legend roles & corresponding colors
+role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
+color <- c("orange","green","dodgerblue", "red", "grey50")
+```
 
 #Create General Graphs
 ##F15
@@ -174,8 +187,9 @@ sem$thu <- ungroup(sem$thu)
 
 **Monday**
 ```{r}
-
-temp_night <- temp %>% filter(night == "monday")
+#Set to right days
+temp_night <- temp            %>% filter(night == "monday")
+temp_att   <- staff_youth_att %>% mutate(night =  "monday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -261,11 +275,12 @@ day <- list(sur1 = surv_1,
 rm(surv_1);rm(surv_2);rm(surv_3);rm(surv_4);rm(surv_5)
 rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
 rm(temp_night)
-
 ```
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -273,39 +288,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create Monday List**
@@ -318,7 +341,8 @@ rm(day);rm(graphs)
 **Tuesday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "tuesday")
+temp_night <- temp            %>% filter(night == "tuesday")
+temp_att   <- staff_youth_att %>% mutate(night =  "tuesday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -409,6 +433,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -416,39 +442,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -461,7 +495,8 @@ rm(day); rm(graphs)
 **Wednesday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "wednesday")
+temp_night <- temp            %>% filter(night == "wednesday")
+temp_att   <- staff_youth_att %>% mutate(night =  "wednesday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -552,6 +587,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -559,39 +596,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -604,7 +649,8 @@ rm(day); rm(graphs)
 **Thursday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "thursday")
+temp_night <- temp            %>% filter(night == "thursday")
+temp_att   <- staff_youth_att %>% mutate(night =  "thursday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -692,8 +738,11 @@ rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
 rm(temp_night)
 
 ```
+
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -701,39 +750,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 
@@ -838,7 +895,8 @@ sem$thu <- ungroup(sem$thu)
 **Monday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "monday")
+temp_night <- temp            %>% filter(night == "monday")
+temp_att   <- staff_youth_att %>% mutate(night =  "monday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -929,6 +987,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -936,40 +996,49 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
+
 **Create List**
 ```{r}
 monday <- list(edgelists = day, graphs = graphs)
@@ -980,7 +1049,8 @@ rm(day);rm(graphs)
 **Tuesday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "tuesday")
+temp_night <- temp            %>% filter(night == "tuesday")
+temp_att   <- staff_youth_att %>% mutate(night =  "tuesday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -1071,6 +1141,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -1078,39 +1150,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -1123,7 +1203,8 @@ rm(day); rm(graphs)
 **Wednesday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "wednesday")
+temp_night <- temp            %>% filter(night == "wednesday")
+temp_att   <- staff_youth_att %>% mutate(night =  "wednesday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -1214,6 +1295,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -1221,39 +1304,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -1266,7 +1357,8 @@ rm(day); rm(graphs)
 **Thursday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "thursday")
+temp_night <- temp            %>% filter(night == "thursday")
+temp_att   <- staff_youth_att %>% mutate(night =  "thursday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -1357,6 +1449,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -1364,39 +1458,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -1501,7 +1603,8 @@ sem$thu <- ungroup(sem$thu)
 **Monday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "monday")
+temp_night <- temp            %>% filter(night == "monday")
+temp_att   <- staff_youth_att %>% mutate(night =  "monday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -1592,6 +1695,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -1599,39 +1704,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -1643,7 +1756,9 @@ rm(day);rm(graphs)
 **Tuesday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "tuesday")
+temp_night <- temp            %>% filter(night == "tuesday")
+temp_att   <- staff_youth_att %>% mutate(night =  "tuesday")
+
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -1734,6 +1849,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -1741,39 +1858,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -1786,7 +1911,8 @@ rm(day); rm(graphs)
 **Wednesday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "wednesday")
+temp_night <- temp            %>% filter(night == "wednesday")
+temp_att   <- staff_youth_att %>% mutate(night =  "wednesday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -1877,6 +2003,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -1884,39 +2012,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -1929,7 +2065,8 @@ rm(day); rm(graphs)
 **Thursday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "thursday")
+temp_night <- temp            %>% filter(night == "thursday")
+temp_att   <- staff_youth_att %>% mutate(night =  "thursday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -2017,8 +2154,11 @@ rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
 rm(temp_night)
 
 ```
+
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -2026,39 +2166,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -2164,7 +2312,8 @@ sem$thu <- ungroup(sem$thu)
 **Monday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "monday")
+temp_night <- temp            %>% filter(night == "monday")
+temp_att   <- staff_youth_att %>% mutate(night =  "monday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -2255,6 +2404,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -2262,39 +2413,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -2307,7 +2466,8 @@ rm(day);rm(graphs)
 **Tuesday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "tuesday")
+temp_night <- temp            %>% filter(night == "tuesday")
+temp_att   <- staff_youth_att %>% mutate(night =  "tuesday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -2395,8 +2555,11 @@ rm(isolates1);rm(isolates2);rm(isolates3);rm(isolates4);rm(isolates5)
 rm(temp_night)
 
 ```
+
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -2404,39 +2567,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -2449,7 +2620,8 @@ rm(day); rm(graphs)
 **Wednesday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "wednesday")
+temp_night <- temp            %>% filter(night == "wednesday")
+temp_att   <- staff_youth_att %>% mutate(night =  "wednesday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -2540,6 +2712,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -2547,39 +2721,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
@@ -2592,7 +2774,8 @@ rm(day); rm(graphs)
 **Thursday**
 ```{r}
 
-temp_night <- temp %>% filter(night == "thursday")
+temp_night <- temp            %>% filter(night == "thursday")
+temp_att   <- staff_youth_att %>% mutate(night =  "thursday")
 
 #Surv_1
 surv_1 <- temp_night %>% 
@@ -2683,6 +2866,8 @@ rm(temp_night)
 
 **General Graphs**
 ```{r, warning = FALSE}
+#Convert to Matrices
+
 sur1 <- as.matrix(day$sur1)
 sur2 <- as.matrix(day$sur2)
 sur3 <- as.matrix(day$sur3)
@@ -2690,39 +2875,47 @@ sur4 <- as.matrix(day$sur4)
 sur5 <- as.matrix(day$sur5)
 
 
-# Convert friends matrix to an igraph object
+# Convert matrix to an igraph object
+
 g1 <- graph.edgelist(sur1, directed = TRUE) + vertices(day$iso1$Sender_Final_ID) #Graph edgelist + Add Isolates
 g2 <- graph.edgelist(sur2, directed = TRUE) + vertices(day$iso2$Sender_Final_ID) #Graph edgelist + Add Isolates
 g3 <- graph.edgelist(sur3, directed = TRUE) + vertices(day$iso3$Sender_Final_ID) #Graph edgelist + Add Isolates
 g4 <- graph.edgelist(sur4, directed = TRUE) + vertices(day$iso4$Sender_Final_ID) #Graph edgelist + Add Isolates
 g5 <- graph.edgelist(sur5, directed = TRUE) + vertices(day$iso5$Sender_Final_ID) #Graph edgelist + Add Isolates
 
+
+#Capture Roles, Nights & Colors
+
+temp_att <- temp_att %>% 
+  mutate(
+         role1    = ifelse((!(is.na(role2)))     & (night2 == night), role2,     role1),
+         night1   = ifelse((!(is.na(night2)))    & (night2 == night), night2,    night1),
+         role_col = ifelse((!(is.na(role_col2))) & (night2 == night), role_col2, role_col)
+         )
+
 #Add staff Role Attribute  
 
-V(g1)$role  <- staff_youth_att$role1[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$role  <- staff_youth_att$role1[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$role  <- staff_youth_att$role1[match(V(g3)$name, staff_youth_att$Final_ID)] 
-V(g4)$role  <- staff_youth_att$role1[match(V(g4)$name, staff_youth_att$Final_ID)] 
-V(g5)$role  <- staff_youth_att$role1[match(V(g5)$name, staff_youth_att$Final_ID)] 
+V(g1)$role  <- temp_att$role1[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$role  <- temp_att$role1[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$role  <- temp_att$role1[match(V(g3)$name, temp_att$Final_ID)] 
+V(g4)$role  <- temp_att$role1[match(V(g4)$name, temp_att$Final_ID)] 
+V(g5)$role  <- temp_att$role1[match(V(g5)$name, temp_att$Final_ID)] 
 
 #Add role colors
 
-V(g1)$color <- staff_youth_att$role_col[match(V(g1)$name, staff_youth_att$Final_ID)] 
-V(g2)$color <- staff_youth_att$role_col[match(V(g2)$name, staff_youth_att$Final_ID)] 
-V(g3)$color <- staff_youth_att$role_col[match(V(g3)$name, staff_youth_att$Final_ID)]
-V(g4)$color <- staff_youth_att$role_col[match(V(g4)$name, staff_youth_att$Final_ID)]
-V(g5)$color <- staff_youth_att$role_col[match(V(g5)$name, staff_youth_att$Final_ID)]
+V(g1)$color <- temp_att$role_col[match(V(g1)$name, temp_att$Final_ID)] 
+V(g2)$color <- temp_att$role_col[match(V(g2)$name, temp_att$Final_ID)] 
+V(g3)$color <- temp_att$role_col[match(V(g3)$name, temp_att$Final_ID)]
+V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
+V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
+#Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-#For Legend roles & corresponding colors
-role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
-color <- c("orange","green","dodgerblue", "red", "grey50")
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
 rm(sur1);rm(sur2);rm(sur3);rm(sur4);rm(sur5)
- 
+rm(temp_att)
 ```
 
 **Create List**
