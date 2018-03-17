@@ -3,12 +3,12 @@ title: "R Notebook for Network & belongingness Paper"
 output:
   pdf_document:
     toc: yes
-  html_document:
-    df_print: paged
+  html_notebook:
     toc: yes
     toc_float:
       collapsed: yes
-  html_notebook:
+  html_document:
+    df_print: paged
     toc: yes
     toc_float:
       collapsed: yes
@@ -93,6 +93,23 @@ staff_att <- staff_att %>%
 
 staff_youth_att <- rbind(staff_att, youth_att)
 
+#Mentors that did NOT consent to survey research but DID consent to social Network (separate consent process).
+sn_consent <- staff_youth_att %>% 
+  filter(is.na(role1) | is.na(night1) & role1 != "mentee")
+sn_consent <- as.vector(sn_consent$Final_ID)
+
+#Set night & role of non-consent survey but consent Social Network.
+staff_youth_att <- staff_youth_att %>% 
+  mutate(
+         night1 = ifelse(Final_ID == sn_consent[1], "tuesday", night1), role1  = ifelse(Final_ID == sn_consent[1], "mentor",  role1),
+         night1 = ifelse(Final_ID == sn_consent[2], "tuesday", night1), role1  = ifelse(Final_ID == sn_consent[2], "mentor",  role1),
+         night1 = ifelse(Final_ID == sn_consent[3], "tuesday", night1), role1  = ifelse(Final_ID == sn_consent[3], "mentor",  role1)
+         )
+
+#Check sn_consent status again
+#check <- staff_youth_att %>% 
+#  filter(is.na(role1) | is.na(night1) & role1 != "mentee")
+
 staff_youth_att <- staff_youth_att %>% 
     #lowercase all
   mutate(role1 = tolower(role1),
@@ -112,6 +129,9 @@ staff_youth_att <- staff_youth_att %>%
          role_col2 = ifelse(role2 == "lead mentor coach", "red", role_col2),
          role_col2 = ifelse(role2 == "instructor", "grey50", role_col2)
          )
+
+rm(sn_consent)
+
 ```
 
 
@@ -183,6 +203,8 @@ sem$mon <- ungroup(sem$mon)
 sem$tue <- ungroup(sem$tue)
 sem$wed <- ungroup(sem$wed)
 sem$thu <- ungroup(sem$thu)
+
+rm(sem)
 ```
 
 **Monday**
@@ -890,6 +912,8 @@ sem$mon <- ungroup(sem$mon)
 sem$tue <- ungroup(sem$tue)
 sem$wed <- ungroup(sem$wed)
 sem$thu <- ungroup(sem$thu)
+
+rm(sem)
 ```
 
 **Monday**
@@ -1598,6 +1622,8 @@ sem$mon <- ungroup(sem$mon)
 sem$tue <- ungroup(sem$tue)
 sem$wed <- ungroup(sem$wed)
 sem$thu <- ungroup(sem$thu)
+
+rm(sem)
 ```
 
 **Monday**
@@ -2307,6 +2333,8 @@ sem$mon <- ungroup(sem$mon)
 sem$tue <- ungroup(sem$tue)
 sem$wed <- ungroup(sem$wed)
 sem$thu <- ungroup(sem$thu)
+
+rm(sem)
 ```
 
 **Monday**
@@ -3142,6 +3170,7 @@ plot(thursday$surv5, main =  "week 11 -Thursday")
 
 F15 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
 rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+rm(lc1)
 ```
 
 ##S16
@@ -3296,6 +3325,7 @@ plot(thursday$surv5, main =  "week 11 -Thursday")
 
 S16<- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
 rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+rm(lc1)
 ```
 
 
@@ -3451,6 +3481,7 @@ plot(thursday$surv5, main =  "week 11 -Thursday")
 
 F16 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
 rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+rm(lc1)
 ```
 
 
@@ -3607,6 +3638,7 @@ plot(thursday$surv5, main =  "week 11 -Thursday")
 
 S17 <- list(monday = monday, tuesday = tuesday, wednesday = wednesday, thursday = thursday)
 rm(monday);rm(tuesday);rm(wednesday);rm(thursday)
+rm(lc1)
 ```
 ##Combine Cliques
 ```{r}
