@@ -101,13 +101,13 @@ sn_consent <- as.vector(sn_consent$Final_ID)
 #Set night & role of non-consent survey but consent Social Network.
 staff_youth_att <- staff_youth_att %>% 
   mutate(
-         night1 = ifelse(Final_ID == sn_consent[1], "tuesday", night1), role1  = ifelse(Final_ID == sn_consent[1], "mentor",  role1),
-         night1 = ifelse(Final_ID == sn_consent[2], "tuesday", night1), role1  = ifelse(Final_ID == sn_consent[2], "mentor",  role1),
-         night1 = ifelse(Final_ID == sn_consent[3], "tuesday", night1), role1  = ifelse(Final_ID == sn_consent[3], "mentor",  role1)
+        night1 = ifelse(Final_ID == sn_consent[1], "tuesday", night1), role1  = ifelse(Final_ID == sn_consent[1], "mentor",  role1),
+        night1 = ifelse(Final_ID == sn_consent[2], "tuesday", night1), role1  = ifelse(Final_ID == sn_consent[2], "mentor",  role1),
+        night1 = ifelse(Final_ID == sn_consent[3], "tuesday", night1), role1  = ifelse(Final_ID == sn_consent[3], "mentor",  role1)
          )
 
-#Check sn_consent status again
-#check <- staff_youth_att %>% 
+#Check sn_consent status again - Should be 0 rows
+#staff_youth_att %>% 
 #  filter(is.na(role1) | is.na(night1) & role1 != "mentee")
 
 staff_youth_att <- staff_youth_att %>% 
