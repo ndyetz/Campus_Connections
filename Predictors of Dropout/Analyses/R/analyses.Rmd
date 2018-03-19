@@ -1,15 +1,18 @@
 ---
 title: 'R Notebook: Predictors of Dropout'
 output:
-  pdf_document:
-    toc: yes
   html_notebook:
     toc: yes
     toc_float: yes
+    self_contained: no
+  pdf_document:
+    toc: yes
   html_document:
     df_print: paged
     toc: yes
     toc_float: yes
+    self_contained: no
+    theme: yeti
 ---
 #clear environment
 ```{r}
@@ -31,7 +34,60 @@ library(xtable)
 library("kableExtra")
 library(knitr)
 library(semPlot)
+library(knitr)
+library(gridExtra)
+library(reshape)
+library(pander)
 ```
+
+#Set Kim's Reliability Function
+```{r, warning=FALSE, message=FALSE}
+
+my_reliability <- function (items, itemal = TRUE, NA.Delete = TRUE) 
+{
+    if (!all(apply(items, c(1, 2), is.numeric))) {
+        items <- apply(items, c(1, 2), as.numeric)
+        warning("Data is not numeric. Data has been coerced to be numeric.")
+    }
+    if (NA.Delete == FALSE) {
+        items[is.na(items)] <- 0
+        warning("Missing values or NA values are converted to zeros.")
+    }
+    items <- na.omit(items)
+    s <- apply(items, 2, var)
+    N <- ncol(items)
+    X <- rowSums(items)
+    alpha <- (N/(N - 1)) * (1 - sum(s)/var(X))
+    if (itemal) {
+        alphad <- array(dim = N)
+        pbis <- array(dim = N)
+        for (i in 1:N) {
+            Xd <- rowSums(items[, -i])
+            Mean <- sapply(items, mean)
+            SD <- sapply(items, sd)
+            Min <- sapply(items, min)
+            Max <- sapply(items, max)
+            Nobs <- sapply(items, length)
+            alphad[i] <- ((N - 1)/(N - 2)) * (1 - sum(s[-i])/var(Xd))
+            pbis[i] <- cor(items[, i], Xd)
+            out <- list(nItem = N, nPerson = nrow(items), alpha = alpha, 
+                scaleMean = mean(X), scaleSD = sd(X), Alpha.If.Deleted = alphad, 
+                R.With.Total = pbis, Mean = Mean, SD = SD, Min = Min, Max = Max, Nobs=Nobs)
+        }
+    }
+    else out <- list(nItem = N, nPerson = nrow(items), alpha = alpha, 
+        scaleMean = mean(X), scaleSD = sd(X))
+    class(out) <- "my_reliability"
+    out
+}
+
+print <- function(x, ...) {
+    if (is.numeric(x)) base::print(round(x, digits=3), ...) 
+    else base::print(x, ...)
+}
+
+```
+
 
 #Load Data
 ```{r, message = FALSE, warning = FALSE}
@@ -91,15 +147,49 @@ kable(upper, "html", full_width = T)
 ##Models
 ```{r}
 eco_risk <- "eco_risk  =~ risk_1 + risk_2 + risk_3 + risk_4 + risk_5 + risk_6 + risk_7"
-fam_str  <- "fam_str   =~ risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_ 18"
+fam_str  <- "fam_str   =~ risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_18"
 peer_dif <- "peer_dif  =~ risk_19 + risk_20"
 
 aca_cha  <- "aca_cha   =~ risk_21 + risk_22 + risk_23"    
 prob_be  <- "prob_be   =~ risk_25 + risk_26 + risk_27 + risk_28  + risk_30  #+ risk_29"
-men_he   <- "men_he    =~ risk_31 + risk_ 32"                            
+men_he   <- "men_he    =~ risk_31 + risk_32"                            
 ```
 
 ##Economic Risk
+
+**Item Analysis**
+```{r, message=FALSE, warning=FALSE}
+
+
+items <- sem_items %>% 
+	select(risk_1 , risk_2 , risk_3 , risk_4 , risk_5 , risk_6 , risk_7)
+
+variables <- c("risk_1","risk_2","risk_3","risk_4","risk_5","risk_6","risk_7")
+  
+
+ca <- my_reliability(items, itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha <- paste(formatC(round(ca$alpha, digits=2), 2, format = "f"))
+
+
+temp <- cbind.data.frame(variables, ca$Nobs, ca$Mean, ca$SD, ca$Min, ca$Max, ca$R.With.Total, ca$Alpha.If.Deleted)
+colnames(temp) <- c("Item", "N", "Average", "Standard Deviation", "Minimum", "Maximum", "Correlation with total", "Cronbach's Alpha if item is deleted")
+rownames(temp) <- NULL
+
+
+```
+
+*Cronbach's Alpha:* `r pipealpha`
+```{r   col.print=32, message=FALSE, warning=FALSE}
+set.alignment('center', row.names = 'center')
+pander(temp)
+
+rm(ca)
+rm(temp)
+rm(pipealpha)
+```
+
+
 ```{r}
 cfa <- cfa(eco_risk, data = sem_items)
 summary(cfa, fit.measures = TRUE)
@@ -107,6 +197,38 @@ rm(cfa)
 ```
 
 ##Family structure
+
+**Item Analysis**
+```{r, message=FALSE, warning=FALSE}
+
+
+items <- sem_items %>% 
+	select(risk_8 , risk_9 , risk_10 , risk_11 , risk_12 , risk_13 , risk_14 , risk_15 , risk_16 , risk_17 , risk_18)
+
+variables <- c("risk_8","risk_9","risk_10","risk_11","risk_12","risk_13","risk_14","risk_15","risk_16","risk_17","risk_18")
+  
+
+ca <- my_reliability(items, itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha <- paste(formatC(round(ca$alpha, digits=2), 2, format = "f"))
+
+
+temp <- cbind.data.frame(variables, ca$Nobs, ca$Mean, ca$SD, ca$Min, ca$Max, ca$R.With.Total, ca$Alpha.If.Deleted)
+colnames(temp) <- c("Item", "N", "Average", "Standard Deviation", "Minimum", "Maximum", "Correlation with total", "Cronbach's Alpha if item is deleted")
+rownames(temp) <- NULL
+
+
+```
+
+*Cronbach's Alpha:* `r pipealpha`
+```{r, echo = FALSE}
+set.alignment('center', row.names = 'center')
+pander(temp)
+
+rm(ca)
+rm(temp)
+rm(pipealpha)
+```
 ```{r}
 cfa <- cfa(fam_str, data = sem_items)
 summary(cfa, fit.measures = TRUE)
@@ -114,6 +236,39 @@ rm(cfa)
 ```
 
 ##Peer difficulties
+
+**Item Analysis**
+```{r, message=FALSE, warning=FALSE}
+
+
+items <- sem_items %>% 
+	select(risk_19 , risk_20)
+
+variables <- c("risk_19","risk_20")
+  
+
+ca <- my_reliability(items, itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha <- paste(formatC(round(ca$alpha, digits=2), 2, format = "f"))
+
+
+temp <- cbind.data.frame(variables, ca$Nobs, ca$Mean, ca$SD, ca$Min, ca$Max, ca$R.With.Total)
+colnames(temp) <- c("Item", "N", "Average", "Standard Deviation", "Minimum", "Maximum", "Correlation with total")
+rownames(temp) <- NULL
+
+
+```
+
+*Cronbach's Alpha* NA (2-items scale)
+```{r, echo = FALSE}
+set.alignment('center', row.names = 'center')
+pander(temp)
+
+rm(ca)
+rm(temp)
+rm(pipealpha)
+```
+
 ```{r}
 cfa <- cfa(peer_dif, data = sem_items)
 summary(cfa, fit.measures = TRUE)
@@ -122,6 +277,38 @@ rm(cfa)
 
 
 ##Academic Challenges
+
+**Item Analysis**
+```{r, message=FALSE, warning=FALSE}
+
+
+items <- sem_items %>% 
+	select(risk_21 , risk_22 , risk_23, risk_24)
+
+variables <- c("risk_21","risk_22","risk_23","risk_24")
+  
+
+ca <- my_reliability(items, itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha <- paste(formatC(round(ca$alpha, digits=2), 2, format = "f"))
+
+
+temp <- cbind.data.frame(variables, ca$Nobs, ca$Mean, ca$SD, ca$Min, ca$Max, ca$R.With.Total, ca$Alpha.If.Deleted)
+colnames(temp) <- c("Item", "N", "Average", "Standard Deviation", "Minimum", "Maximum", "Correlation with total", "Cronbach's Alpha if item is deleted")
+rownames(temp) <- NULL
+
+
+```
+
+*Cronbach's Alpha:* `r pipealpha`
+```{r, echo = FALSE}
+set.alignment('center', row.names = 'center')
+pander(temp)
+
+rm(ca)
+rm(temp)
+rm(pipealpha)
+```
 ```{r}
 cfa <- cfa(aca_cha, data = sem_items)
 summary(cfa, fit.measures = TRUE)
@@ -129,6 +316,38 @@ rm(cfa)
 ```
 
 ##Problem Behavior
+
+**Item Analysis**
+```{r, message=FALSE, warning=FALSE}
+
+
+items <- sem_items %>% 
+	select(risk_25:risk_30)
+
+variables <- c("risk_25","risk_26","risk_27","risk_28", "risk_29", "risk_30")
+  
+
+ca <- my_reliability(items, itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha <- paste(formatC(round(ca$alpha, digits=2), 2, format = "f"))
+
+
+temp <- cbind.data.frame(variables, ca$Nobs, ca$Mean, ca$SD, ca$Min, ca$Max, ca$R.With.Total, ca$Alpha.If.Deleted)
+colnames(temp) <- c("Item", "N", "Average", "Standard Deviation", "Minimum", "Maximum", "Correlation with total", "Cronbach's Alpha if item is deleted")
+rownames(temp) <- NULL
+
+
+```
+
+*Cronbach's Alpha:* `r pipealpha`
+```{r, echo = FALSE}
+set.alignment('center', row.names = 'center')
+pander(temp)
+
+rm(ca)
+rm(temp)
+rm(pipealpha)
+```
 ```{r}
 cfa <- cfa(prob_be, data = sem_items)
 summary(cfa, fit.measures = TRUE)
@@ -136,6 +355,39 @@ rm(cfa)
 ```
 
 ##Mental Health Challenges
+
+**Item Analysis**
+```{r, message=FALSE, warning=FALSE}
+
+
+items <- sem_items %>% 
+	select( risk_31, risk_32)
+
+variables <- c("risk_31","risk_32")
+  
+
+ca <- my_reliability(items, itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha <- paste(formatC(round(ca$alpha, digits=2), 2, format = "f"))
+
+
+temp <- cbind.data.frame(variables, ca$Nobs, ca$Mean, ca$SD, ca$Min, ca$Max, ca$R.With.Total)
+colnames(temp) <- c("Item", "N", "Average", "Standard Deviation", "Minimum", "Maximum", "Correlation with total")
+rownames(temp) <- NULL
+
+
+```
+
+*Cronbach's Alpha* NA (2-items scale)
+```{r, echo = FALSE}
+set.alignment('center', row.names = 'center')
+pander(temp)
+
+rm(ca)
+rm(temp)
+rm(pipealpha)
+```
+
 ```{r}
 cfa <- cfa(men_he, data = sem_items)
 summary(cfa, fit.measures = TRUE)
@@ -151,13 +403,13 @@ I will also take all items loaded onto the environmental & individual risk facto
 model1 <- "
        #Environmental risk factors
           eco_risk  =~ risk_1 + risk_2 + risk_3 + risk_4 + risk_5 + risk_6 + risk_7
-          fam_str   =~ risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_ 18
+          fam_str   =~ risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_18
           peer_dif  =~ risk_19 + risk_20
           
         #Individual Risk factors
           aca_cha   =~ risk_21 + risk_22 + risk_23                        #+risk_24
           prob_be   =~ risk_25 + risk_26 + risk_27 + risk_28  + risk_30   #+ risk_29
-          men_he    =~ risk_31 + risk_ 32
+          men_he    =~ risk_31 + risk_32
 
         #env_risk =~ eco_risk + fam_str + peer_dif    
         #ind_risk =~ aca_cha + prob_be + men_he
@@ -168,14 +420,14 @@ model1 <- "
 model2 <- "
        #Environmental risk factors
           env_risk =~ risk_1 + risk_2 + risk_3 + risk_4 + risk_5 + risk_6 + risk_7 +
-          risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_ 18 +
+          risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_18 +
           risk_19 + risk_20
   
           
         #Individual Risk factors
          ind_risk   =~ risk_21 + risk_22 + risk_23 +                        #+risk_24
           risk_25 + risk_26 + risk_27 + risk_28  + risk_30 +   #+ risk_29
-          risk_31 + risk_ 32
+          risk_31 + risk_32
 
        # risk =~ env_risk + ind_risk
 "
