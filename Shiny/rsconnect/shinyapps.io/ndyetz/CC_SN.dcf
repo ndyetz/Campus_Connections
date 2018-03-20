@@ -1,0 +1,13 @@
+name: CC_SN
+title: CC_SN
+username:
+account: ndyetz
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 303288
+bundleId: 1278002
+url: https://ndyetz.shinyapps.io/CC_SN/
+when: 1521530518.93607
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: CC_Logo.jpg|CC_Logo.png|Thumbs.db
