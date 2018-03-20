@@ -12,6 +12,8 @@ This project was funded by the [William T. Grant Foundation](http://wtgrantfound
 
 This repository is managed by Neil Yetz, MPH and the code works directly with the William T. Grant funded data collection which began in the Fall of 2015 and is set to finish (for a total of 3 years, 6 semesters) at the end of the Spring of 2018 semester. 
 
+[Checkout my first ever R-Shiny app!](https://ndyetz.shinyapps.io/CC_SN/)
+
 Please send questions and correspondences regarding the code and output in this repository to Neil Yetz, MPH at <ndyetz@gmail.com>.
 
 No data should be provided in this repository.
