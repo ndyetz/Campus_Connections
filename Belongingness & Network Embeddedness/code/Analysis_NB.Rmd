@@ -354,23 +354,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
@@ -535,23 +535,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
@@ -716,29 +716,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -897,29 +894,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -1173,23 +1167,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
@@ -1354,29 +1348,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -1535,29 +1526,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -1716,29 +1704,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -1991,23 +1976,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
@@ -2172,29 +2157,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
-
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -2353,29 +2335,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -2534,29 +2513,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -2810,28 +2786,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -2989,29 +2963,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -3170,29 +3141,26 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
-
-
 
 
 rm(g1); rm(g2); rm(g3); rm(g4); rm(g5)
@@ -3351,23 +3319,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
-g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
+                           g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
-g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
+                           g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
-g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
+                           g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
-g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
+                           g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
 w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
-g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
+                           g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
