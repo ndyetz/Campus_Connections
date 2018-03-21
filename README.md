@@ -6,7 +6,7 @@
 
 Student mentors spend four hours once a week with their mentee in a group setting to provide academic support and career planning, encourage positive social skills development, assist with goal setting, and implement wellness programming. Strong bonds are developed over the 12 week program between mentors and mentees. Graduate-level family therapists and experienced mentors serve as coaches to provide support and guidance for undergraduate mentors during Campus Connections.
 
-The program aims to prevent delinquency and recidivism, while addressing relevant correlates (e.g., substance use) and promoting important protective factors (e.g., academic success). If you are interested bringing Campus Connections to your community, please contact Ton Zimmerman at: <Toni.Zimmerman@ColoState.edu>. 
+The program aims to prevent delinquency and recidivism, while addressing relevant correlates (e.g., substance use) and promoting important protective factors (e.g., academic success). If you are interested bringing Campus Connections to your community, please contact Toni Zimmerman at: <Toni.Zimmerman@ColoState.edu>. 
 
 This project was funded by the [William T. Grant Foundation](http://wtgrantfoundation.org/) as part of a 3 year data collection project in an effort to better improve outcomes of at-risk adolescents. This project is focused on understanding and evaluating the differences between a "family" based mentorship style and the classic dyadic one-on-one mentorship family style. More information on the family-based mentorship style may be read [here](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/files/Understanding%20the%20experience%20of%20Mentor%20Families%20in%20therapeutic%20youth%20mentoring.pdf). 
 
