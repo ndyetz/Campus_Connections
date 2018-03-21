@@ -8,4 +8,4 @@ I will be updating this as I utilize the CC social network in my research. If yo
 **App screenshot:** 
 
 
-![](C:/Users/Neil/Desktop/Git/Campus_Connections/Shiny_Networks/App_screenshot.PNG)
+![](https://github.com/ndyetz/Campus_Connections/blob/master/Shiny_Networks/App_screenshot.PNG)
