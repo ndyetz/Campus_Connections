@@ -1,0 +1,369 @@
+---
+title: "Examine Isolates"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float:
+      collapsed: yes
+  html_notebook:
+    toc: yes
+    toc_float:
+      collapsed: yes
+    code_folding: hide
+author: By Neil Yetz, MPH
+---
+
+#Clear Environment
+```{r}
+rm(list = ls(all.names = TRUE))
+```
+
+#Load Libraries
+```{r, message = FALSE}
+library(tidyverse)
+library(stringr)
+```
+
+#load data
+```{r, message = FALSE}
+ALL <- readRDS("T:/Research folders/CCWTG/Data/MERGEALL/ALL_NETWORKS.RDS")
+survs <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/Allwide.csv")
+```
+
+#select necessary columns
+```{r}
+#names(survs)
+
+#select survtime columns
+surv_take <- survs %>% 
+  select(Final_ID, starts_with("m"), starts_with("k"), -starts_with("k0"), -starts_with("m0"), -starts_with("k6"), -starts_with("m6")) %>% 
+  select(Final_ID, ends_with("start")) %>% 
+  mutate(Final_ID_M = paste0("M", Final_ID),
+         Final_ID_K = paste0("K", Final_ID))
+
+```
+
+
+#convert times to binary
+```{r}
+
+surv_take[,2:11][!is.na(surv_take[,2:11])] <- 1; surv_take[is.na(surv_take)] <- 0
+
+
+```
+
+#Grab Isolates
+
+##F15 
+
+**Monday**
+```{r}
+#These should all give the output, "chracter0"
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$F15$monday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$F15$monday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$F15$monday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$F15$monday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$F15$monday$edgelists$iso5))
+
+
+```
+
+**Tuesday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$F15$tuesday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$F15$tuesday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$F15$tuesday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$F15$tuesday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$F15$tuesday$edgelists$iso5))
+
+```
+
+**Wednesday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$F15$wednesday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$F15$wednesday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$F15$wednesday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$F15$wednesday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$F15$wednesday$edgelists$iso5))
+
+```
+
+**Thursday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$F15$thursday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$F15$thursday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$F15$thursday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$F15$thursday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$F15$thursday$edgelists$iso5))
+
+```
+
+
+##S16 
+
+**Monday**
+```{r}
+#These should all give the output, "chracter0"
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$S16$monday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$S16$monday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$S16$monday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$S16$monday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$S16$monday$edgelists$iso5))
+
+
+```
+
+**Tuesday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$S16$tuesday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$S16$tuesday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$S16$tuesday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$S16$tuesday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$S16$tuesday$edgelists$iso5))
+
+```
+
+**Wednesday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$S16$wednesday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$S16$wednesday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$S16$wednesday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$S16$wednesday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$S16$wednesday$edgelists$iso5))
+
+```
+
+**Thursday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$S16$thursday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$S16$thursday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$S16$thursday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$S16$thursday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$S16$thursday$edgelists$iso5))
+
+```
+
+##F16 
+
+**Monday**
+```{r}
+#These should all give the output, "chracter0"
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$F16$monday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$F16$monday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$F16$monday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$F16$monday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$F16$monday$edgelists$iso5))
+
+
+```
+
+**Tuesday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$F16$tuesday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$F16$tuesday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$F16$tuesday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$F16$tuesday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$F16$tuesday$edgelists$iso5))
+
+```
+
+**Wednesday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$F16$wednesday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$F16$wednesday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$F16$wednesday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$F16$wednesday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$F16$wednesday$edgelists$iso5))
+
+```
+
+**Thursday**
+```{r}
+#These should all give the output, "chracter0"
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$F16$thursday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$F16$thursday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$F16$thursday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$F16$thursday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$F16$thursday$edgelists$iso5))
+
+```
+
+##S17
+
+**Monday**
+```{r}
+#These should all give the output, "chracter0"
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$S17$monday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$S17$monday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$S17$monday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$S17$monday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$S17$monday$edgelists$iso5))
+
+
+```
+
+**Tuesday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$S17$tuesday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$S17$tuesday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$S17$tuesday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$S17$tuesday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$S17$tuesday$edgelists$iso5))
+
+```
+
+**Wednesday**
+```{r}
+#These should all give the output, "chracter0"
+
+
+check1 <- surv_take %>% filter(m1start == 0) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(m2start == 0) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(m3start == 0 ) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(m4start == 0) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(m5start == 0) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$S17$wednesday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$S17$wednesday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$S17$wednesday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$S17$wednesday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$S17$wednesday$edgelists$iso5))
+
+```
+
+**Thursday**
+```{r}
+#These should all give the output, "chracter0"
+
+check1 <- surv_take %>% filter(is.na(m1start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check2 <- surv_take %>% filter(is.na(m2start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check3 <- surv_take %>% filter(is.na(m3start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check4 <- surv_take %>% filter(is.na(m4start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+check5 <- surv_take %>% filter(is.na(m5start)) %>% select(Final_ID_K, Final_ID_M) %>% as.matrix()
+
+intersect(check1, as.matrix(ALL$S17$thursday$edgelists$iso1))
+intersect(check2, as.matrix(ALL$S17$thursday$edgelists$iso2))
+intersect(check3, as.matrix(ALL$S17$thursday$edgelists$iso3))
+intersect(check4, as.matrix(ALL$S17$thursday$edgelists$iso4))
+intersect(check5, as.matrix(ALL$S17$thursday$edgelists$iso5))
+
+```

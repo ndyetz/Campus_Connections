@@ -23,10 +23,26 @@ author: By Neil Yetz, MPH
 This Document was last updated on `r format(Sys.time(), "%B %d, %Y")`. This document is associated with the [Campus Connections](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/) Social Network Data. Please set the correct working directories in the [setwd & load data](#ref) section of this notebook. When run successfully, all network graphs, separated by semester and night with role attributes will be outputted and saved as a .RDS file into the MERGEALL folder of WTG. If you have any questions concerning this document, please send an email to Neil Yetz at <neil.yetz@colostate.edu>.
 
 
+#Check for errors here.
+```{r, message = FALSE}
+#Source code for problem isolates
+
+source("T:/Research folders/CCWTG/Analyses/Papers/Belongingness & Network Embeddedness/iso_source.R") #<- source code for isolates
+
+#Look at the Global Environnment for errors! They will be datasets indicating where the isolate is.
+#For example, a dataset called "F15_M_1" indicates that there is is an error in the Fall 2015 semester, Monday, survey 1.
+#Run the source code to check if there are any nodes that should be missing. #If nothing gets outputted, this is good!
+
+#No errors, checked on 3/20/2018 -Neil
+
+```
+
+
 #Clear Environment
 ```{r}
 rm(list = ls(all.names = TRUE))
 ```
+
 
 #Load Libraries
 ```{r, message = FALSE}
@@ -55,8 +71,8 @@ library(tidyverse)
 ```{r, message = FALSE, warning = FALSE}
 setwd("T:/Research folders/CCWTG/Analyses/Data for Stats Dept/FINAL DATA")
 
-#elmk <- read_csv("CC_edgelist.csv") 
-#saveRDS(elmk,"cc_edgelist.rds")
+elmk <- read_csv("CC_edgelist.csv") 
+saveRDS(elmk,"cc_edgelist.rds")
 elmk <- readRDS("cc_edgelist.rds")
 youth_att <- read_csv("Mentee_Attributes.csv")
 staff_att <- read_csv("Staff_Attributes_Final.csv")
@@ -350,31 +366,31 @@ V(g4)$color <- temp_att$role_col[match(V(g4)$name, temp_att$Final_ID)]
 V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 
+
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1 , Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
 #Set graphs to list
 graphs <- list(g1 = g1,g2 = g2, g3 = g3,g4 = g4, g5 = g5)
-
 
 
 
@@ -533,23 +549,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -714,23 +730,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -892,23 +908,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -1165,23 +1181,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -1346,23 +1362,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -1524,23 +1540,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -1702,23 +1718,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -1974,23 +1990,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -2155,23 +2171,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
                            
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -2333,23 +2349,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -2511,23 +2527,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -2784,23 +2800,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -2961,23 +2977,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -3139,23 +3155,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 
@@ -3317,23 +3333,23 @@ V(g5)$color <- temp_att$role_col[match(V(g5)$name, temp_att$Final_ID)]
 
 #Add Edge weights - Match by edgelist rows Send/ Receive rows & temp_night Send/Receive rows. filter by survey.  
 
-w <- left_join(rename(as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g1)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 1) #Match Weights
                            g1 <-  set_edge_attr(g1, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g2)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 2) #Match weights
                            g2 <-  set_edge_attr(g2, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g3)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 3) #Match weights
                            g3 <-  set_edge_attr(g3, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g4)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 4) #Match weights
                            g4 <-  set_edge_attr(g4, "weight", value = w$sn2) #Add edge attribute
 
-w <- left_join(rename(as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
+w <- left_join(dplyr::rename(dplyr::as_data_frame(as_edgelist(g5)), Sender_Final_ID =V1, Receiver_Final_ID = V2), temp_night, by = c("Sender_Final_ID","Receiver_Final_ID")) %>% 
                                filter(survnum == 5) #Match weights
                            g5 <-  set_edge_attr(g5, "weight", value = w$sn2) #Add edge attribute
 

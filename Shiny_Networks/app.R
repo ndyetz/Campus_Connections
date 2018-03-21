@@ -1,14 +1,3 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
-
-
 library(shiny)
 library(igraph)
 suppressPackageStartupMessages(library(threejs, quietly=TRUE))
@@ -18,7 +7,7 @@ ALL
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
-# Define UI for application that plots features of movies
+# Define UI for application
 ui <- fluidPage(
   titlePanel("Campus Connections Networks"),
 
@@ -43,7 +32,7 @@ ui <- fluidPage(
                   choices = c("monday", "tuesday", "wednesday", "thursday"), 
                   selected = "monday"),
       
-      # Select variable for color
+      # Select time point
       selectInput(inputId = "survey", 
                   label = "survey_number",
                   choices = c("g1", "g2", "g3", "g4", "g5"),
@@ -57,10 +46,10 @@ ui <- fluidPage(
   )
 )
 
-# Define server function required to create the scatterplot
+# Define server function
 server <- function(input, output) {
   
-  # Create the scatterplot object the plotOutput function is expecting
+  # Define output
   output$plot <- renderPlot({
     plot.igraph(ALL[[input$sem]][[input$night]][["graphs"]][[input$survey]], vertex.label = NA, edge.color = "black",
                 edge.width=E(ALL[[input$sem]][[input$night]][["graphs"]][[input$survey]])$weight/3, vertex.size= 5)
