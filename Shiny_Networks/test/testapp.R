@@ -1,17 +1,15 @@
 library(shiny)
 library(igraph)
 suppressPackageStartupMessages(library(threejs, quietly=TRUE))
-library(sigma)
 
 #ALL <- readRDS("ALL_NETWORKS.RDS")
 ALL <- readRDS("T:/Research folders/CCWTG/Data/MERGEALL/ALL_NETWORKS.RDS")
-
 
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")
 
 # Define UI for application
-ui <- shinyUI(fluidPage(
+ui <- fluidPage(
   titlePanel("Campus Connections Networks"),
   
   
@@ -44,20 +42,20 @@ ui <- shinyUI(fluidPage(
     
     # Outputs
     mainPanel(
-      sigmaOutput(outputId = "plot")
+      plotOutput(outputId = "plot")
     )
   )
 )
-)
+
 # Define server function
 server <- function(input, output) {
   
   # Define output
-  output$plot <- renderSigma({
-    print(graphjs(ALL[[input$sem]][[input$night]][["graphs"]][[input$survey]]))#, vertex.label = NA)#, edge.color = "black",
-                 #vertex.size= 5)
-    #legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(0, 0))
-  })
+  output$plot <- renderPlot({
+    plot.igraph(ALL[[input$sem]][[input$night]][["graphs"]][[input$survey]], vertex.label = NA, edge.color = "black",
+                edge.width=E(ALL[[input$sem]][[input$night]][["graphs"]][[input$survey]])$weight/3, vertex.size= 5)
+    legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(0, 0))
+  }, height = 1000, width = 1000)
 }
 
 # Create a Shiny app object
