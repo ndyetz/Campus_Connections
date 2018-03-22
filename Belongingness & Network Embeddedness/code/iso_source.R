@@ -52,11 +52,11 @@ check5 <- surv_take %>% filter(m5start == 0) %>% select(Final_ID_K, Final_ID_M) 
  #Monday #
    
 
-mat <- as.character(intersect(check1, as.matrix(ALL$F15$monday$edgelists$iso1))); F15_M_1 <- as.data.frame(mat)
-mat <- as.character(intersect(check2, as.matrix(ALL$F15$monday$edgelists$iso2))); F15_M_2 <- as.data.frame(mat)
-mat <- as.character(intersect(check3, as.matrix(ALL$F15$monday$edgelists$iso3))); F15_M_3 <- as.data.frame(mat)
-mat <- as.character(intersect(check4, as.matrix(ALL$F15$monday$edgelists$iso4))); F15_M_4 <- as.data.frame(mat)
-mat <- as.character(intersect(check5, as.matrix(ALL$F15$monday$edgelists$iso5))); F15_M_5 <- as.data.frame(mat)
+mat <- intersect(check1, as.matrix(ALL$F15$monday$edgelists$iso1)); F15_M_1 <- as.data.frame(mat)
+mat <- intersect(check2, as.matrix(ALL$F15$monday$edgelists$iso2)); F15_M_2 <- as.data.frame(mat)
+mat <- intersect(check3, as.matrix(ALL$F15$monday$edgelists$iso3)); F15_M_3 <- as.data.frame(mat)
+mat <- intersect(check4, as.matrix(ALL$F15$monday$edgelists$iso4)); F15_M_4 <- as.data.frame(mat)
+mat <- intersect(check5, as.matrix(ALL$F15$monday$edgelists$iso5)); F15_M_5 <- as.data.frame(mat)
 
 
 
@@ -186,11 +186,11 @@ mat <- intersect(check5, as.matrix(ALL$F16$tuesday$edgelists$iso5)); F16_T_5 <- 
  
 
 
-mat <- as.character(intersect(check1, as.matrix(ALL$F16$wednesday$edgelists$iso1))); F16_W_1 <- as.data.frame(mat)
-mat <- as.character(intersect(check2, as.matrix(ALL$F16$wednesday$edgelists$iso2))); F16_W_2 <- as.data.frame(mat)
-mat <- as.character(intersect(check3, as.matrix(ALL$F16$wednesday$edgelists$iso3))); F16_W_3 <- as.data.frame(mat)
-mat <- as.character(intersect(check4, as.matrix(ALL$F16$wednesday$edgelists$iso4))); F16_W_4 <- as.data.frame(mat)
-mat <- as.character(intersect(check5, as.matrix(ALL$F16$wednesday$edgelists$iso5))); F16_W_5 <- as.data.frame(mat)
+mat <- intersect(check1, as.matrix(ALL$F16$wednesday$edgelists$iso1)); F16_W_1 <- as.data.frame(mat)
+mat <- intersect(check2, as.matrix(ALL$F16$wednesday$edgelists$iso2)); F16_W_2 <- as.data.frame(mat)
+mat <- intersect(check3, as.matrix(ALL$F16$wednesday$edgelists$iso3)); F16_W_3 <- as.data.frame(mat)
+mat <- intersect(check4, as.matrix(ALL$F16$wednesday$edgelists$iso4)); F16_W_4 <- as.data.frame(mat)
+mat <- intersect(check5, as.matrix(ALL$F16$wednesday$edgelists$iso5)); F16_W_5 <- as.data.frame(mat)
 
  
 
@@ -270,8 +270,6 @@ isFullDF <- function(nm) nrow(get(nm))>0
 rm(list = alldfnames[!sapply(alldfnames, isFullDF)])
 
 
-ReadMe <- "If no datasets are in the global environment then you're good to go!"
-
 
 #Remove all but errors
 rm(surv_take); rm(survs); rm(ALL); 
@@ -280,6 +278,12 @@ rm(x)
 rm(alldfnames)
 rm(mat)
 rm(isFullDF)
+
+
+print("Look at your Global environment! If no datasets are in the global environment then you're good to go!")
+print("If there are datasets in the Global environment then those nodes need to be checked.")
+print("For example, a dataset called 'F15_M_1' indicates that there is is an error in the Fall 2015 semester, Monday, survey 1.")
+print("The value(s) inside there is the Final_ID of the problem variable. That individual did NOT take the survey but are included in the network")
 
 
 
