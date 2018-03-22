@@ -1,8 +1,9 @@
 library(shiny)
 library(igraph)
 suppressPackageStartupMessages(library(threejs, quietly=TRUE))
+
 ALL <- readRDS("ALL_NETWORKS.RDS")
-ALL
+
 
 role <-  c("mentee", "mentor", "mentor coach", "lead mentor coach", "instructor") 
 color <- c("orange","green","dodgerblue", "red", "grey50")

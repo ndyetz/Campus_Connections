@@ -26,14 +26,11 @@ This Document was last updated on `r format(Sys.time(), "%B %d, %Y")`. This docu
 #Check for errors here.
 ```{r, message = FALSE}
 #Source code for problem isolates
+#NOTE: This source code clears the global environment.
 
 source("T:/Research folders/CCWTG/Analyses/Papers/Belongingness & Network Embeddedness/iso_source.R") #<- source code for isolates
 
-#Look at the Global Environnment for errors! They will be datasets indicating where the isolate is.
-#For example, a dataset called "F15_M_1" indicates that there is is an error in the Fall 2015 semester, Monday, survey 1.
-#Run the source code to check if there are any nodes that should be missing. #If nothing gets outputted, this is good!
-
-#No errors, checked on 3/20/2018 -Neil
+#No errors, checked on 3/21/2018 -Neil
 
 ```
 
