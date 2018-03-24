@@ -44,7 +44,7 @@ ui <- shinyUI(fluidPage(
     
     # Outputs
     mainPanel(
-      sigmaOutput(outputId = "plot")
+      plotOutput(outputId = "plot")
     )
   )
 )
@@ -53,7 +53,7 @@ ui <- shinyUI(fluidPage(
 server <- function(input, output) {
   
   # Define output
-  output$plot <- renderSigma({
+  output$plot <- renderPlot({
     print(graphjs(ALL[[input$sem]][[input$night]][["graphs"]][[input$survey]]))#, vertex.label = NA)#, edge.color = "black",
                  #vertex.size= 5)
     #legend("bottomright", legend=role  , col = color , bty = "o", pch=20 , pt.cex = 1, cex = 1, text.col= color , horiz = FALSE, inset = c(0, 0))

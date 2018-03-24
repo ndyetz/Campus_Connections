@@ -1,0 +1,353 @@
+---
+title: "R Notebook For Grade Discrepancies: F15"
+output: 
+  html_notebook:
+    toc: yes
+
+---
+
+#Introduction
+This notebooks was created by Neil Yetz, MPH on 03/23/2018. It was last updated on `r format(Sys.time(), "%B %d, %Y")`. The point of this notebooks is to check discrepencies between multiple entries of a dataset. Specifically, it is being used to ensure accuracy for the WIlliam T. Grant study, 2 people enter in academic records and then this code tracks any instance where there is nto agreement between the two data sheets. Additionaly, shows every area that the discrepancy occurred. After each list of discrepancies, I track them and make a decision with a brief description of my rationale for the change. 
+
+Please send any questions or correspondence of this document to Neil Yetz as <neil.yetz@colostate.edu>
+
+
+#Clear Environment
+```{r}
+rm(list = ls(all.names = TRUE))
+```
+
+
+
+#Load Libraries
+```{r}
+library(tidyverse)
+```
+
+
+#Load Data
+```{r, message = FALSE}
+library(tidyverse)
+
+df1 <- read_csv("temp_neil.csv")
+df2 <- read_csv("temp_dacre.csv")
+
+#Make sure this matches the semester
+tempdelete <- read_csv("T:/Research folders/CCWTG/Data/Fall2015/FINALDATA/tempdelete.csv")
+
+```
+
+#Set Up data
+```{r}
+
+df1$mentee_name <- word(df1$mentee_name, 1, 2)
+df2$mentee_name <- word(df2$mentee_name, 1, 2)
+
+
+notes1 <- df1 %>% 
+  arrange(mentee_name, Year, Grade, Term) %>%
+  select(notes1 = Notes)
+
+notes2 <- df2 %>% 
+  arrange(mentee_name, Year, Grade, Term) %>%
+  select(notes2 = Notes)
+
+notes <- cbind(notes1, notes2)
+
+
+df1<- df1 %>% 
+  mutate(rownum = row.names(df1)) %>% 
+  arrange(mentee_name, Year, Grade, Term) %>% 
+  select(rownum, mentee_name, Year, Grade, Term, GPA, GPA_Unweighted, Credit, Weight_Sum, Class_Count, School, School_Number)
+
+
+df2 <- df2 %>% 
+  mutate(rownum = row.names(df2)) %>% 
+  arrange(mentee_name, Year, Grade, Term) %>% 
+  select(rownum, mentee_name, Year, Grade, Term, GPA, GPA_Unweighted, Credit, Weight_Sum, Class_Count, School, School_Number) 
+
+#Add leading zeros to school number
+df1$School_Number  <- stringr::str_pad(df1$School_Number, 4, side = "left", pad = 0)
+df2$School_Number  <- stringr::str_pad(df2$School_Number, 4, side = "left", pad = 0)
+    
+```
+
+#Total number of discrepancies in each row. Look at this!
+Please ntoe, a difference in "rownum" JUst indicates that the order of the entry was different. Not that there was anything different about the entry itself. It is the row number a case was placed *prior* to to arranging the records by mentee_name.
+```{r}
+#Compare the dataframes
+diff <- as_data_frame(df1 == df2)
+
+#Total number of differences in each column
+colSums(diff == FALSE, na.rm = TRUE)
+```
+
+#Combine datasets
+```{r}
+colnames(df1) <- paste( colnames(df1), "1", sep = "_")
+colnames(df2) <- paste( colnames(df2), "2", sep = "_")
+colnames(diff) <- paste( colnames(diff), "d", sep = "_")
+combine <- cbind(df1, df2, diff, notes)
+```
+
+
+#Errors to check (By column)
+All instances in these next sections need to be assessed. They indicate a disagreement in data entry from data sheet 1 and data sheet 2.
+
+##Discrepencies in Mentee_name
+```{r}
+combine %>% select(rownum_1, rownum_2, mentee_name_1, mentee_name_2, mentee_name_d) %>% filter(mentee_name_d == FALSE)
+```
+
+###Changes with comments
+```{r}
+#Mentee_Name spelt wrong in dateset 2. Changing to dataset 1 name based on FIdenitifying_Files_Basic:
+fix <- df1$mentee_name_1[94]; error <- df2$mentee_name_2[94]
+df2 <- df2 %>% mutate(mentee_name_2 = ifelse(mentee_name_2 == error, fix, mentee_name_2))
+
+#Mentee_Name spelt wrong in dateset 2. Changing to dataset 1 name based on FIdenitifying_Files_Basic:
+fix <- df1$mentee_name_1[47]; error <- df2$mentee_name_2[47]
+df2 <- df2 %>% mutate(mentee_name_2 = ifelse(mentee_name_2 == error, fix, mentee_name_2))
+
+#Mentee_Name spelt wrong in dateset 2. Changing to dataset 1 name based on FIdenitifying_Files_Basic:
+fix <- df1$mentee_name_1[68]; error <- df2$mentee_name_2[68]
+df2 <- df2 %>% mutate(mentee_name_2 = ifelse(mentee_name_2 == error, fix, mentee_name_2))
+
+#Mentee_Name spelt wrong in dateset 2. Changing to dataset 1 name based on FIdenitifying_Files_Basic:
+fix <- df1$mentee_name_1[75]; error <- df2$mentee_name_2[75]
+df2 <- df2 %>% mutate(mentee_name_2 = ifelse(mentee_name_2 == error, fix, mentee_name_2))
+
+#Mentee_Name spelt wrong in dateset 2. Changing to dataset 1 name based on FIdenitifying_Files_Basic:
+fix <- df1$mentee_name_1[79]; error <- df2$mentee_name_2[79]
+df2 <- df2 %>% mutate(mentee_name_2 = ifelse(mentee_name_2 == error, fix, mentee_name_2))
+
+#Mentee_Name spelt wrong in dateset 1. Changing to dataset 2 name based on FIdenitifying_Files_Basic:
+fix <- df2$mentee_name_2[93]; error <- df1$mentee_name_1[93]
+df1 <- df1 %>% mutate(mentee_name_1 = ifelse(mentee_name_1 == error, fix, mentee_name_1))
+
+#Mentee_Name spelt wrong in dateset 2. Changing to dataset 1 name based on FIdenitifying_Files_Basic:
+fix <- df1$mentee_name_1[121]; error <- df2$mentee_name_2[121]
+df2 <- df2 %>% mutate(mentee_name_2 = ifelse(mentee_name_2 == error, fix, mentee_name_2))
+
+#Mentee_Name spelt wrong in dateset 2. Changing to dataset 1 name based on FIdenitifying_Files_Basic:
+fix <- df1$mentee_name_1[125]; error <- df2$mentee_name_2[125]
+df2 <- df2 %>% mutate(mentee_name_2 = ifelse(mentee_name_2 == error, fix, mentee_name_2))
+
+#Mentee_Name spelt wrong in dateset 2. Changing to dataset 1 name based on FIdenitifying_Files_Basic:
+fix <- df1$mentee_name_1[183]; error <- df2$mentee_name_2[183]
+df2 <- df2 %>% mutate(mentee_name_2 = ifelse(mentee_name_2 == error, fix, mentee_name_2))
+
+```
+
+
+##Discrepencies in Year
+```{r}
+combine %>% select(rownum_1, rownum_2, mentee_name_1, Year_1, Year_2, Year_d) %>% filter(Year_d == FALSE)
+```
+
+##Discrepencies in Term
+```{r}
+combine %>% select(rownum_1, rownum_2, Term_1, Term_2, Term_d) %>% filter(Term_d == FALSE)
+```
+
+
+##Discrepencies in GPA
+```{r}
+combine %>% select(rownum_1, rownum_2, GPA_1, GPA_2, GPA_d) %>% filter(GPA_d == FALSE)
+```
+
+###Changes with comments
+```{r}
+#correct in dataset2 changing dataset 1
+fix <- df2$GPA_2[6]; error <- df1$GPA_1[6]; name <- df1$mentee_name_1[6]; year <-  df1$Year_1[6]; grade <- df1$Grade_1[6]; term <- df1$Term_1[6]
+df1 <- df1 %>% mutate(GPA_1 = ifelse(GPA_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term,
+                                     fix, GPA_1))
+
+#correct in dataset1 changing dataset 2
+fix <- df1$GPA_1[131]; error <- df2$GPA_2[131]; name <- df1$mentee_name_1[131]; year <-  df1$Year_1[131]; grade <- df1$Grade_1[131]; term <- df1$Term_1[131]
+df2 <- df2 %>% mutate(GPA_2 = ifelse(GPA_2 == error & mentee_name_2 == name & Year_2 == year & Grade_2 == grade & Term_2 == term, 
+                                     fix, GPA_2))
+```
+
+
+##Discrepencies in GPA_Unweighted
+```{r}
+combine %>% select(rownum_1, rownum_2, GPA_Unweighted_1, GPA_Unweighted_2, GPA_Unweighted_d) %>% filter(GPA_Unweighted_d == FALSE)
+```
+
+###Changes with comments
+```{r}
+#correct in dataset2 changing dataset 1
+fix <- df2$GPA_Unweighted_2[6]; error <- df1$GPA_Unweighted_1[6]; name <- df1$mentee_name_1[6]; year <-  df1$Year_1[6]; grade <- df1$Grade_1[6]; term <- df1$Term_1[6]
+df1 <- df1 %>% mutate(GPA_Unweighted_1 = ifelse(GPA_Unweighted_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term, 
+                                                fix, GPA_Unweighted_1))
+
+#correct in dataset1 changing dataset 2
+fix <- df1$GPA_Unweighted_1[42]; error <- df2$GPA_Unweighted_2[42]; name <- df1$mentee_name_1[42]; year <-  df1$Year_1[42]; grade <- df1$Grade_1[42]; term <- df1$Term_1[42]
+df2 <- df2 %>% mutate(GPA_Unweighted_2 = ifelse(GPA_Unweighted_2 == error & mentee_name_2 == name & Year_2 == year & Grade_2 == grade & Term_2 == term,
+                                                fix, GPA_Unweighted_2))
+```
+
+##Discrepencies in Credit
+```{r}
+combine %>% select(rownum_1, rownum_2, Credit_1, Credit_2, Credit_d) %>% filter(Credit_d == FALSE)
+```
+
+
+
+##Discrepencies in Weight_Sum
+```{r}
+combine %>% select(rownum_1, rownum_2, Weight_Sum_1, Weight_Sum_2, Weight_Sum_d) %>% filter(Weight_Sum_d == FALSE)
+```
+
+###Changes with comments
+```{r}
+#correct in dataset2 changing dataset 1
+fix <- df2$Weight_Sum_2[51]; error <- df1$Weight_Sum_1[51] ; name <- df1$mentee_name_1[51]; year <-  df1$Year_1[51]; grade <- df1$Grade_1[51]; term <- df1$Term_1[51]
+df1 <- df1 %>% mutate(Weight_Sum_1 = ifelse(Weight_Sum_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term, 
+                                                fix, Weight_Sum_1))
+
+#correct in dataset2 changing dataset 1
+fix <- df2$Weight_Sum_2[130]; error <- df1$Weight_Sum_1[130] ; name <- df1$mentee_name_1[130]; year <-  df1$Year_1[130]; grade <- df1$Grade_1[130]; term <- df1$Term_1[130]
+df1 <- df1 %>% mutate(Weight_Sum_1 = ifelse(Weight_Sum_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term, 
+                                                fix, Weight_Sum_1))
+```
+
+
+##Discrepencies in Class_Count
+```{r}
+combine %>% select(rownum_1, rownum_2, Class_Count_1, Class_Count_2, Class_Count_d) %>% filter(Class_Count_d == FALSE)
+```
+
+###Changes with comments
+```{r}
+
+#correct in dataset1 changing dataset 2
+fix <- df1$Class_Count_1[6]; error <- df2$Class_Count_2[6]; name <- df1$mentee_name_1[6]; year <-  df1$Year_1[6]; grade <- df1$Grade_1[6]; term <- df1$Term_1[6]
+df2 <- df2 %>% mutate(Class_Count_2 = ifelse(Class_Count_2 == error & mentee_name_2 == name & Year_2 == year & Grade_2 == grade & Term_2 == term, 
+                                             fix, Class_Count_2))
+
+#correct in dataset2 changing dataset 1
+fix <- df2$Class_Count_2[51]; error <- df1$Class_Count_1[51]; name <- df1$mentee_name_1[51]; year <-  df1$Year_1[51]; grade <- df1$Grade_1[51]; term <- df1$Term_1[51]
+df1 <- df1 %>% mutate(Class_Count_1 = ifelse(Class_Count_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term,
+                                             fix, Class_Count_1))
+
+
+#correct in dataset2 changing dataset 1
+fix <- df2$Class_Count_2[84]; error <- df1$Class_Count_1[84]; name <- df1$mentee_name_1[84]; year <-  df1$Year_1[84]; grade <- df1$Grade_1[84]; term <- df1$Term_1[84]
+df1 <- df1 %>% mutate(Class_Count_1 = ifelse(Class_Count_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term,
+                                             fix, Class_Count_1))
+```
+
+##Discrepencies in School
+```{r}
+combine %>% select(rownum_1, rownum_2, School_1, School_2, School_d) %>% filter(School_d == FALSE)
+```
+
+###Changes with comments
+```{r}
+
+#correct in dataset2 changing dataset 1
+fix <- df2$School_2[134]; error <- df1$School_1[134]; name <- df1$mentee_name_1[134]; year <-  df1$Year_1[134]; grade <- df1$Grade_1[134]; term <- df1$Term_1[134]
+df1 <- df1 %>% mutate(School_1 = ifelse(School_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term,
+                                             fix, School_1))
+```
+
+
+##Discrepencies in School_Number
+```{r}
+combine %>% select(rownum_1, rownum_2, mentee_name_1, School_Number_1, School_Number_2, School_Number_d) %>% filter(School_Number_d == FALSE)
+```
+###Changes with comments
+```{r}
+
+#correct in dataset2 changing dataset 1
+fix <- df2$School_Number_2[71]; error <- df1$School_Number_1[71]; name <- df1$mentee_name_1[71]; year <-  df1$Year_1[71]; grade <- df1$Grade_1[71]; term <- df1$Term_1[71]
+df1 <- df1 %>% mutate(School_Number_1 = ifelse(School_Number_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term,
+                                             fix, School_Number_1))
+
+#correct in dataset2 changing dataset 1
+fix <- df2$School_Number_2[72]; error <- df1$School_Number_1[72]; name <- df1$mentee_name_1[72]; year <-  df1$Year_1[72]; grade <- df1$Grade_1[72]; term <- df1$Term_1[72]
+df1 <- df1 %>% mutate(School_Number_1 = ifelse(School_Number_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term,
+                                             fix, School_Number_1))
+
+#correct in dataset2 changing dataset 1
+fix <- df2$School_Number_2[73]; error <- df1$School_Number_1[73]; name <- df1$mentee_name_1[73]; year <-  df1$Year_1[73]; grade <- df1$Grade_1[73]; term <- df1$Term_1[73]
+df1 <- df1 %>% mutate(School_Number_1 = ifelse(School_Number_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term,
+                                             fix, School_Number_1))
+
+#correct in dataset2 changing dataset 1
+fix <- df2$School_Number_2[74]; error <- df1$School_Number_1[74]; name <- df1$mentee_name_1[74]; year <-  df1$Year_1[74]; grade <- df1$Grade_1[74]; term <- df1$Term_1[74]
+df1 <- df1 %>% mutate(School_Number_1 = ifelse(School_Number_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term,
+                                             fix, School_Number_1))
+
+#correct in dataset2 changing dataset 1
+fix <- df2$School_Number_2[134]; error <- df1$School_Number_1[134]; name <- df1$mentee_name_1[134]; year <-  df1$Year_1[134]; grade <- df1$Grade_1[134]; term <- df1$Term_1[134]
+df1 <- df1 %>% mutate(School_Number_1 = ifelse(School_Number_1 == error & mentee_name_1 == name & Year_1 == year & Grade_1 == grade & Term_1 == term,
+                                             fix, School_Number_1))
+```
+
+#Set Up to re-check if process was done properly
+
+##Remove df column indicators
+```{r}
+colnames(df1) <- str_sub(colnames(df1), start=1, end=-3); df1 <- select(df1, -rownum)
+colnames(df2) <- str_sub(colnames(df2), start=1, end=-3); df2 <- select(df2, -rownum)
+```
+
+##Compare again (There should be 0 in all columns sums)
+```{r}
+#Compare the dataframes
+diff <- as_data_frame(df1 == df2)
+
+#Total number of differences in each column
+colSums(diff == FALSE, na.rm = TRUE)
+```
+
+
+##Look at notes
+```{r}
+notes
+```
+
+###Assess & Add notes to final
+```{r}
+df_final <- cbind(df1, notes)
+
+
+
+df_final <- df_final %>% 
+  mutate(Notes = notes1) %>%  #manipulate if there is something of unique impoortance in NOtes2. NOtes were the same, so only keeping notes1
+  select(-notes1, -notes2)
+```
+
+#merge final_ID's
+```{r}
+#Arrange by mentee name
+df_final <- arrange(df_final,   mentee_name)
+tempdelete <- arrange(tempdelete, mentee_name)
+
+#Join datasets
+df_final <- left_join(df_final, tempdelete, by = "mentee_name")
+
+#Deidentify and remove uncessecary variables
+df_final <- df_final %>% 
+  mutate(Semester = "F15") %>%  #Change each semester.
+  select(Final_ID, Year:Notes, Semester)
+
+#arrange by Final_ID
+df_final <- arrange(df_final, Final_ID)
+```
+
+#Clear environemnt (Except final doc)
+```{r}
+rm(list=setdiff(ls(), "df_final"))
+```
+
+
+#When checked, export final document
+```{r}
+write_csv(df_final, "T:/Research folders/CCWTG/RECORDS/Grades_Final/F15_grades.csv", na = "")
+
+```
+
