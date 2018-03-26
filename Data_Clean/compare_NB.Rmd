@@ -7,7 +7,7 @@ output:
 ---
 
 #Introduction
-This notebooks was created by Neil Yetz, MPH on 03/23/2018. It was last updated on `r format(Sys.time(), "%B %d, %Y")`. The point of this notebooks is to check discrepencies between multiple entries of a dataset. Specifically, it is being used to ensure accuracy for the WIlliam T. Grant study, 2 people enter in academic records and then this code tracks any instance where there is nto agreement between the two data sheets. Additionaly, shows every area that the discrepancy occurred. After each list of discrepancies, I track them and make a decision with a brief description of my rationale for the change. 
+This notebooks was created by Neil Yetz, MPH on 03/23/2018. It was last updated on `r format(Sys.time(), "%B %d, %Y")`. The point of this notebooks is to check discrepencies between multiple entries of a dataset. Specifically, it is being used to ensure accuracy for the WIlliam T. Grant study, 2 people enter in academic records and then this code tracks any instance where there is not agreement between the two data sheets. Additionaly, it shows every area that the discrepancy occurred. After each list of discrepancies, I track them and make a decision with a brief description of my rationale for the change. 
 
 Please send any questions or correspondence of this document to Neil Yetz as <neil.yetz@colostate.edu>
 
