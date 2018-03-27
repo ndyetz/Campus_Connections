@@ -92,8 +92,6 @@ proc sort data=weekly out=weekly_agg nodupkey; by mentee_name; run;
 data staff; set id_staff; staff_nomentee=1; 
 keep Final_ID staff_nomentee; run;
 
-/*N = 132  - May need to delete Webb Julianna up here again*/
-
 
 /***************************************************************************************************/
 /*MENTOR SURVEY DATA                    														   */
