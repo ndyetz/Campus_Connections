@@ -1,6 +1,0 @@
-"0","cor <- round(cor(sem_items, use = ""pairwise.complete.obs"") ,2)"
-"0","upper<-cor"
-"0","upper[upper.tri(cor)]<-"""""
-"0","upper<-as.data.frame(upper)"
-"0","#kable(upper, ""html"", full_width = T)"
-"0","kable(upper, ""html"")#%>%"

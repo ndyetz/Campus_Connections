@@ -1,4 +1,0 @@
-"0","  kable_styling(full_width = T, position = ""left"") # <- nicer chart but only works whenknit to html. "
-"2","Error in kable_styling(full_width = T, position = ""left"") : 
-  argument ""kable_input"" is missing, with no default
-"

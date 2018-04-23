@@ -1,6 +1,0 @@
-"0","eco_risk <- ""eco_risk  =~ risk_1 + risk_2 + risk_3 + risk_4 + risk_5 + risk_6 + risk_7"""
-"0","fam_str  <- ""fam_str   =~ risk_8 + risk_9 + risk_10 + risk_11 + risk_12 + risk_13 + risk_14 + risk_15 + risk_16 + risk_17 + risk_ 18"""
-"0","peer_dif <- ""peer_dif  =~ risk_19 + risk_20"""
-"0","aca_cha  <- ""aca_cha   =~ risk_21 + risk_22 + risk_23""    "
-"0","prob_be  <- ""prob_be   =~ risk_25 + risk_26 + risk_27 + risk_28  + risk_30  #+ risk_29"""
-"0","men_he   <- ""men_he    =~ risk_31 + risk_ 32""                            "
