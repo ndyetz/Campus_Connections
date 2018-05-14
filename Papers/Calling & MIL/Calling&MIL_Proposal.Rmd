@@ -1,0 +1,158 @@
+---
+title: "Calling & Meaning in Life Proposal"
+author: "Neil Yetz"
+date: "May 11, 2018"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: "yeti"
+---
+
+#Introduction
+
+<center>![](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/images/302671_CampusConnections-logo.png)</center><br>
+
+This document contains a general descrition of the [Campus Connections program](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/index.aspx), and research questions proposed by Dylan Marsh & Neil Yetz during a meeting 05/11/2018. This document was created on on May 11, 2018 and was last updated on, `r format(Sys.time(), "%B %d, %Y")`. 
+
+#Campus Connections Description
+
+Campus Connections is a multidisciplinary service learning course at CSU where undergraduate students serve as mentors to youth. Students from over 65 different majors work one-on-one with youth ranging in age from 11-18 who are referred to Campus Connections from our community partners within the juvenile justice system of Larimer County, local schools, community agencies, and directly from families.
+
+Student mentors spend four hours once a week with their mentee in a group setting to provide academic support and career planning, encourage positive social skills development, assist with goal setting, and implement wellness programming. Strong bonds are developed over the 12 week program between mentors and mentees. Graduate students and experienced mentors serve as mentor coaches to provide support and guidance during Campus Connections.
+
+##Role Descriptions.
+
+Within Campus COnnections, there are a total of 5 possible to fulfilled within. These roles include [**Mentor**](#ref-1), [**Mentor Coach**](#ref-2), [**Lead Mentor Coach**](#ref-3), [**Instructor**](#ref-4), and lastly, [**Mentee**](#ref-5). Each role is described in greater detail below.
+
+###Mentor {#ref-1}
+
+**Mentor:** Undergraduate and graduate students
+from any major on campus. Students from over 40 majors have
+served as mentors to date. Students must follow a specific process in
+order to be deemed eligible as a mentor, beginning with attendance
+at a mandatory informational meeting and subsequent formal
+application to become a mentor. Applications allow program staff
+to identify mentors who possess important skills and attributes for
+effective mentoring, including experience in helping roles (Dubois,
+Holloway, Valentine, & Cooper, 2002), sense of self-efficacy, and appreciation
+of cultural and socioeconomic differences (Hirsch, 2005). If
+accepted into Campus Corps, students must also complete and pass
+a criminal background check. Because Campus Corps is offered
+as a one-semester service-learning course, students receive course
+credit for participating as mentors in the program. Many students
+elect to participate in subsequent semesters of Campus Corps,
+either as a Mentor Coach or as a Research or Teaching Assistant.
+
+
+###Mentor Coach {#ref-2}
+
+**Mentor Coach:** A Colorado State University Student that looks over multiple mentor-mentee dyad groups. They generally have served as a mentor in the past and gained mentorship experience from the Campus Connections program in the past.
+
+###Lead Mentor Coach {#ref-3}
+
+**Lead Mentor Coach:** A Lead Mentor Coach serves as very experienced mentor coach that leads mentor coaches in mentoring roles. 
+
+###Instructor {#ref-4}
+
+**Instructor:** A graduate student trained in therapeutic counseling. In the current study, the instructors are master's- or doctorate-level marriage and family therapy students.
+
+###Mentee {#ref-5}
+
+**Mentees** are youth between the ages of 10 and 18. The 
+youth who attend Campus Corps are considered at risk of offending
+232 Journal of Higher Education Outreach and Engagement
+or re-offending and are referred to Campus Corps from a variety
+of sources including the District Attorney's Office, the Probation
+Department, the Department of Human Services, the local school
+district, and other community agencies. Seventy percent of youth
+enrolled in the program possess at least one charge with the juvenile
+justice system. Although all youth attend voluntarily, Campus
+Corps is often part of each youth's diversion or probationary conditions,
+or treatment plan.
+
+
+
+#Mentor Family 
+
+A Mentor family involves "families" of 3-4 Dyads that support each other. Each mentor family has a mentor coach that helps to facilitate the group activities and discussion. They are more likely to participate in activities together such as eating dinner and walk and talks. 
+
+The figure 1 below illustrates the mentor family styling:
+
+
+<center>**Figure 1** </center>
+ <center> ![Figure 1: Mentor Family Layout](T:/Research folders/CCWTG/Analyses/Data for Stats Dept/FINAL DATA/CODEBOOK/Capture.png)</center>
+ <br>
+More may be read on Mentor Families [HERE](https://pdfs.semanticscholar.org/a6bc/005f38e345bc43a9ea523ae8554391741de7.pdf)
+
+##Campus Connections Nesting Figure
+
+Figure 2 illustrates the CC nesting
+
+ <center>**Figure 2** </center>
+
+ <center> ![Figure 3: Campus Connections Nesting](T:/Research folders/CCWTG/Analyses/Data for Stats Dept/FINAL DATA/CODEBOOK/Nesting.png)</center>
+ 
+
+#Project aims & interests
+
+This project has a focus on how *meaning in life* and *calling towards being a mentor* are associated with being part of the Campus Connections program. This research will focus on many aspects of the mentor and how these variables change from the beginning of the program to the time that the 12-week program ends. Both Calling and meaning in life have a breadth of reseaerch within college student populations. Additionally, research on calling shows interesting results in the field of vocational research.
+
+#Constructs of interest summaries
+##Meaning in life brief summary
+
+For the purpose of this study, meaning in life can be described by 2 subscale:
+
+- 1.) **Presence of Meaning**: How much one feel's they have meaning in their life and
+- 2.) **Search for Meaning**: How much an individuals strive to find meaning and understanding in their lives. 
+
+For a more specific description of Meaning in Life please refer to [this article](http://www.michaelfsteger.com/wp-content/uploads/2012/08/Steger-Frazier-Oishi-Kaler-JCP-2006.pdf).
+
+
+The *Meaning in Life Quesationnaire* can help to measure these constructs. It is shown below: 
+
+![MIL](S:\Git\Campus_Connections\Papers\Calling & MIL\MIL.PNG) 
+
+The instructions were manipulated to fit the role of being a mentor at Campus Connections. 
+
+##Calling to be a mentor brief summary
+
+Calling is a more specific to how and individual feels they are *meant* to partake in their role. In other words, it is a measure of how the amout of calling one feels towards a specific career or role. More information on the oevrall research on calling can be read in [this article](https://ac.els-cdn.com/S0001879113001334/1-s2.0-S0001879113001334-main.pdf?_tid=43624a84-5403-4c35-967a-a9c2a6b21fa4&acdnat=1526085654_d47de1f1db0600688fbb52dd82e5a149).
+
+Here is the measure:
+
+Broadly speaking, a “calling” refers to a person’s belief that she or he is called upon (by the needs of society, by a person’s own inner potential, by God, by a Higher Power, etc.) to do a particular kind of work. The following questions assess the degree to which you see this concept as relevant to your own life, particularly in reference to your _role as a mentor_. Please respond honestly, not according to what is socially desirable or what you feel you “ought” to think. Please indicate the extent to which each of the following statements currently describe you, using the following scale.
+
+1 = Not at all true of me;
+2 = Mildly true of me;
+3 = Moderately true of me;
+4 = Mostly true of me;
+5 = Totally true of me
+
+- I have a calling to be a mentor.
+- I have a good understanding of my calling as it applies to my role as a mentor.
+- I am trying to figure out if I have a calling toward mentorship.
+- I am searching for my calling as it applies to my role as a mentor.
+
+#Proposed Research Questions
+
+##Questions about Calling to be a mentor
+
+- 1.) To what extent is calling toward mentorship change by particpating in CC? 
+- 2.) What engenders a higher calling towards mentorship? 
+-- i.e. Is mentor alliance predictive of calling toward mentorship post CC program?
+- 3.) What mentor Traits are more likely to cause a mentee to enjoy the program?
+- 4.) What Characteristics of a mentees would influence a mentor's calling to be a mentor outcome? 
+- 5.) What mentor factors are protective against a bad mentee relationship? 
+-- i.e. do mentors with a better sense of calling to be a mentor have mentees that enjoy the program more? 
+- 6.) What characteristics are likely ti be protective toward their sense of calling? 
+- 7.) Does time 2 calling predict returning as a mentor next semester? 
+
+## Questions About Meaning in Life
+
+- 1.) Does Campus Connections increase meaning in life from time 1 to time 2?
+
+
+
+
+
