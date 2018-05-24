@@ -1,0 +1,646 @@
+---
+title: "TGYS outcomes notebook"
+subtitle: "Neil Yetz"
+output:
+  html_notebook:
+    toc: yes
+    toc_float: true
+    code_folding: hide
+    theme: yeti
+  html_document:
+    toc: yes
+    toc_float: true
+    theme: yeti
+---
+
+
+<center>
+![CC](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/images/302671_CampusConnections-logo.png)
+</center>
+
+#Introduction
+
+The following is a resource to collect the information required for the Tony Grampas Youth Services (TGYS) Program report. The report is due 01/19/2017 and requires "Numbers served" statistics for Youth, mentors, parents and "Other community members". 
+
+Additionally, this DOcument will information about the TGYS "Statement of Work activites" These are pre-and post statistics for the Spring 2017 semester of Campus Connections. Below is a table reporting all of the deliverables to be reported in this document pertaining to the statement of activities in the accepted TGYS grant. This document was last updated on `r format(Sys.time(), "%B %d, %Y")`.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#Setwd
+#Read in Libraries
+
+ rm(list=ls(all=TRUE)) 
+
+#install.packages("GGally")
+#install.packages("ggplot2")
+#install.packages("lattice")
+#install.packages("gridExtra")
+#install.packages("reshape")
+#install.packages("pander")
+#install.packages("knitr")
+#install.packages("tidyverse")
+
+
+library(GGally)
+library(ggplot2)
+library(lattice)
+library(gridExtra)
+library(reshape)
+library(pander)
+library(knitr)
+library(tidyverse)
+library(purrr)
+library(data.table)
+
+panderOptions('table.split.table', Inf)
+#panderOptions('digits', 3)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('keep.line.breaks', TRUE)
+set.alignment('left', row.names = 'right')
+
+
+setwd("T:/Research folders/CCWTG/DATA/MERGEALL")
+
+varlist <- read.csv("T:/Research folders/CCWTG/Analyses/NEIL/TGYS/objectives.csv", header = TRUE) 
+
+
+
+
+THISDATA <- read.csv("MENTEESURVEY.csv", header = TRUE) 
+master <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/MASTER.csv")
+ALLDATA <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/Allwide.csv")
+
+
+```
+
+
+
+
+##Read in S18 dat, set up to combine (not prepared yet)
+```{r, message = FALSE}
+
+setwd("T:/Research folders/CCWTG/Data/Spring2018/For_TGYS")
+
+#To anyone reading this, I'd advise learning the purrr package. It has amazing capabilities! 
+#Below I'm reading in & merging 15 .csv's in seconds!
+
+
+s18_y_0 <- read_csv("S18_mentee_intake.csv")
+s18_y_1 <- read_csv("S18_mentee_1.csv")
+s18_y_2 <- read_csv("S18_mentee_2.csv")
+s18_y_3 <- read_csv("S18_mentee_3.csv")
+s18_y_4 <- read_csv("S18_mentee_4.csv")
+s18_y_5 <- read_csv("S18_mentee_5.csv")
+
+s18_m_0 <- read_csv("S18_mentor_intake.csv")
+s18_m_1 <- read_csv("S18_mentor_1.csv")
+s18_m_2 <- read_csv("S18_mentor_2.csv")
+s18_m_3 <- read_csv("S18_mentor_3.csv")
+s18_m_4 <- read_csv("S18_mentor_4.csv")
+s18_m_5 <- read_csv("S18_mentor_5.csv")
+
+s18_p_intake <- read_csv("S18_parent_intake.csv")
+s18_p_post <- read_csv("S18_parent_post.csv")
+
+
+#Arrange & filter to necessary variables
+s18_y_0 <- s18_y_0 %>% arrange(RecipientEmail) %>% select(MENTEE_ID , everything(), -(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage)
+s18_y_1 <- s18_y_1 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1  )
+s18_y_2 <- s18_y_2 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1    )
+s18_y_3 <- s18_y_3 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1    )
+s18_y_4 <- s18_y_4 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1    )
+s18_y_5 <- s18_y_5 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1  )
+
+s18_m_0 <- s18_m_0 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage)
+s18_m_1 <- s18_m_1 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1, -Night2    )
+s18_m_2 <- s18_m_2 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1, -Night2    )
+s18_m_3 <- s18_m_3 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")),-StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1, -Night2)
+s18_m_4 <- s18_m_4 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1, -Night2    )
+s18_m_5 <- s18_m_5 %>% arrange(RecipientEmail) %>% select(-(contains("msn")), -(contains("ksn")), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage, -Night1, -Night2)
+
+s18_p_intake <- s18_p_intake %>% arrange(RecipientEmail) %>% select(MENTEE_ID,  everything(), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage)
+
+
+s18_p_post <- s18_p_post %>% arrange(RecipientEmail) %>% select(MENTEE_ID, everything(), -StartDate, -EndDate, -Status, -IPAddress, -Progress,-(contains("Duration")),-Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -ExternalReference, -LocationLatitude,-LocationLongitude, -DistributionChannel, -UserLanguage)
+
+
+s18_y_0       <- as.data.table(s18_y_0)
+s18_y_1       <- as.data.table(s18_y_1)
+s18_y_2       <- as.data.table(s18_y_2)
+s18_y_3       <- as.data.table(s18_y_3)
+s18_y_4       <- as.data.table(s18_y_4)
+s18_y_5       <- as.data.table(s18_y_5)
+      
+s18_m_0       <- as.data.table(s18_m_0)
+s18_m_1       <- as.data.table(s18_m_1)
+s18_m_2       <- as.data.table(s18_m_2)
+s18_m_3       <- as.data.table(s18_m_3)
+s18_m_4       <- as.data.table(s18_m_4)
+s18_m_5       <- as.data.table(s18_m_5)
+
+s18_p_intake  <- as.data.table(s18_p_intake)
+s18_p_post    <- as.data.table(s18_p_post)
+
+
+#creating intake emails for mentees & Parents
+
+S18_intake <- read_csv("T:/Research folders/CCWTG/Analyses/NEIL/S18 Intake Master Tracking.csv")
+
+S18_intake <- S18_intake %>% 
+  select(MENTEE_ID, guardian_name, mentee_name, mentor_name ="Final_assigned_mentor") %>% 
+  arrange(mentor_name)
+
+acns <- read_csv("T:/Research folders/CCWTG/Data/Spring2018/S18 Staff_and_ACNS.csv")
+
+acns <- acns %>% 
+  select(mentor_name = "Name", RecipientEmail = "Email") %>% 
+  arrange(mentor_name)
+
+my_match <- S18_intake %>% 
+  left_join(acns, by = "mentor_name") %>% 
+  arrange(MENTEE_ID)
+
+s18_y_0 <- s18_y_0 %>% 
+  arrange(MENTEE_ID) %>% 
+  select(-RecipientEmail) %>% 
+  left_join(my_match, by = "MENTEE_ID") %>% 
+  arrange(RecipientEmail)
+
+
+#Merge data frames
+y <-        s18_y_0 %>% 
+  full_join(s18_y_1, by = "RecipientEmail") %>% 
+  full_join(s18_y_2, by = "RecipientEmail") %>% 
+  full_join(s18_y_3, by = "RecipientEmail") %>% 
+  full_join(s18_y_4, by = "RecipientEmail") %>% 
+  full_join(s18_y_5, by = "RecipientEmail")
+
+m <-        s18_m_0 %>% 
+  full_join(s18_m_1, by = "RecipientEmail") %>% 
+  full_join(s18_m_2, by = "RecipientEmail") %>% 
+  full_join(s18_m_3, by = "RecipientEmail") %>% 
+  full_join(s18_m_4, by = "RecipientEmail") %>% 
+  full_join(s18_m_5, by = "RecipientEmail")
+
+s18_p_intake  <- s18_p_intake %>% arrange(MENTEE_ID) %>% select(-RecipientEmail)
+s18_p_post    <- s18_p_post   %>% arrange(MENTEE_ID) %>% select(-RecipientEmail)
+
+p <-        s18_p_intake %>% 
+  full_join(s18_p_post, by = "MENTEE_ID")
+
+
+S18 <- full_join(y, m, by = "RecipientEmail") %>% 
+  arrange(MENTEE_ID) %>% 
+  full_join(p, by = "MENTEE_ID") %>% 
+  mutate(Final_ID = RecipientEmail) %>% 
+  arrange(Final_ID)
+
+
+#create mentee_eth variable
+
+#SAS algorhythm
+#kethtotal=sum (of k0race_1-k0race_7);
+#if kethtotal ge 1 then do;
+#if k0race_6=1 and kethtotal=1 then mentee_eth=6;
+#else if k0race_5=1 and kethtotal=1 then mentee_eth=5;
+#else if k0race_4=1 and kethtotal=1 then mentee_eth=4;
+#else if k0race_4=1 and k0race_6=1 and kethtotal=2 then mentee_eth=4;
+#else if k0race_3=1 and kethtotal=1 then mentee_eth=3;
+#else if k0race_2=1 and kethtotal=1 then mentee_eth=2;
+#else if k0race_1=1 and kethtotal=1 then mentee_eth=1;
+#else if sum(of k0race_1-k0race_6) gt 1 then mentee_eth=7;
+#end;
+
+#/*new variable - eth
+#1=american indian
+#2=asian
+#3=black
+#4=hispanic
+#5=hawaiian
+#6=white
+#7=mixed*/
+
+S18 <- S18 %>% 
+  mutate(
+        k0race_1 = ifelse(is.na(k0race_1), 0, k0race_1), 
+         k0race_2 = ifelse(is.na(k0race_2), 0, k0race_2), 
+         k0race_3 = ifelse(is.na(k0race_3), 0, k0race_3), 
+         k0race_4 = ifelse(is.na(k0race_4), 0, k0race_4), 
+         k0race_5 = ifelse(is.na(k0race_5), 0, k0race_5), 
+         k0race_6 = ifelse(is.na(k0race_6), 0, k0race_6), 
+         k0race_7 = ifelse(is.na(k0race_7), 0, k0race_7),
+         
+         p0race_1 = ifelse(is.na(p0race_1), 0, p0race_1), 
+         p0race_2 = ifelse(is.na(p0race_2), 0, p0race_2), 
+         p0race_3 = ifelse(is.na(p0race_3), 0, p0race_3), 
+         p0race_4 = ifelse(is.na(p0race_4), 0, p0race_4), 
+         p0race_5 = ifelse(is.na(p0race_5), 0, p0race_5), 
+         p0race_6 = ifelse(is.na(p0race_6), 0, p0race_6), 
+         p0race_7 = ifelse(is.na(p0race_7), 0, p0race_7)
+         )%>% 
+rowwise() %>% 
+    mutate(
+        kethtotal = sum(k0race_1, k0race_2, k0race_3, k0race_4, k0race_5, k0race_6, k0race_7, na.rm = TRUE),
+         mentee_eth = ifelse((k0race_1 == 1 & kethtotal == 1), 1, NA),
+         mentee_eth = ifelse((k0race_2 == 1 & kethtotal == 1), 2, mentee_eth),
+         mentee_eth = ifelse((k0race_3 == 1 & kethtotal == 1), 3, mentee_eth),
+         mentee_eth = ifelse((k0race_4 == 1 & kethtotal == 1), 4, mentee_eth),
+         mentee_eth = ifelse((k0race_5 == 1 & kethtotal == 1), 5, mentee_eth),
+         mentee_eth = ifelse((k0race_6 == 1 & kethtotal == 1), 6, mentee_eth),
+         mentee_eth = ifelse(sum(k0race_1, k0race_2, k0race_3, k0race_4, k0race_5, k0race_6, k0race_7, na.rm = TRUE) > 1, 7, mentee_eth),
+         mentee_eth = ifelse((k0race_4 == 1 & k0race_6 == 1 & kethtotal == 2), 4, mentee_eth),
+         
+        pethtotal = sum(p0race_1, p0race_2, p0race_3, p0race_4, p0race_5, p0race_6, p0race_7, na.rm = TRUE),
+         parent_eth = ifelse((p0race_1 == 1 & pethtotal == 1), 1, NA),
+         parent_eth = ifelse((p0race_2 == 1 & pethtotal == 1), 2, parent_eth),
+         parent_eth = ifelse((p0race_3 == 1 & pethtotal == 1), 3, parent_eth),
+         parent_eth = ifelse((p0race_4 == 1 & pethtotal == 1), 4, parent_eth),
+         parent_eth = ifelse((p0race_5 == 1 & pethtotal == 1), 5, parent_eth),
+         parent_eth = ifelse((p0race_6 == 1 & pethtotal == 1), 6, parent_eth),
+        parent_eth = ifelse(sum(p0race_1, p0race_2, p0race_3, p0race_4, p0race_5, p0race_6, p0race_7, na.rm = TRUE) > 1, 7, parent_eth),
+         parent_eth = ifelse((p0race_4 == 1 & p0race_6 == 1 & pethtotal == 2), 4, parent_eth),
+        
+        mentee_eth = ifelse(is.na(mentee_eth), parent_eth, mentee_eth),
+        pmentee_eth = NA,
+      
+      mentee_male.x = ifelse(m0gender == 2, 0, m0gender), 
+      mentee_male.x = ifelse(m0gender == 3, -1, mentee_male.x),
+      
+      kage1 = (2018 - k0byear)
+         ) %>% 
+  ungroup()
+
+ALLDATA <- ALLDATA %>% 
+  mutate(mentee_male.x = mentee_male)
+
+
+these_variables <- intersect(names(ALLDATA), names(S18))
+
+
+
+#Clean Environment
+rm(s18_y_0)   
+rm(s18_y_1)   
+rm(s18_y_2)   
+rm(s18_y_3)   
+rm(s18_y_4)   
+rm(s18_y_5)   
+     
+rm(s18_m_0)   
+rm(s18_m_1)   
+rm(s18_m_2)   
+rm(s18_m_3)   
+rm(s18_m_4)   
+rm(s18_m_5)   
+
+rm(s18_p_intake)
+rm(s18_p_post)   
+
+
+
+
+
+```
+
+##Table of requested objectives
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+#Overview of Constructs Assessed at each Survey
+
+
+varlist <- read.csv("T:/Research folders/CCWTG/Analyses/NEIL/TGYS/objectives.csv", header = TRUE) 
+
+set.alignment('left', row.names = 'right')
+
+#constructs$Scale <- NULL
+row.names(varlist) <- NULL
+
+#pander(varlist, split.cells = 75)
+varlist
+```
+
+#Objective 1
+##1.1: 
+###Youth Enrollment
+```{r,message = FALSE}
+
+
+started <- master %>% 
+  filter(is.na(no_start),
+         semester == "F17") #Need to unhashtag this out for F17 semester
+
+  summarize(started, Youth_Enrolled = n()) 
+
+
+```
+
+##1.2:
+###Intake Assessment w/ atleast 1 parent or guardian
+```{r}
+
+started <- started %>% 
+  filter(semester == "F17") %>% 
+  arrange(Final_ID)
+
+ALLDATA <- ALLDATA %>% 
+  filter(semester == "F17") %>% 
+  arrange(Final_ID) %>% 
+  mutate(K_intake = ifelse(is.na(k0start), 0,1),
+         P_intake = ifelse(is.na(p0start), 0,1),
+         B_intake = ifelse(P_intake == 1 & K_intake == 1, 1,0))
+
+started_all <- left_join(started, ALLDATA, by = "Final_ID")
+#started_all <- mutate(started_all, mentee_male.x = mentee_male)
+
+summarize(started_all, parent = mean(P_intake), kid = mean(K_intake), Both = (mean(B_intake)))
+
+```
+###Program Completion
+```{r}
+
+complete <- master %>% 
+  filter(is.na(no_start)) %>%
+  filter(semester == "F17") %>% 
+  mutate(complete = ifelse(is.na(date_dropped), 1, 0))
+
+summarize(complete, program_completion = mean(complete))
+
+
+```
+###participants referred to individual/family therapy appointment(??)
+```{r}
+
+#Mackenzie gets this info
+
+
+```
+###participants completed a pre- & post test assessment (K,P, & M)
+```{r}
+
+pre_post <- started_all %>% 
+  mutate(prepost_m = ifelse((is.na(m0end) | is.na(m5end)), 0, 1),
+         prepost_k = ifelse((is.na(k0end) | is.na(k5end)), 0, 1), 
+         prepost_p = ifelse((is.na(p0end) | is.na(p1end)), 0, 1))
+
+summarize(pre_post, mentor_prepost = mean(prepost_m), kid_prepost = mean(prepost_k), parent_prepost = mean(prepost_p))
+
+
+```
+
+##1.3:
+###Youth paired with a mentor
+```{r}
+paired <- master %>% 
+  filter(type == "pair") 
+
+summarize(paired, number_paired_w_mentor = n()) 
+```
+
+#Bind S18 & all data (Just F17 & S18 for final report)
+```{r}
+ALLDATA <- select(ALLDATA, one_of(these_variables)) 
+S18     <- select(S18,     one_of(these_variables)) 
+
+ALLDATA <- rbind(ALLDATA, S18)
+
+started_all <- select(started_all, one_of(these_variables))
+started_all <- rbind(started_all, S18)
+
+```
+
+
+##1.4:
+###Youth reporting a positive relationship with mentor
+```{r}
+
+ALLDATA$k5mas_3R <-  6-ALLDATA$k5mas_3
+ALLDATA$k5mas_6R <-  6-ALLDATA$k5mas_6
+ALLDATA$k5mas_9R <-  6-ALLDATA$k5mas_9
+ALLDATA$k5mas_12R <- 6-ALLDATA$k5mas_12
+ALLDATA$k5mas_13R <- 6-ALLDATA$k5mas_13
+ALLDATA$k5mas_14R <- 6-ALLDATA$k5mas_14
+ALLDATA$k5mas_15R <- 6-ALLDATA$k5mas_15
+ALLDATA$k5mas_16R <- 6-ALLDATA$k5mas_16
+
+
+
+men_rel <- ALLDATA %>% 
+  #filter(!(is.na(k5start))) %>% 
+  select(Final_ID, k5mas_1, k5mas_2, k5mas_3R, k5mas_4, k5mas_5, k5mas_6R, k5mas_7,
+k5mas_8, k5mas_9R, k5mas_10, k5mas_11, k5mas_12R, k5mas_13R, k5mas_14R, k5mas_15R, k5mas_16R) %>% 
+  rowwise() %>% 
+  mutate(men_rel = mean(
+                      k5mas_1 ,
+                      k5mas_2 ,
+                      k5mas_3R ,
+                      k5mas_4 ,
+                      k5mas_5 ,
+                      k5mas_6R ,
+                      k5mas_7,
+                      k5mas_8,
+                      k5mas_9R, 
+                      k5mas_10 ,
+                      k5mas_11 ,
+                      k5mas_12R ,
+                      k5mas_13R,
+                      k5mas_14R ,
+                      k5mas_15R ,
+                      k5mas_16R, 
+                      trim = 0,
+                        na.rm = TRUE),
+         men_rel_di = ifelse(men_rel > 2.5, 1,0)) %>% 
+  ungroup()
+
+summarise(men_rel, men_rel = mean(men_rel_di, na.rm = TRUE))
+
+
+```
+###Youth reporting a sense of belonging (?? How do we define belonging?)
+```{r}
+
+belong <- ALLDATA %>% 
+ # filter(!(is.na(k5start))) %>% 
+  select(Final_ID, k5blng_1, k5blng_2, k5blng_3, k5blng_4,k5blng_5) %>% 
+  rowwise() %>% 
+  mutate(belong = mean(k5blng_1, k5blng_2, k5blng_3, k5blng_4, k5blng_5, na.rm = TRUE)) %>% 
+  filter(!(is.na(belong))) %>% 
+  mutate(belong_di = ifelse(belong > 5, 1, 0),
+         belong_di = ifelse(is.na(belong), NA, belong_di)) %>% 
+  ungroup()
+
+summarize(belong, belong = mean(belong_di))
+
+
+```
+###Youth reporting the presence of program quality indicators (FROM YAPS)
+```{r}
+
+yaps <- started_all %>% 
+  select(Final_ID, k4nyaps_1:k4nyaps_40) %>% 
+  mutate(k4nyaps_22R = 6 - k4nyaps_22,
+         k4nyaps_26R = 6 - k4nyaps_26) %>%
+  rowwise() %>% 
+  mutate(safety = mean(k4nyaps_32, k4nyaps_39, na.rm = TRUE),
+         yaps_1 = ifelse(safety > 2.5, 1,0),
+         apstruc = mean(k4nyaps_1,k4nyaps_2,k4nyaps_4,k4nyaps_6,k4nyaps_7,k4nyaps_8, na.rm = TRUE),
+         yaps_2 = ifelse(apstruc > 2.5, 1, 0),
+         supr = mean(k4nyaps_3,k4nyaps_5,k4nyaps_9,k4nyaps_25,k4nyaps_34,k4nyaps_40, na.rm = TRUE),
+         yaps_3 = ifelse(supr > 2.5, 1, 0),
+         oppbel = mean(k4nyaps_10, k4nyaps_11, k4nyaps_12, na.rm = TRUE, trim = 0),
+         yaps_4 = ifelse(oppbel > 2.5, 1, 0),
+         possc = mean(k4nyaps_16, k4nyaps_18, k4nyaps_21, na.rm = TRUE),
+         yaps_5 = ifelse(possc > 2.5, 1, 0),
+        supsemat = mean(k4nyaps_22R, k4nyaps_23, k4nyaps_24, k4nyaps_26R, k4nyaps_27, k4nyaps_31, k4nyaps_38, na.rm = TRUE),
+        yaps_6 = ifelse(supsemat > 2.5, 1, 0),
+        oppskill = mean(k4nyaps_17, k4nyaps_19, k4nyaps_20, k4nyaps_29, k4nyaps_33, k4nyaps_37, na.rm = TRUE),
+        yaps_7 = ifelse(oppskill > 2.5, 1, 0),
+        inegr = mean(k4nyaps_13, k4nyaps_14, k4nyaps_15, na.rm = TRUE),
+        yaps_8 = ifelse(inegr > 2.5, 1, 0)) %>% 
+  filter((!(is.na(yaps_1))),
+         (!(is.na(yaps_2))),
+          (!(is.na(yaps_3))),
+          (!(is.na(yaps_4))),
+          (!(is.na(yaps_5))),
+          (!(is.na(yaps_6))),
+          (!(is.na(yaps_7))),
+          (!(is.na(yaps_8)))) %>% 
+        mutate(YAPS = ifelse(sum(yaps_1, yaps_2, yaps_3, yaps_4, yaps_5, yaps_6, yaps_7, yaps_8, na.rm = TRUE) >= 3, 1, 0)) %>% 
+    ungroup()
+
+summarize(yaps, Total = n(), YAPS_3_or_more = mean(YAPS))
+```
+###Mentors reporting presence of at least 3 quality indicators (FROM YAPS)
+```{r}
+
+```
+
+
+###Substance abuse at pretest & post test (Of youth that youth that reported pre-substance use)
+```{r}
+
+sub <- started_all %>% 
+  select(Final_ID, k0dlq_4:k0dlq_7, k5dlq_4:k5dlq_7) %>% 
+  filter(k0dlq_4 >= 1 | k0dlq_5 >= 1 | k0dlq_6 >= 1 | k0dlq_7 >= 1) %>% 
+  rowwise() %>% 
+  mutate(k0sub = (k0dlq_4 + k0dlq_5 + k0dlq_6 + k0dlq_7),
+         k5sub = (k5dlq_4 + k5dlq_5 + k5dlq_6 + k5dlq_7)) %>% 
+  filter((!(is.na(k5sub))),
+         (!(is.na(k0sub)))) %>% 
+  mutate(sub_dec = ifelse(k5sub < k0sub, 1,0)) %>% 
+  ungroup()
+
+summarize(sub, Total = n(), substance_decrease = mean(sub_dec))
+
+```
+
+###No use at pre-test vs post test (of you that report NO use at pre-test)
+```{r}
+
+nosub <- started_all %>% 
+  select(Final_ID, k0dlq_4:k0dlq_7, k5dlq_4:k5dlq_7) %>% 
+  filter(k0dlq_4 == 0 & k0dlq_5 == 0 & k0dlq_6 == 0 & k0dlq_7 == 0) %>% 
+  rowwise() %>% 
+  mutate(k0sub = (k0dlq_4 + k0dlq_5 + k0dlq_6 + k0dlq_7),
+         k5sub = (k5dlq_4 + k5dlq_5 + k5dlq_6 + k5dlq_7)) %>% 
+  filter((!(is.na(k5sub))),
+         (!(is.na(k0sub)))) %>% 
+  mutate(no_use_post = ifelse(k5sub > 0, 0,1)) %>% 
+  ungroup()
+
+summarize(nosub, Total = n(), o_post_use = mean(no_use_post))
+
+```
+
+###marijuana use at pre-test vs post test (NO Marijuana attitudes scale)
+```{r}
+
+
+
+```
+
+#Objective 2
+##2.1:
+##2.2:
+##2.3:
+##2.4:
+###Attendance pre-test vs post-test (of youth who report pre-test)
+```{r}
+
+##Create Data set of those that have commited violent & property crimes
+crime <- started_all %>% 
+  select(Final_ID, k0dlq_1:k0dlq_2, k0dlq_3, k5dlq_1:k5dlq_10, k1bhvscl_1:k1bhvscl_10, k5bhvscl_1:k5bhvscl_10) %>%
+  filter(k0dlq_1 > 0 | k0dlq_2 > 0 | k0dlq_3 > 0)
+
+
+
+atten <- crime %>% 
+  rowwise() %>% 
+  mutate(k1atten = (k1bhvscl_7 + k1bhvscl_8),
+         k5atten = (k5bhvscl_7 + k5bhvscl_8)) %>% 
+  filter((!(is.na(k1atten))),
+         (!(is.na(k5atten)))) %>% 
+  mutate(bet_atten = ifelse(k5atten < k1atten, 1,0)) %>% 
+  ungroup()
+
+summarize(atten,better_attendance = mean(bet_atten))
+
+```
+
+###Property crime pre-test vs post test (of youth who report pre-test)
+```{r}
+
+prop <- crime %>% 
+  mutate(k0prdam = (k0dlq_1 + k0dlq_2),
+         k5prdam = (k5dlq_1 + k5dlq_2)) %>% 
+    filter((!(is.na(k0prdam))),
+         (!(is.na(k5prdam)))) %>% 
+  mutate(prop_decrease = ifelse(k5prdam < k0prdam, 1,0))
+
+summarize(prop, Total = n(), prop_dam_decrease = mean(prop_decrease))
+
+
+
+
+```
+
+
+###Violence pretest vs post test (of youth who report pre-test)
+```{r}
+
+violent <- crime %>% 
+  filter((!(is.na(k0dlq_3))),
+        (!(is.na(k5dlq_3)))) %>% 
+  mutate(violence_decrease = ifelse(k5dlq_3 < k0dlq_3, 1, 0))
+
+summarize(violent, Total = n(), violence_decrease = mean(violence_decrease))
+
+
+```
+
+
+###behavior abstainment pre test vs post test (of you who do NOT report pre-test)
+
+```{r}
+
+```
+
+
+#Numbers served Statistics
+```{r}
+
+
+keth_gen <- started_all %>% 
+  select(mentee_eth, mentee_eth, pmentee_eth, kage1, mentee_male.x) %>% 
+  mutate(mentee_eth = ifelse(is.na(mentee_eth), pmentee_eth, mentee_eth),
+    mentee_eth.f = factor(mentee_eth, levels = c(1,2,3,4,5,6,7), labels = c("American Indian", "Asian", "Black", "Hispanic", "Hawaiian", "White", "Mixed")),
+         mentee_male.f = factor(mentee_male.x, levels = c(0,1,-1), labels = c("female", "male", "other"))) %>% 
+  group_by(mentee_male.f) 
+  
+
+summarize(keth_gen, Total = n(), Am_In = sum(mentee_eth == 1, na.rm = TRUE), Asian_Hawaiian = sum((mentee_eth == 2 | mentee_eth == 5), na.rm = TRUE), Black = sum(mentee_eth ==3, na.rm = TRUE), Hispanic = sum(mentee_eth == 4, na.rm = TRUE), White = sum(mentee_eth == 6, na.rm = TRUE), Mixed = sum(mentee_eth == 7, na.rm = TRUE), Missing = sum(is.na(mentee_eth)))
+  
+
+
+
+
+```
