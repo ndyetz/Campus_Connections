@@ -1,0 +1,129 @@
+---
+title: "Examining DESSA"
+subtitle: 'Authors: Thao Trann (and some Neil)'
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+  html_notebook:
+    toc: yes
+    toc_depth: 3
+---
+
+#Introduction
+
+This Document was created on 05/31/2018 By Thao Trann. There have been additions made by Neil Yetz. The goal of this project is to evaluate and factor analyze The Devereux Student Strengths Assessment (DESSA) scale.The researchers hope to understand the internal structure of the DESSA and its corresponding subcomponents. The DESSA scale was administered at Pre-intervention ("time 0"), at the end of the intervention (week 11; to be referred to as "time 1") and at a 6 month follow-up to the interventions ("time 2"). This document was last updated on `r format(Sys.time(), "%B %d, %Y")` at `r format(Sys.time(), "%X")` by `r Sys.info()[7]`.
+
+##Instrument Information
+
+**Instrument Citation**
+
+LeBuffe, P. A., Shapiro, V. B., & Naglieri, J. A. (2009, 2014). The Devereux Student Strengths Assessment (DESSA). Charlotte, NC: Apperson.
+
+**Description of Instrument**
+
+The DESSA is composed of seven subscales: Decision Making, Goal-Directed Behavior, Optimistic Thinking, Personal Responsibility, Relationship Skills, Self Awareness, and Self Management. The instrument is available at intake (p0), at the end of CC (p1), and at the six month follow-up (p2).
+
+
+#Load libraries
+```{r, message=FALSE}
+
+#Clear Environment
+rm(list=ls(all=TRUE)) 
+
+library(tidyverse)
+library(psych)
+library(lavaan)
+library(semTools)
+library(GPArotation)
+```
+
+#Read in data
+```{r, message = FALSE}
+data <- read_csv("PARENTSURVEY.csv")
+#dataF15 <- data[1:127,] 
+
+dataF15 <- data %>% 
+  filter(semester == "F15")
+
+```
+
+#Select relevant variables
+```{r}
+
+#Pre-intervention
+dessa.time0 <- dataF15 %>%
+  select(p0dessa_1:p0dessa_76) %>% 
+  na.omit()
+
+#End of intervention
+dessa.time1 <- dataF15 %>% 
+  select(p1dessa_1:p1dessa_76) %>% 
+  na.omit()
+
+#6 months post-intervention
+dessa.time2 <- dataF15 %>%
+  select(p2dessa_1:p2dessa_76) %>% 
+  na.omit()
+```
+
+#Conduct Factor Analysis to re-test the DESSA structure
+DESSA was designed as a multidimension scale with 7 subscales: Decision Making, Goal-Directed Behavior, Optimistic Thinking, Personal Responsibility, Relationship Skills, Self Awareness, and Self Management. We will fit a CFA model with 7 factors and examine the fit statistics of this model.
+
+##CFA with 7 factors (using dessa pre-intervention)
+```{r}
+model.7f <- 'f1 =~ NA*p0dessa_57 + p0dessa_58 + p0dessa_36 + p0dessa_41 + p0dessa_71 + p0dessa_48 + p0dessa_49 + p0dessa_73
+  f2 =~ NA*p0dessa_17 + p0dessa_20 + p0dessa_6 + p0dessa_22 + p0dessa_7 + p0dessa_9 + p0dessa_23 + p0dessa_13 + p0dessa_30 + p0dessa_55
+  f3 =~ NA*p0dessa_1 + p0dessa_18 + p0dessa_5 + p0dessa_8 + p0dessa_15 + p0dessa_33 + p0dessa_19
+  f4 =~ NA*p0dessa_16 + p0dessa_2 + p0dessa_3 + p0dessa_10 + p0dessa_26 + p0dessa_27 + p0dessa_12 + p0dessa_14 + p0dessa_56 + p0dessa_53
+  f5 =~ NA*p0dessa_34 + p0dessa_35 + p0dessa_61 + p0dessa_62 + p0dessa_69 + p0dessa_40 + p0dessa_66 + p0dessa_47 + p0dessa_50 + p0dessa_74
+  f6 =~ NA*p0dessa_59 + p0dessa_63 + p0dessa_67 + p0dessa_44 + p0dessa_68 + p0dessa_46 + p0dessa_70
+  f7 =~ NA*p0dessa_31 + p0dessa_60 + p0dessa_37 + p0dessa_38 + p0dessa_39 + p0dessa_64 + p0dessa_65	+ p0dessa_42 + p0dessa_43 + p0dessa_45 + p0dessa_72 + p0dessa_51
+  f1 ~~ 1*f1
+  f2 ~~ 1*f2
+  f3 ~~ 1*f3
+  f4 ~~ 1*f4
+  f5 ~~ 1*f5
+  f6 ~~ 1*f6
+  f7 ~~ 1*f7'
+	fit.model.7f <- cfa(model.7f, dessa.time0)
+summary(fit.model.7f, fit.measures = TRUE, standardized = TRUE)
+resid(fit.model.7f, type ="cor")
+reliability(fit.model.7f)
+```
+
+```{r}
+alpha(dessa.time0)
+omega(dessa.time0, 7)
+```
+
+##EFA with 7 factors (using dessa pre-intervention)
+```{r}
+fa(dessa.time0, nfactors = 7, fm = "ml", rotate = "geominQ")
+```
+
+try to simulate a random matrix with equal size => run EFA on this.
+
+
+##Scree Plot for Dessa at time 0
+```{r}
+
+set.seed(Sys.time())
+scree_0 = fa.parallel(dessa.time0,
+ fm = 'ml',
+ fa = 'fa',
+ n.iter = 200,
+ main = "Scree plot for DESSA at pre-intervention : All items",
+ SMC = TRUE)
+
+
+```
+
+###EFA: Recommended solution. All items
+```{r}
+ ##EFA with number of factors as recommended by simulation (using dessa pre-intervention) -Neil
+fa(dessa.time0, nfactors = scree_0$nfact, fm = "ml", rotate = "geominQ")
+```
+
+
+
