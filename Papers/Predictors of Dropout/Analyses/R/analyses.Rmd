@@ -26,6 +26,8 @@ rm(list = ls(all.names = TRUE))
 #install.packages("xtable")
 #install.packages("kableExtra")
 #install.packages("semPlot")
+#install.packages("minqa")
+
 
 library(tidyverse)
 library(lavaan)
@@ -33,11 +35,12 @@ library(GGally)
 library(xtable)
 library("kableExtra")
 library(knitr)
-library(semPlot)
+#library(semPlot)
 library(knitr)
 library(gridExtra)
 library(reshape)
 library(pander)
+library(modelr)
 ```
 
 #Set Kim's Reliability Function
@@ -450,10 +453,28 @@ summary(fit2, fit.measures =TRUE)
 ##Diagrams
 ##Model 1
 ```{r, fig.width= 20, fig.height= 20}
-
-semPaths(fit, "std", title = FALSE, curvePivot = TRUE)
+#semPaths(fit, "std", title = FALSE, curvePivot = TRUE)
 ```
 ##Model 2
 ```{r, fig.width= 20, fig.height= 20}
-semPaths(fit2, "std", title = FALSE, curvePivot = TRUE)
+#semPaths(fit2, "std", title = FALSE, curvePivot = TRUE)
 ```
+
+```{r}
+glimpse(drop)
+```
+
+#set up data for logistic regression
+```{r}
+
+logreg0 <- glm(start_drop ~ Env_ri + In_Ri, data = drop, family=binomial("logit"))
+summary(logreg0)
+
+```
+
+
+```{r}
+logreg0 <- glm(start_drop ~ Env_ri + In_Ri + male + age, data = drop, family=binomial("logit"))
+summary(logreg0)
+```
+
