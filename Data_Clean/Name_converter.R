@@ -55,9 +55,9 @@ ID2$last <- paste0(ID2$last, ".")
 
 #combine last, and first initial add quotes
 ID2$name <- paste(ID2$first, ID2$last)
-ID2$name <- paste0("'", ID2$name, "'")
 
-ID2$mentor_name <- paste0("'", ID2$mentor_name, "'")
+ID2$name <- paste0("\"",ID2$name,"\"")
+ID2$mentor <- paste0("\"",ID2$mentor,"\"")
 
 
 
@@ -119,9 +119,9 @@ ID2$last <- paste0(ID2$last, ".")
 #combine last, and first initial add quotes
 ID2$name <- paste(ID2$first, ID2$last)
 ID2$name <- trimws(ID2$name) #removes leading white space
-ID2$name <- paste0("'",ID2$name,"'")
 
-ID2$mentee_name <- paste0("'",ID2$mentee_name,"'")
+ID2$name <- paste0("\"",ID2$name,"\"")
+ID2$mentee_name <- paste0("\"",ID2$mentee_name,"\"")
 
 
 #select only necessary Variables
