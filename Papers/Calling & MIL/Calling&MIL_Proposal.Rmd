@@ -141,11 +141,11 @@ Broadly speaking, a “calling” refers to a person’s belief that she or he i
 - 1.) To what extent is calling toward mentorship change by particpating in CC? 
 - 2.) What engenders a higher calling towards mentorship? 
 -- i.e. Is mentor alliance predictive of calling toward mentorship post CC program?
-- 3.) What mentor Traits are more likely to cause a mentee to enjoy the program?
+- 3.) What mentor Traits are more likely to cause a mentee to enjoy the program? -- directly associated woith calling. 
 - 4.) What Characteristics of a mentees would influence a mentor's calling to be a mentor outcome? 
 - 5.) What mentor factors are protective against a bad mentee relationship? 
 -- i.e. do mentors with a better sense of calling to be a mentor have mentees that enjoy the program more? 
-- 6.) What characteristics are likely ti be protective toward their sense of calling? 
+- 6.) What characteristics are likely to be protective toward their sense of calling? 
 - 7.) Does time 2 calling predict returning as a mentor next semester? 
 
 ## Questions About Meaning in Life
@@ -153,6 +153,28 @@ Broadly speaking, a “calling” refers to a person’s belief that she or he i
 - 1.) Does Campus Connections increase meaning in life from time 1 to time 2?
 
 
+#Descriptives
+```{r}
+library(tidyverse)
+
+youth <- read_csv("Data.csv")
+```
+
+```{r}
+
+youth %>% 
+  mutate(age = 2018 - k0byear,
+         male = ifelse(k0gender == "boy", 1, 0)) %>% 
+  summarize(n = n(),
+            avg_age = mean(age, na.rm = TRUE),
+            perc_male = mean(male, na.rm = TRUE))
+
+```
+
+#Second meeting with Dylan 08/07/18
+
+Help to create a matching process by incorporating calling and risk level of youth.
+Calling is positively weakly associated with life-satisfaction but it is more associated with meaning in life.
 
 
 
