@@ -1,0 +1,92 @@
+---
+title: "Bohemian Notebook"
+output: html_notebook
+---
+
+#Load Library
+```{r}
+
+library(tidyverse)
+
+```
+
+#Load Data
+```{r,message = FALSE}
+mentee <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/MENTEESURVEY.csv")
+master <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/MASTER.csv")
+parent <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/PARENTSURVEY.csv")
+```
+
+
+#Select & Filter variables
+```{r}
+
+y_gen <- master %>% 
+  select(Final_ID, mentee_male, semester) %>% 
+  filter((semester == "S18" | semester == "F17"),
+         !is.na(mentee_male))
+
+
+y_eth <- mentee %>% 
+  select(Final_ID, mentee_eth, pmentee_eth, semester) %>% 
+  filter(semester == "S18" | semester == "F17")
+
+p_income <- parent %>% 
+  select(Final_ID, p0income, semester) %>% 
+  filter(semester == "S18" | semester == "F17")
+
+```
+
+
+#Kid Gender
+
+```{r}
+sum_gen <- y_gen %>% 
+  summarize(per_male = round(mean(mentee_male) * 100),
+            per_female =  round(100 - mean(mentee_male) * 100))
+
+sum_gen
+```
+
+
+#create kid ethnicity summary 
+
+1=American Indian, 2=Asian, 3=Black, 4=Hispanic, 5=Hawaiian, 6=White, 7=Mixed)
+
+```{r}
+
+sum_eth <- y_eth %>% 
+  select(mentee_eth) %>% 
+  group_by(mentee_eth) %>% 
+  summarize(Total = n(), 
+            Am_In = round(sum(mentee_eth == 1, na.rm = TRUE) / nrow(y_eth) * 100) , 
+            Asian_Hawaiian = round(sum((mentee_eth == 2 | mentee_eth == 5), na.rm = TRUE) / nrow(y_eth) * 100),  
+            Black = round(sum(mentee_eth ==3, na.rm = TRUE) / nrow(y_eth) * 100), 
+            Hispanic = round(sum(mentee_eth == 4, na.rm = TRUE) / nrow(y_eth) * 100), 
+            White = round(sum(mentee_eth == 6, na.rm = TRUE) / nrow(y_eth) * 100), 
+            Mixed = round(sum(mentee_eth == 7, na.rm = TRUE) / nrow(y_eth) * 100), 
+            Missing = round(sum(is.na(mentee_eth)) / nrow(y_eth) * 100))
+  
+
+sum_eth
+
+```
+
+
+#report under 250% poverty line
+
+2018 250% poverty level for family of 4 in 2018 = $62,750
+
+p0income -> What is your total household income? (Less than `$`20,000=1, `$`20,000 to `$`39,999=2, `$`40,000 to `$`59,999=3, `$`60,000 to `$`79,999=4, `$`80,000 to `$`99,999=5, `$`100,000 or more=6)
+```{r}
+
+sum_income <- p_income %>% 
+  summarize(less_250 = round(sum(p0income <= 4, na.rm = TRUE) / nrow(p_income) *100))
+  
+sum_income
+
+```
+
+
+
+CC enrolls any youth who is considered at risk of not being able to fulfill their potential. Youth are referred from the juvenile justice system (13%), school personnel (41%), social service agencies (26%), and family (16%). Both male (`r paste0(sum_gen$per_male, "%")`) and female (`r paste0(sum_gen$per_female, "%")`) mentees participate in CC. They identify as white (`r paste0(sum_eth$White[5], "%")`), African American (`r paste0(sum_eth$Black[3], "%")`), Native American (`r paste0(sum_eth$Am_In[1], "%")`), Asian / Pacific Islander (`r paste0(sum_eth$Asian_Hawaiian[2], "%")`), Mixed Race (`r paste0(sum_eth$Mixed[6], "%")`), and other (<1%). About `r paste0(sum_eth$Hispanic[4], "%")` of the mentees reported a Hispanic ethnicity. About `r paste0(sum_income$less_250, "%")` of the youth served are below 250% of the poverty level. Many youth participants are food insecure, suffer from abuse or neglect, battle with mental health and addiction issues, and/or live in unstable housing or are homeless. The youth are frequently truant and typically have a D average. Almost 60% of youth have a criminal charge; 25% have substance abuse issues; 38% have behavioral or mental health issues; 41% have been assaultive; and the majority are experiencing academic difficulties. 
