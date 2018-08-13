@@ -148,7 +148,44 @@ if 		Night='Wednesday'	& Semester = 'S17'	then do;
 if 		Night='Thursday' 	& Semester = 'S17'	then do; 
 	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=1; end;
 
+
+/*F17*/
+if 		Night='Monday' 		& Semester = 'F17'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=1; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end; 
+
+if 		Night='Tuesday' 	& Semester = 'F17'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=1; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
+
+if 		Night='Wednesday'	& Semester = 'F17'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=1; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
+
+if 		Night='Thursday' 	& Semester = 'F17'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=1; d20=0; d21=0;  d22=0; d23=0;end;
+
+
+/*S18*/
+if 		Night='Monday' 		& Semester = 'S18'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=1; d21=0;  d22=0; d23=0;end; 
+
+if 		Night='Tuesday' 	& Semester = 'S18'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=1;  d22=0; d23=0;end;
+
+if 		Night='Wednesday'	& Semester = 'S18'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=1; d23=0;end;
+
+if 		Night='Thursday' 	& Semester = 'S18'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=1;end;
 Run;
+
+
 
 /*Dummy coding ethnicity variables*/
 /*compact and dummy code ethnicity
@@ -189,58 +226,109 @@ RUN;
 data No_start; set No_start;
 /*F15*/
 if 		Night='Monday' 		& Semester = 'F15'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; 
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0; end; 
 
 if 		Night='Tuesday' 	& Semester = 'F15'	then do; 
-	d1=1; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end;
+	d1=1; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0; end;
 
 if 		Night='Wednesday'		 & Semester = 'F15'	then do; 
-	d1=0; d2=1; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end;
+	d1=0; d2=1; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; 
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;  end;
 
 if 		Night='Thursday' 	& Semester = 'F15'	then do; 
-	d1=0; d2=0; d3=1; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end;
+	d1=0; d2=0; d3=1; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; 
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;  end;
 
 /*S16*/
 if 		Night='Monday' 		& Semester = 'S16'	then do; 
-	d1=0; d2=0; d3=0; d4=1; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end; 
+	d1=0; d2=0; d3=0; d4=1; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; 
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0; end; 
 
 if 		Night='Tuesday' 	& Semester = 'S16'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=1; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end;
+	d1=0; d2=0; d3=0; d4=0; d5=1; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
 
 if 		Night='Wednesday'	& Semester = 'S16'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=1;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end;
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=1;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
 
 if 		Night='Thursday' 	& Semester = 'S16'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=1; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end;
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=1; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
 
 
 /*F16*/
 if 		Night='Monday' 		& Semester = 'F16'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=1; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=1; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end; 
 
 if 		Night='Tuesday' 	& Semester = 'F16'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=1; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0; end;
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=1; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
 
 if 		Night='Wednesday'	& Semester = 'F16'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=1; d11=0; d12=0; d13=0; d14=0; d15=0; end;
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=1; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
 
 if 		Night='Thursday' 	& Semester = 'F16'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=1; d12=0; d13=0; d14=0; d15=0; end;
-
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=1; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
 
 
 /*S17*/
 if 		Night='Monday' 		& Semester = 'S17'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=1; d13=0; d14=0; d15=0; end; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=1; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end; 
 
 if 		Night='Tuesday' 	& Semester = 'S17'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=1; d14=0; d15=0; end;
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=1; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
 
 if 		Night='Wednesday'	& Semester = 'S17'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=1; d15=0; end;
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=1; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
 
 if 		Night='Thursday' 	& Semester = 'S17'	then do; 
-	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=1; end;
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=1;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
+
+
+/*F17*/
+if 		Night='Monday' 		& Semester = 'F17'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=1; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end; 
+
+if 		Night='Tuesday' 	& Semester = 'F17'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=1; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
+
+if 		Night='Wednesday'	& Semester = 'F17'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=1; d19=0; d20=0; d21=0;  d22=0; d23=0;end;
+
+if 		Night='Thursday' 	& Semester = 'F17'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=1; d20=0; d21=0;  d22=0; d23=0;end;
+
+
+/*S18*/
+if 		Night='Monday' 		& Semester = 'S18'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=1; d21=0;  d22=0; d23=0;end; 
+
+if 		Night='Tuesday' 	& Semester = 'S18'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=1;  d22=0; d23=0;end;
+
+if 		Night='Wednesday'	& Semester = 'S18'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=1; d23=0;end;
+
+if 		Night='Thursday' 	& Semester = 'S18'	then do; 
+	d1=0; d2=0; d3=0; d4=0; d5=0; d6=0;	d7=0; d8=0; d9=0; d10=0; d11=0; d12=0; d13=0; d14=0; d15=0;
+	d16=0; d17=0; d18=0; d19=0; d20=0; d21=0;  d22=0; d23=1;end;
 run; 
 
 
@@ -306,7 +394,7 @@ run;
 
 /*Start program but drop RISK*/
 proc logistic descending data = this_data;
-	model start_drop = RISK mentee_male kage1 p0income mentee_eth room d1 - d15;
+	model start_drop = RISK mentee_male kage1 p0income mentee_eth room d1 - d23;
 RUN;
 
 
@@ -329,7 +417,7 @@ RUN;
 /*No_start program*/
 
 proc logistic descending data = No_start;
-	model No_start = RISK mentee_male kage1 p0income e1 e2 room d1 - d15;
+	model No_start = RISK mentee_male kage1 p0income e1 e2 room d1 - d23;
 RUN;
 
 
@@ -337,7 +425,7 @@ RUN;
 /*Understanding increase effect*/
 
 proc logistic descending data = this_data;
-	model start_drop = RISK mentee_male kage1 p0income e1 e2 room d1 - d15 / scale=n aggregate lackfit;
+	model start_drop = RISK mentee_male kage1 p0income e1 e2 room d1 - d23 / scale=n aggregate lackfit;
 	output out=pdat p=pihat;
 	contrast '2 pt increase RISK' RISK 2/estimate=exp;
 RUN;
@@ -529,13 +617,25 @@ DATA This_data;
 		IF  Night='Wednesday' 	& Semester = 'S17'	then sem_night=15;
 		IF  Night='Thursday' 	& Semester = 'S17'	then sem_night=16;
 
+		IF  Night='Monday' 		& Semester = 'F17'	then sem_night=17; 
+		IF  Night='Tuesday' 	& Semester = 'F17'	then sem_night=18; 
+		IF  Night='Wednesday' 	& Semester = 'F17'	then sem_night=19;
+		IF  Night='Thursday' 	& Semester = 'F17'	then sem_night=20;
+
+		IF  Night='Monday' 		& Semester = 'S18'	then sem_night=21; 
+		IF  Night='Tuesday' 	& Semester = 'S18'	then sem_night=22; 
+		IF  Night='Wednesday' 	& Semester = 'S18'	then sem_night=23;
+		IF  Night='Thursday' 	& Semester = 'S18'	then sem_night=24;
+
+
+
 	RUN;
 
 
  proc glimmix data=this_data;
       class sem_night ethnicity;
-      model start_drop = RISK mentee_male kage1 p0income ethnicity room sem_night / solution;
-/*      random intercept;*/
+      model start_drop = RISK mentee_male kage1 ethnicity room sem_night / solution;
+     random intercept;
    run;
 
 proc sort data = this_data;
@@ -554,7 +654,7 @@ Pages_FitHeight = '100' );
 
  proc glimmix data=this_data;
       class sem_night ethnicity;
-      model start_drop (order = freq ref=first)= RISK mentee_male kage1 p0income ethnicity room sem_night / solution dist=binary oddsratio CL;
+      model start_drop (order = freq ref=first)= RISK mentee_male kage1 ethnicity room sem_night / solution dist=binary oddsratio CL;
 /*      random intercept;*/
    run;
 
