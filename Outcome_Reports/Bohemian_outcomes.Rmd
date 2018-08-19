@@ -15,6 +15,7 @@ library(tidyverse)
 mentee <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/MENTEESURVEY.csv")
 master <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/MASTER.csv")
 parent <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/PARENTSURVEY.csv")
+ALL <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/ALLWIDE.csv")
 ```
 
 
@@ -87,6 +88,76 @@ sum_income
 
 ```
 
-
+#Bohemian Paragraph
 
 CC enrolls any youth who is considered at risk of not being able to fulfill their potential. Youth are referred from the juvenile justice system (13%), school personnel (41%), social service agencies (26%), and family (16%). Both male (`r paste0(sum_gen$per_male, "%")`) and female (`r paste0(sum_gen$per_female, "%")`) mentees participate in CC. They identify as white (`r paste0(sum_eth$White[5], "%")`), African American (`r paste0(sum_eth$Black[3], "%")`), Native American (`r paste0(sum_eth$Am_In[1], "%")`), Asian / Pacific Islander (`r paste0(sum_eth$Asian_Hawaiian[2], "%")`), Mixed Race (`r paste0(sum_eth$Mixed[6], "%")`), and other (<1%). About `r paste0(sum_eth$Hispanic[4], "%")` of the mentees reported a Hispanic ethnicity. About `r paste0(sum_income$less_250, "%")` of the youth served are below 250% of the poverty level. Many youth participants are food insecure, suffer from abuse or neglect, battle with mental health and addiction issues, and/or live in unstable housing or are homeless. The youth are frequently truant and typically have a D average. Almost 60% of youth have a criminal charge; 25% have substance abuse issues; 38% have behavioral or mental health issues; 41% have been assaultive; and the majority are experiencing academic difficulties. 
+
+
+
+#Parent reported youth attendance
+```{r}
+
+parent_att <- parent %>% 
+  select(Final_ID, p0attend, p1attend) %>% 
+  filter(!is.na(p0attend) & !is.na(p1attend),
+         p0attend != 0 & p1attend != 0) %>% 
+  mutate(imp_att = ifelse(p0attend > p1attend, 1, 0))
+
+sum_att <- parent_att %>% 
+  summarize(imp_att = round(mean(imp_att) * 100))
+
+sum_att
+
+
+```
+
+#Youth reporting 0 days missed
+```{r}
+
+y_skip <- mentee %>% 
+  select(Final_ID, k1bhvscl_8) %>% 
+  filter(!is.na(k1bhvscl_8)) %>% 
+  mutate(zero_missed = ifelse(k1bhvscl_8 == 0, 1, 0))
+
+
+sum_skip <-  y_skip %>% 
+  summarize(zero_missed = round(mean(zero_missed) * 100))
+
+sum_skip
+
+
+```
+
+
+#Not sent out of class or school suspensions 
+
+```{r}
+y_misbehave <- mentee %>% 
+  select(Final_ID, k1bhvscl_3,k1bhvscl_4) %>% 
+  filter(!is.na(k1bhvscl_3) & !is.na(k1bhvscl_4)) %>% 
+  mutate(no_misbehave = ifelse(k1bhvscl_3 == 0, 1, 0),
+         no_susp      = ifelse(k1bhvscl_4 == 0, 1, 0))
+
+
+sum_misbehave <- y_misbehave %>% 
+  summarize(no_misbehave = round(mean(no_misbehave)* 100),
+            no_susp      = round(mean(no_susp)* 100)
+            )
+sum_misbehave
+
+```
+
+
+
+
+#Other outcomes
+
+What results have you achieved in the past 2-3 years? Have your outcomes or targets changed? If so, why?
+
+"We have achieved similar results in the past years. Campus Connections continues to retain positive outcomes in regards to the youth it serves. Therefore, there are no changes to the outcome or targets for our outcome goals." 
+
+
+Data was also collected from parents; results indicate that `r paste0(sum_att$imp_att, "%")` parents reported that their child's school attendance improved during CC, and `r paste0(sum_skip$zero_missed, "%")` of youth reported that they did not skip class during the last 30 days of the program. 
+
+Our evaluation also indicates that `r paste0(sum_misbehave$no_misbehave, "%")` of youth reported never being sent out of the classroom or to the office for misbehaving in the last 30 days of the program, and `r paste0(sum_misbehave$no_susp, "%")` of youth reported receiving no school suspensions during this same time frame. 
+
