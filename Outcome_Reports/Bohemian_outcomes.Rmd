@@ -16,6 +16,8 @@ mentee <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/MENTEESURVEY.csv")
 master <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/MASTER.csv")
 parent <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/PARENTSURVEY.csv")
 ALL <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/ALLWIDE.csv")
+master <- read_csv("T:/Research folders/CCWTG/Data/MERGEALL/MASTER.csv")
+
 ```
 
 
@@ -161,3 +163,22 @@ Data was also collected from parents; results indicate that `r paste0(sum_att$im
 
 Our evaluation also indicates that `r paste0(sum_misbehave$no_misbehave, "%")` of youth reported never being sent out of the classroom or to the office for misbehaving in the last 30 days of the program, and `r paste0(sum_misbehave$no_susp, "%")` of youth reported receiving no school suspensions during this same time frame. 
 
+
+#CC completion rate
+% of youth that started and completed program 
+```{r}
+
+
+complete <- master %>% 
+    filter((semester == "S18" | semester == "F17"), (is.na(no_start))) %>% 
+  select(Final_ID, date_dropped) %>% 
+  mutate(dropped = ifelse(is.na(date_dropped), 1, 0)) %>% 
+  summarize(perc_complete = round(mean(dropped, na.rm = TRUE) *100))
+
+complete
+
+
+
+```
+
+The percentage of youth that completed the Campus Connections program is `r paste0(complete$perc_complete, "%")`.
