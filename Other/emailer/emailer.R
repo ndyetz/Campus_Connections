@@ -1,4 +1,4 @@
-#                                 This program was creared on 08.23.18 by Neil Yetz
+#                                 This program was created on 08.23.18 by Neil Yetz
 #                                 The purpose of this program is to send emails to mentors at Campus Connections
 #                                 It automatically detects their names, ID#'s and send emails to the indicated email address.
 #                                 
