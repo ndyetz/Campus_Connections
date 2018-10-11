@@ -1,0 +1,147 @@
+---
+title: "TGYS staff survey measures"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+rm(list=ls()) #clear environment
+
+library(tidyverse)
+library(lattice)
+library(gridExtra)
+library(reshape)
+library(pander)
+library(knitr)
+
+
+panderOptions('table.split.table', Inf)
+#panderOptions('digits', 3)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('keep.line.breaks', TRUE)
+set.alignment('left', row.names = 'right')
+```
+
+
+```{r, echo = FALSE, message = FALSE}
+measures <- read_csv("TGYS_survey.csv")
+
+meas_sel <- measures %>% 
+  select(measure, item, text, scale, response_options)
+
+```
+
+#Measure Count
+```{r, echo = FALSE}
+
+measures %>% 
+  summarize(measures = paste("There are", max(measure), "potential measures in the TGYS staff survey"))
+
+```
+
+
+#Measure 1
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(meas_sel, measure == 1)
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+
+#Measure 2
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(meas_sel, measure == 2)
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+#Measure 3
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(meas_sel, measure == 3)
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+
+#Measure 4
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(meas_sel, measure == 4)
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+#Measure 5
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(meas_sel, measure == 5)
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+
+#Measure 6
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(meas_sel, measure == 6)
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+
+#Measure 7
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(meas_sel, measure == 7)
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+
+#Measure 8
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(meas_sel, measure == 8)
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
