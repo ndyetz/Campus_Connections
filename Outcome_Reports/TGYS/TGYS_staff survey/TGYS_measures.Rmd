@@ -41,9 +41,6 @@ meas_sel <- measures %>%
 ```
 
 
-<center>
-![CC](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/images/302671_CampusConnections-logo.png)
-</center>
 
 #Introduction
 
