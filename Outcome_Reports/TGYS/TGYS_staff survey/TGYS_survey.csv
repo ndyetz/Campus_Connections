@@ -1,4 +1,4 @@
-measure,item,text,level,scale,response_options,notes
+Measure,Item,Text,level,scale,response_options,notes
 1,1,My organization has a designated person who monitors the training of staff,interval,likert,Strongly Disagree; Disagree; Agree; Strongly Agree; Not applicable to our program; Don't Know,
 1,2,Practitioners are trained prior to beginning to deliver this program,interval,likert,Strongly Disagree; Disagree; Agree; Strongly Agree; Not applicable to our program; Don't Know,
 1,3,Practitioner training is provided by one or more persons who are expert in the program,interval,likert,Strongly Disagree; Disagree; Agree; Strongly Agree; Not applicable to our program; Don't Know,

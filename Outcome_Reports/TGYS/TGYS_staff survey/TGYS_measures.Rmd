@@ -1,10 +1,14 @@
 ---
-title: "TGYS staff survey measures"
+title: 'TGYS staff survey measures: Identification and recommendations for Campus
+  Connections'
+author: "Neil Yetz, MPH"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     df_print: paged
-    toc: true
-    toc_float: true
+    toc: yes
+    toc_float: yes
 ---
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
@@ -32,17 +36,22 @@ set.alignment('left', row.names = 'right')
 measures <- read_csv("TGYS_survey.csv")
 
 meas_sel <- measures %>% 
-  select(measure, item, text, scale, response_options)
+  select(Measure, Item, Text, `Response options` = "response_options")
 
 ```
 
-#Measure Count
-```{r, echo = FALSE}
 
-measures %>% 
-  summarize(measures = paste("There are", max(measure), "potential measures in the TGYS staff survey"))
+<center>
+![CC](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/images/302671_CampusConnections-logo.png)
+</center>
 
-```
+#Introduction
+
+This report was created by Neil Yetz, MPH on October 18, 2018 and was last updated on `r format(Sys.time(), "%B %d, %Y")`. The purpose of this report is to identify constructs measured in the staff survey administered by the Tony Grampas Youth Foundation (TGYS) to the Campus Connections (CC) staff. The term "construct" in this report is referring to an identifiable attribute that is being measured by the questions (items) within the survey. There is a total of 8 constructs identified in the TGYS staff survey. The sections below summarize the measure  and proposes a construct that is being measured. Next, a rationale as to why that construct was chosen. Lastly, a recommendation of how to improve the outcomes associated with this measure.
+
+For any questions or concerns relating to this document, please email Neil Yetz at <neil.yetz@colostate.edu>
+
+
 
 
 #Measure 1
@@ -50,12 +59,26 @@ measures %>%
 
 set.alignment('left', row.names = 'right')
 
-vl <- subset(meas_sel, measure == 1)
+vl <- subset(meas_sel, Measure == 1)
 vl$Scale <- NULL
 row.names(vl) <- NULL
 
 pander(vl, split.cells = 75)
 ```
+
+
+##**Proposed construct(s)**: 
+  - 1.	Satisfaction with practitioner training (Items 1-4)
+  - 2.	Evaluation of skills (Items 5-8)
+
+
+##**Rationale**: 
+[Schmidt (2007)]( https://onlinelibrary.wiley.com/doi/pdf/10.1002/hrdq.1216) provides a great review of satisfaction with training.  This characterized by ensuring the training meets the needs and is ready for utilization within an organization. The study also goes on to state that the most preferred method of training was instructor-led training. Interaction with the trainer is much preferred and will increase the satisfaction.
+
+
+##**Recommendations**: 
+Provide *Instructor led* training within CC and follow-up to provide feedback to trainees. 
+
 
 
 #Measure 2
@@ -63,24 +86,45 @@ pander(vl, split.cells = 75)
 
 set.alignment('left', row.names = 'right')
 
-vl <- subset(meas_sel, measure == 2)
+vl <- subset(meas_sel, Measure == 2)
 vl$Scale <- NULL
 row.names(vl) <- NULL
 
 pander(vl, split.cells = 75)
 ```
+
+##**Proposed Construct(s)**: 
+Supervisor coaching Satisfaction/Quality 
+
+##**Rationale**: 
+This appears to be loosely connected with leadership coaching. [Ely et al. (2010)]( https://www.sciencedirect.com/science/article/pii/S1048984310000895) indicates that correct coaching is associated with clients' self-report perceptions of being able to take on effective leadership.
+
+##**Recommendations**: 
+Provide one-on-one support to practitioners in training. Create a formal mentor for practitioners in training and allow for regular scheduled meetings between coach and practitioner.
+
 
 #Measure 3
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 set.alignment('left', row.names = 'right')
 
-vl <- subset(meas_sel, measure == 3)
+vl <- subset(meas_sel, Measure == 3)
 vl$Scale <- NULL
 row.names(vl) <- NULL
 
 pander(vl, split.cells = 75)
 ```
+
+##**Proposed Construct(s)**: 
+- 1.)	Perception of organization structure.
+- 2.)	Transparency of individual evaluation and program performance
+
+##**Rationale**: 
+No similar measures appear in the literature. This measure seems to be associated with active performance reviews and indications of how their work has impacted the outcomes associated with youth and families. 
+
+##**Recommendations**: 
+Provide consistent feedback to practitioners and performance reviews. Bring the staff in on the program outcomes and indicate how their work has made an impact on the youth and families within the community.
+
 
 
 #Measure 4
@@ -88,24 +132,46 @@ pander(vl, split.cells = 75)
 
 set.alignment('left', row.names = 'right')
 
-vl <- subset(meas_sel, measure == 4)
+vl <- subset(meas_sel, Measure == 4)
 vl$Scale <- NULL
 row.names(vl) <- NULL
 
 pander(vl, split.cells = 75)
 ```
+
+
+##**Proposed Construct(s)**: 
+Data quality and confidentiality management. 
+
+##**Rationale**: 
+There is not much on this. However, it seems to be based on the general idea of how evidence-based program development works. The amount evaluation, evidence, and implementation seem to be actively measured in this scale. The most closely related measure found was subsection in [this 1997 article written by Zeitz et al.]( http://journals.sagepub.com/doi/pdf/10.1177/1059601197224002). The measure proposed in this study attends to the idea that staff enjoy an organizational structure that embraces readiness and transparency of improvement. 
+
+##**Recommendations**: 
+Provide staff and practitioners with program outcome reports and indicate how their work has made an impact. Inform them that data collected is formerly secured and adheres to IRB standards. I, Neil, would be happy to inform all staff about the data collection procedures that take place in CC.
+
+
 
 #Measure 5
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 set.alignment('left', row.names = 'right')
 
-vl <- subset(meas_sel, measure == 5)
+vl <- subset(meas_sel, Measure == 5)
 vl$Scale <- NULL
 row.names(vl) <- NULL
 
 pander(vl, split.cells = 75)
 ```
+
+##**Proposed Construct(s)**: 
+Satisfaction with program administrative practices and organization. 
+
+##**Rationale**: 
+No clear existing surveys were provided in our literature search. However, this measure shows clear measurement with organizational and administrative practices displayed in the program. It has a focus on the overall structure and impact of the program. 
+
+##**Recommendations**: 
+Inform all staff of the of the organizations and partnerships that Campus Connections have formed in the past and currently. Provide clear training manuals and invoke a sense of organization and structure within Campus Connections.
+
 
 
 #Measure 6
@@ -113,12 +179,23 @@ pander(vl, split.cells = 75)
 
 set.alignment('left', row.names = 'right')
 
-vl <- subset(meas_sel, measure == 6)
+vl <- subset(meas_sel, Measure == 6)
 vl$Scale <- NULL
 row.names(vl) <- NULL
 
 pander(vl, split.cells = 75)
 ```
+
+
+##**Proposed Construct(s)**: 
+- 1.	Perceived relationship with external partners. 
+- 2.	Indication of clear program values and philosophies
+
+##**Rationale**: 
+No clear existing measure was found in the literature. The items clearly are aimed at understanding the Campus Connections' relationship with community partners. Additionally, items mention the philosophy and values within the program, which are usually indicated clearly in programs that provide clear mission statements. 
+
+##**Recommendations**: 
+Inform staff of all program stakeholders and external funders. Ensure that resources are always available for the program to run effectively. Lastly, Inform staff of the philosophies of the program through a clear and informative mission statement(s).
 
 
 #Measure 7
@@ -126,12 +203,23 @@ pander(vl, split.cells = 75)
 
 set.alignment('left', row.names = 'right')
 
-vl <- subset(meas_sel, measure == 7)
+vl <- subset(meas_sel, Measure == 7)
 vl$Scale <- NULL
 row.names(vl) <- NULL
 
 pander(vl, split.cells = 75)
 ```
+
+
+##**Proposed construct(s)**: 
+Perceived Leader effectiveness/empowerment
+
+##**Rationale**: 
+[Arnold et al. (2000)](https://onlinelibrary.wiley.com/doi/epdf/10.1002/%28SICI%291099-1379%28200005%2921%3A3%3C249%3A%3AAID-JOB10%3E3.0.CO%3B2-%23) provide a similar scale focused on measuring leader behavior called the *Empowerment Leadership Questionnaire* (ELQ). The ELQ is composed of 5-factors that indicate a great leader within an organization: 1.) Coaching, 2.) Informing, 3.) Showing concern/interacting, 4.) Participative decision making & 5.) Leading by example. All of which are components that contribute to being a good leader. 
+
+##**Recommendations**: 
+First, identify leaders at Campus Connections. Next, train and improve their leadership skills based on the 5 leadership factors. Then promote efficacy of leaders and allow them to utilize positive skills in the program. 
+
 
 
 #Measure 8
@@ -139,9 +227,25 @@ pander(vl, split.cells = 75)
 
 set.alignment('left', row.names = 'right')
 
-vl <- subset(meas_sel, measure == 8)
+vl <- subset(meas_sel, Measure == 8)
 vl$Scale <- NULL
 row.names(vl) <- NULL
 
 pander(vl, split.cells = 75)
 ```
+
+
+##**Proposed construct(s)**: 
+Continuous organizational commitment. 
+
+##**Rationale**: 
+Based on evidence from [Jaros (2007)]( https://pdfs.semanticscholar.org/7546/2d9094b420466ad68c404527c7b6cb38d040.pdf), appears to be a measurement of ones commitment to Campus Connections. More specifically, continuous commitment.  This continuous commitment is characterized by perceived costs (both economic & social) associated with leaving the Campus Connections program. It is used as a predictor of employee turnover, absenteeism and performance. This is a subscale of a 3-factor model associated with Overall organizational commitment. 
+
+##**Recommendations**: 
+According to [Meyer & Allen (1991)]( http://www.m5zn.com/newuploads/2015/10/04/pdf/400c5edfcd96289.pdf), improvements of continuous commitment may be done through increases in pay and incentives. An easier and more practical strategy includes ensuring that employees of Campus Connections are receiving skills they feel are worthy and transferrable. Additionally, ensuring they are aware of the importance and implications of their job. 
+
+
+
+#Acknowledgements
+Thank you to Dacre Kurth and Yuto Okamoto for their help in putting together this report.
+
