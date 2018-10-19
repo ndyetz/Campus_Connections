@@ -5,6 +5,10 @@ author: "Neil Yetz, MPH"
 output:
   pdf_document:
     toc: yes
+  html_notebook:
+    df_print: paged
+    toc: yes
+    toc_float: yes
   html_document:
     df_print: paged
     toc: yes
@@ -44,7 +48,7 @@ meas_sel <- measures %>%
 
 #Introduction
 
-This report was created by Neil Yetz, MPH on October 18, 2018 and was last updated on `r format(Sys.time(), "%B %d, %Y")`. The purpose of this report is to identify constructs measured in the staff survey administered by the Tony Grampas Youth Foundation (TGYS) to the Campus Connections (CC) staff. The term "construct" in this report is referring to an identifiable attribute that is being measured by the questions (items) within the survey. There is a total of 8 constructs identified in the TGYS staff survey. The sections below summarize the measure  and proposes a construct that is being measured. Next, a rationale as to why that construct was chosen. Lastly, a recommendation of how to improve the outcomes associated with this measure.
+This report was created by Neil Yetz, MPH on October 18, 2018 and was last updated on `r format(Sys.time(), "%B %d, %Y")`. The purpose of this report is to identify constructs measured in the staff survey administered by the Tony Grampas Youth Foundation (TGYS) to the Campus Connections (CC) staff. The term "construct" in this report is referring to an identifiable attribute that is being measured by the questions (items) within the survey. There is a total of 8 constructs identified in the TGYS staff survey. The sections below summarize each measure  and proposes a construct that is being assessed. Next, a rationale as to why that construct was chosen. Lastly, a recommendation of how to improve outcomes associated with this measure.
 
 For any questions or concerns relating to this document, please email Neil Yetz at <neil.yetz@colostate.edu>
 
