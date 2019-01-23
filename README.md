@@ -1,6 +1,6 @@
 # Campus_Connections
 
-![](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/images/302671_CampusConnections-logo.png)
+![](https://source.colostate.edu/wp-content/uploads/2016/02/CampusConnectionsLogo.jpg)
 
 [Campus Connections](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/) is a multidisciplinary service learning course at CSU where undergraduate students serve as mentors to youth. Students from over 90 majors work one-on-one with youth ranging from 11-18 to tackle a broad range of challenges. Youth may be referred by family members or our community partners, and work with mentors to establish goals for positive growth.
 
