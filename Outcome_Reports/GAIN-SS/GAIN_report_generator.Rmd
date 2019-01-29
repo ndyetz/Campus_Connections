@@ -1,0 +1,257 @@
+---
+title: "GAIN-SS & cognitive interview reports"
+output:
+  html_notebook:
+    theme: yeti
+    toc: yes
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: true
+    theme: yeti
+  pdf_document:
+    toc: yes
+---
+
+<center>
+![CC](http://www.hdfs.chhs.colostate.edu/students/undergraduate/campusconnections/images/302671_CampusConnections-logo.png)
+</center>
+
+#Introduction
+This report was created by Neil Yetz, MPH on December 10, 2018. It was last updated on `r format(Sys.time(), "%B %d, %Y")`. The purpose of this report is to provide the Campus Connections (CC) program manager with the responses for youth that met the threshold to take the GAIN-SS measure. Youth filled out the Gain-substance use items. If they scored 2 or above, they qualified for the GAIN-SS and Cognitive impariment screener. 
+
+#Clear environment
+```{r}
+rm(list=ls())
+```
+
+
+#load Libraries
+```{r, message = FALSE}
+library(tidyverse)
+library(readxl)
+library(stringr)
+library(lubridate)
+```
+
+
+#Read Data
+```{r, warning = FALSE, message = FALSE}
+#read intake
+intake <- read_excel("R:/For CC Program/Spring 2019/Youth Recruitment/S19 Intake Master Tracking.xlsx", sheet = 1) 
+
+##read GAIN & cognitive interview (when ready)
+gainn_sub       <- read_csv("alcohol.csv")
+gainn_all       <- read_csv("full_gainn.csv")
+cog             <- read_csv("cog_screen.csv")
+```
+
+#Clean datasets
+```{r}
+#Intake clean
+intake_reduced <- intake %>% 
+  select(MENTEE_ID = "Mentee ID", everything()) %>% 
+  filter(MENTEE_ID != "SP19_000" & MENTEE_ID != "S19_000") %>% 
+  select(MENTEE_ID, 
+         cydc = "was a CYDC ROI for GAIN responses obtained?", 
+         gain = "did the youth take the full GAIN assessment?", 
+         impnotes = "program notes") %>% 
+  mutate(cydc = str_to_lower(cydc), 
+         gain = str_to_lower(gain)
+         )
+
+intake_reduced
+```
+
+#Checks
+```{r}
+ask_mac <- intake_reduced %>% 
+  filter((is.na(cydc) & gain == "n") | is.na(cydc) & gain == "y")
+
+
+count_y <- intake_reduced %>% 
+  filter(gain == "y")
+```
+
+
+
+##Clean
+```{r}
+
+gainn_sub <- gainn_sub %>% 
+  select(MENTEE_ID = "Q1", Date = "StartDate", Duration_sub = "Duration (in seconds)", everything(), -EndDate, Status, IPAddress, -Progress, -Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -RecipientEmail, -ExternalReference, -LocationLatitude, -LocationLongitude, -DistributionChannel, -UserLanguage, -Status, - IPAddress) %>% 
+  filter(Score > 0)
+
+gainn_all <- gainn_all %>% 
+  select(MENTEE_ID = "Q12", Duration_all = "Duration (in seconds)", everything(), -StartDate, -EndDate, Status, IPAddress, -Progress, -Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -RecipientEmail, -ExternalReference, -LocationLatitude, -LocationLongitude, -DistributionChannel, -UserLanguage,  -Status, - IPAddress, -Q40, -StartDate_1)
+
+cog <- cog %>% 
+  select(MENTEE_ID = "Q12", everything(), -StartDate, -EndDate, Status, IPAddress, -Progress, -`Duration (in seconds)`, -Finished, -RecordedDate, -ResponseId, -RecipientLastName, -RecipientFirstName, -RecipientEmail, -ExternalReference, -LocationLatitude, -LocationLongitude, -DistributionChannel, -UserLanguage,  -Status, - IPAddress, -Q40, -StartDate_1)
+  
+
+
+```
+
+#Merge Data 
+```{r}
+
+merge_all <- gainn_sub %>% 
+  left_join(gainn_all, by = "MENTEE_ID") %>% 
+  left_join(cog, by = "MENTEE_ID")
+
+merge_all %>% 
+  group_by(MENTEE_ID) %>% 
+  summarize(check = n() > 1 ) %>% 
+  filter(check == TRUE)
+
+merge_all %>% 
+  filter(MENTEE_ID == "S19_060" | MENTEE_ID == "S19_079")
+
+```
+
+
+#Organize Data
+```{r}
+merge_all <- merge_all %>% 
+  select(MENTEE_ID, Date,IDScr_1:IDScr_6, EDscr_1:EDscr_7, Q3_1:Q3_5, CVScr_1:CVScr_5, everything(), 
+         -Q19, -Q16, -Q22, -Q20, -Q23, -Q24, -Q8, - SC0, -Score) %>% 
+  group_by(MENTEE_ID) %>% 
+  slice(1) %>% 
+  ungroup() %>% 
+  rowwise() %>% 
+  mutate(duration_gainn =(Duration_sub + Duration_all)/60,
+         duration_gainn = ifelse(duration_gainn > 20, 20, duration_gainn)) %>% 
+  ungroup() %>% 
+  select(MENTEE_ID:CVScr_5, problem:Age, duration_gainn, everything(), -Duration_sub, -Duration_all) 
+```
+
+#Score Cognitive interview
+```{r}
+merge_all <- merge_all %>% 
+  mutate(phraserep_temp = ifelse(phrase_rep == 99, 0, phrase_rep))
+
+merge_all$cog_score <- rowSums(merge_all[ , c("year", "month", "time", "count", "days", "phraserep_temp") ], na.rm = TRUE) 
+
+merge_all <- merge_all %>% 
+  select(MENTEE_ID, Date:phrase_rep, cog_score, everything(), -phraserep_temp)
+
+#Convert NA to DK, convert 99 to RF
+merge_all <- merge_all %>%
+  mutate(
+         year       = ifelse(is.na(year)         , "DK", year      ),
+         month      = ifelse(is.na(month)        , "DK", month     ),
+         time       = ifelse(is.na(time)         , "DK", time      ),
+         count      = ifelse(is.na(count)        , "DK", count     ),
+         days       = ifelse(is.na(days)         , "DK", days      ),
+         phrase_rep = ifelse(is.na(phrase_rep)   , "DK", phrase_rep),
+         thirty     = ifelse(is.na(thirty)       , "DK", thirty    ),
+         ninety     = ifelse(is.na(ninety)       , "DK", ninety    ),
+         twelvmo    = ifelse(is.na(twelvmo)      , "DK", twelvmo   ),
+            
+         year       = ifelse(year       == "99"  , "RF", year      ),
+         month      = ifelse(month      == "99"  , "RF", month     ),
+         time       = ifelse(time       == "99"  , "RF", time      ),
+         count      = ifelse(count      == "99"  , "RF", count     ),
+         days       = ifelse(days       == "99"  , "RF", days      ),
+         phrase_rep = ifelse(phrase_rep == "99"  , "RF", phrase_rep),
+         thirty     = ifelse(thirty     == "99"  , "RF", thirty    ),
+         ninety     = ifelse(ninety     == "99"  , "RF", ninety    ),
+         twelvmo    = ifelse(twelvmo    == "99"  , "RF", twelvmo   ),
+         
+         IDScr_1    = IDScr_1 - 1,
+         IDScr_2    = IDScr_2 - 1,
+         IDScr_3    = IDScr_3 - 1,
+         IDScr_4    = IDScr_4 - 1,
+         IDScr_5    = IDScr_5 - 1,
+         IDScr_6    = IDScr_6 - 1,
+        
+         EDscr_1    = EDscr_1 - 1,
+         EDscr_2    = EDscr_2 - 1,
+         EDscr_3    = EDscr_3 - 1,
+         EDscr_4    = EDscr_4 - 1,
+         EDscr_5    = EDscr_5 - 1,
+         EDscr_6    = EDscr_6 - 1,
+         EDscr_7    = EDscr_7 - 1,
+         
+         Q3_1       = Q3_1    - 1,
+         Q3_2       = Q3_2    - 1,
+         Q3_3       = Q3_3    - 1,
+         Q3_4       = Q3_4    - 1,
+         Q3_5       = Q3_5    - 1,
+         
+         CVScr_1    = CVScr_1 - 1,
+         CVScr_2    = CVScr_2 - 1,
+         CVScr_3    = CVScr_3 - 1,
+         CVScr_4    = CVScr_4 - 1,
+         CVScr_5    = CVScr_5 - 1,
+         
+         duration_gainn = round(duration_gainn, 0),
+         duration_gainn = paste(duration_gainn, "minutes"),
+         
+         gender = factor(gender, levels = c(1,2),labels = c("male", "female"))
+         ) %>% 
+  filter(MENTEE_ID != "S19_079") 
+
+
+
+
+```
+
+
+#Format Report
+```{r}
+
+names <- intake %>% 
+  select(MENTEE_ID = "Mentee ID", `mentee name`)
+
+
+gainn_final <- merge_all %>% 
+  select(MENTEE_ID:duration_gainn) %>% 
+  left_join(names, by = "MENTEE_ID") %>% 
+  select(`mentee name`, everything(), -MENTEE_ID) %>% 
+  arrange(`mentee name`)
+
+gainn_final$IDscrMon  <- rowSums(gainn_final[,3:8] == 4)
+gainn_final$IDscr90   <- rowSums(gainn_final[,3:8] >= 3)
+gainn_final$IDscrYear <- rowSums(gainn_final[,3:8] >= 2)
+gainn_final$IDscrEver <- rowSums(gainn_final[,3:8] >= 1)
+
+gainn_final$EDscrMon  <- rowSums(gainn_final[,9:15] == 4)
+gainn_final$EDscr90   <- rowSums(gainn_final[,9:15] >= 3)
+gainn_final$EDscrYear <- rowSums(gainn_final[,9:15] >= 2)
+gainn_final$EDscrEver <- rowSums(gainn_final[,9:15] >= 1)
+
+gainn_final$SDscrMon  <- rowSums(gainn_final[,16:20] == 4)
+gainn_final$SDscr90   <- rowSums(gainn_final[,16:20] >= 3)
+gainn_final$SDscrYear <- rowSums(gainn_final[,16:20] >= 2)
+gainn_final$SDscrEver <- rowSums(gainn_final[,16:20] >= 1)
+
+gainn_final$CVscrMon  <- rowSums(gainn_final[,21:25] == 4)
+gainn_final$CVscr90   <- rowSums(gainn_final[,21:25] >= 3)
+gainn_final$CVscrYear <- rowSums(gainn_final[,21:25] >= 2)
+gainn_final$CVscrEver <- rowSums(gainn_final[,21:25] >= 1)
+
+gainn_final$TDscrMon  <- rowSums(gainn_final[,3:25] == 4)
+gainn_final$TDscr90   <- rowSums(gainn_final[,3:25] >= 3)
+gainn_final$TDscrYear <- rowSums(gainn_final[,3:25] >= 2)
+gainn_final$TDscrEver <- rowSums(gainn_final[,3:25] >= 1)
+
+
+
+cog_final <- merge_all %>% 
+  select(MENTEE_ID, year:twelvmo) %>% 
+    left_join(names, by = "MENTEE_ID") %>% 
+  select(`mentee name`, everything(), -MENTEE_ID) %>% 
+  arrange(`mentee name`)
+```
+
+
+#Export
+```{r}
+write_csv(gainn_final, "GAINN.csv", na = "")
+write_csv(cog_final, "Cognitive interview.csv", na = "")
+```
+
+
+
