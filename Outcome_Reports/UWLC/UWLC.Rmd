@@ -1,0 +1,251 @@
+---
+title: "UWLC report"
+output: 
+  html_notebook:
+    toc: yes
+    toc_float: true
+---
+
+#Clear environment
+```{r}
+rm(list=ls())
+```
+
+#Load Libraries
+```{r, message = FALSE}
+library(tidyverse)
+library(haven)
+library(readxl)
+```
+
+#Read in data
+```{r, message = FALSE}
+
+s18_pre_post <- read_sas("T:/Research folders/CCWTG/Data/Spring2018/FINALDATA/mentees.sas7bdat")
+master       <- read_sas("T:/Research folders/CCWTG/Data/Spring2018/FINALDATA/MASTER.sas7bdat")
+
+f18_drop     <- read_excel("R:/For CC Program/Fall 2018/Youth Recruitment/FALL18 Intake Master Tracking.xlsx", sheet = "Dropped")
+f18_intake   <- read_excel("R:/For CC Program/Fall 2018/Youth Recruitment/FALL18 Intake Master Tracking.xlsx", sheet = 1)
+
+headers <- names(read_csv("../Data/F18/F18_Youth_Intake.csv", n_max = 0))
+f18_pre <- read_csv("../Data/F18/F18_Youth_Intake.csv", skip = 3, col_names = FALSE)
+colnames(f18_pre) <- headers
+rm(headers)
+
+headers <-  names(read_csv("../Data/F18/F18_Youth_Post.csv", n_max = 0))
+f18_post <- read_csv("../Data/F18/F18_Youth_Post.csv", skip = 3, col_names = FALSE)
+colnames(f18_post) <- headers
+rm(headers)
+
+```
+
+
+#Clean data
+```{r}
+
+s18_pre_post <- s18_pre_post %>% 
+  select(Final_ID, starts_with("k0"), starts_with("k5"), contains("bhvscl")) %>% 
+  filter(!is.na(k0start), !is.na(k5start))
+
+f18_pre <- f18_pre %>% 
+  select(MENTEE_ID, starts_with("k0")) %>% 
+  arrange(MENTEE_ID)
+
+f18_post <- f18_post %>% 
+  select(MENTEE_ID, starts_with("k1")) %>% 
+  arrange(MENTEE_ID)
+
+f_18_pre_post <- f18_pre %>% 
+  left_join(f18_post, by = "MENTEE_ID") %>% 
+  filter(str_length(MENTEE_ID) == 7)
+
+f18_drop <- f18_drop %>% 
+  mutate("drop" = `before/after program began?`,
+          drop = str_to_lower(drop),
+          drop_num = ifelse(drop != "before", 1,0)) %>% 
+  select(MENTEE_ID, drop_num) %>% 
+  arrange(MENTEE_ID)
+
+f18_drop <- f18_drop %>% 
+  full_join(f18_intake, by = "MENTEE_ID") %>% 
+  select(MENTEE_ID, drop_num) %>% 
+  filter(drop_num == 1 | is.na(drop_num)) %>% 
+  mutate(drop_num = ifelse(is.na(drop_num), 0, drop_num))
+
+s18_drop <- master%>% 
+  filter(is.na(no_start)) %>% 
+  select(MENTEE_ID = "Final_ID", drop_num = "date_dropped") %>% 
+  mutate(drop_num = ifelse(!is.na(drop_num), 1, 0))
+
+drop <- bind_rows(f18_drop, s18_drop)
+
+  
+
+```
+
+
+#Objective 2.2
+##Attendance & Mentor Pair
+```{r}
+
+
+per_drop <- drop %>% 
+  summarize(perc_drop = mean(drop_num) * 100)
+
+per_drop
+
+
+
+```
+
+
+100% of mentees were matched in 2018, and only `r paste0(round(per_drop$perc_drop,2), "%")` of the 226 youth dropped from the program.
+
+
+##Substance use reduce
+##Set-up
+```{r}
+
+s18_del <- s18_pre_post %>% 
+  select(MENTEE_ID = "Final_ID", contains("dlq"))
+
+
+f18_del <- f_18_pre_post %>% 
+  select(MENTEE_ID, contains("dlq"))
+
+namecon <- colnames(f18_del)
+namecon <- str_replace(namecon, "k1", "k5")
+colnames(f18_del) <- namecon
+
+del <- bind_rows(s18_del, f18_del)
+
+
+
+```
+
+##2.2.1
+```{r}
+sub <- del %>% 
+  select(MENTEE_ID, k0dlq_4:k0dlq_7, k5dlq_4:k5dlq_7) %>% 
+  filter(k0dlq_4 >= 1 | k0dlq_5 >= 1 | k0dlq_6 >= 1 | k0dlq_7 >= 1) %>% 
+  rowwise() %>% 
+  mutate(k0sub = (k0dlq_4 + k0dlq_5 + k0dlq_6 + k0dlq_7),
+         k5sub = (k5dlq_4 + k5dlq_5 + k5dlq_6 + k5dlq_7)) %>% 
+  filter((!(is.na(k5sub))),
+         (!(is.na(k0sub)))) %>% 
+  mutate(sub_dec = ifelse(k5sub < k0sub, 1,0)) %>% 
+  ungroup()
+summarize(sub, Total = n(), substance_decrease = mean(sub_dec))
+```
+
+
+```{r}
+nosub <- del %>% 
+  select(MENTEE_ID, k0dlq_4:k0dlq_7, k5dlq_4:k5dlq_7) %>% 
+  filter(k0dlq_4 == 0 & k0dlq_5 == 0 & k0dlq_6 == 0 & k0dlq_7 == 0) %>% 
+  rowwise() %>% 
+  mutate(k0sub = (k0dlq_4 + k0dlq_5 + k0dlq_6 + k0dlq_7),
+         k5sub = (k5dlq_4 + k5dlq_5 + k5dlq_6 + k5dlq_7)) %>% 
+  filter((!(is.na(k5sub))),
+         (!(is.na(k0sub)))) %>% 
+  mutate(no_use_post = ifelse(k5sub > 0, 0,1)) %>% 
+  ungroup()
+
+summarize(nosub, Total = n(), no_post_use = mean(no_use_post))
+```
+
+##Create Data set of those that have commited violent & property crimes
+```{r}
+crime <- del %>% 
+  select(MENTEE_ID, k0dlq_1:k0dlq_2, k0dlq_3, k5dlq_1:k5dlq_10) %>%
+  filter(k0dlq_1 > 0 | k0dlq_2 > 0 | k0dlq_3 > 0)
+```
+
+
+###Property crime pre-test vs post test (of youth who report pre-test)
+```{r}
+prop <- crime %>% 
+  mutate(k0prdam = (k0dlq_1 + k0dlq_2),
+         k5prdam = (k5dlq_1 + k5dlq_2)) %>% 
+    filter((!(is.na(k0prdam))),
+         (!(is.na(k5prdam)))) %>% 
+  mutate(prop_decrease = ifelse(k5prdam < k0prdam, 1,0))
+summarize(prop, Total = n(), prop_dam_decrease = mean(prop_decrease))
+```
+
+
+###Violence pretest vs post test (of youth who report pre-test)
+```{r}
+violent <- crime %>% 
+  filter((!(is.na(k0dlq_3))),
+        (!(is.na(k5dlq_3)))) %>% 
+  mutate(violence_decrease = ifelse(k5dlq_3 < k0dlq_3, 1, 0))
+summarize(violent, Total = n(), violence_decrease = mean(violence_decrease))
+```
+
+###Stealing
+```{r}
+steal <- del %>% 
+  select(MENTEE_ID, k0dlq_9, k0dlq_10, k5dlq_9, k5dlq_10) %>% 
+  mutate(k0steal = (k0dlq_9 + k0dlq_10),
+         k5steal = (k5dlq_9 + k5dlq_10)) %>% 
+  filter((!(is.na(k0steal))),
+        (!(is.na(k5steal))),
+        (k0steal != 0))%>% 
+ mutate(steal_decrease = ifelse(k5steal < k0steal, 1,0))
+  
+summarize(steal, Total = n(), steal_decrease = mean(steal_decrease))
+```
+
+
+#Attendance
+##Set-up
+```{r}
+
+s18_att <- s18_pre_post %>% 
+  select(MENTEE_ID = "Final_ID", contains("bhvscl"))
+
+namecon <- colnames(s18_att)
+namecon <- str_replace(namecon, "k1", "k0")
+colnames(s18_att) <- namecon
+rm(namecon)
+
+f18_att <- f_18_pre_post %>% 
+  select(MENTEE_ID, contains("bhvscl"))
+
+namecon <- colnames(f18_att)
+namecon <- str_replace(namecon, "k1", "k5")
+colnames(f18_att) <- namecon
+rm(namecon)
+
+att <- bind_rows(s18_att, f18_att)
+
+att <- att %>% 
+  select(MENTEE_ID, ends_with("_8"), ends_with("_9")) %>% 
+  mutate(pre_att  = (k0bhvscl_8 + k0bhvscl_9),
+         post_att = (k5bhvscl_8 + k5bhvscl_9)) %>% 
+  filter(!is.na(pre_att),
+         !is.na(post_att))
+```
+
+#preintervention attendendance problems
+```{r}
+
+att_prob <- att %>%
+  filter(pre_att > 0) %>% 
+  mutate(att_impr = ifelse(post_att < pre_att, 1,0))
+
+summarize(att_prob, n = n(), att_improvement = mean(att_impr))
+
+```
+
+#preintervention attendendance problems
+```{r}
+
+att_good <- att %>%
+  filter(pre_att == 0) %>% 
+  mutate(att_impr = ifelse(post_att == pre_att, 1,0))
+
+summarize(att_good, n = n(), att_same = mean(att_impr))
+
+```
