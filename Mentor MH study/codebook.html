@@ -1,0 +1,2838 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Codebook for Mentor Mental Health Study Data</title>
+
+<script src="codebook_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="codebook_files/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="codebook_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="codebook_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="codebook_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="codebook_files/navigation-1.1/tabsets.js"></script>
+<link href="codebook_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="codebook_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Codebook for Mentor Mental Health Study Data</h1>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#general-variables">General variables</a></li>
+<li><a href="#demographics">Demographics</a></li>
+<li><a href="#instruments">Instruments</a><ul>
+<li><a href="#depression">Depression</a></li>
+<li><a href="#substance-use">Substance use</a></li>
+<li><a href="#positive-psych">Positive psych</a><ul>
+<li><a href="#engagement">Engagement</a></li>
+<li><a href="#perseverance">Perseverance</a></li>
+<li><a href="#optimism">Optimism</a></li>
+<li><a href="#connectedness">Connectedness</a></li>
+<li><a href="#happiness">Happiness</a></li>
+</ul></li>
+<li><a href="#flourishing">Flourishing</a></li>
+<li><a href="#generalized-anxiety">Generalized Anxiety</a></li>
+<li><a href="#gratitude">Gratitude</a></li>
+<li><a href="#self-compassion">Self Compassion</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Mentors were invited to complete a survey on 2 occasions: prior to the start of Campus Connections (during the first week of mentor training, prefix for variables = m0) and week 11 (prefix = m1) of the program. The surveys were completed during prelab, and in some cases during postlab. The time stamp for each survey (e.g., m0start, m0end) gives the date and time that the respondent started and ended the survey.</p>
+<p>In this study, there was also a control group (variable in_cc = 0). In these instances, students at Colorado State University were recruited from Human Development &amp; Family Studies, and Psychology courses. They were emailed a survey link and asked to complete the survey at there own convenience.</p>
+<p>For tables labeled “List of Items in the Instrument”, substitute the X in the variable name for the survey number (e.g., 0, 1). Variables in the item analysis tables that end in a capital r (“R”) have been reverse coded for analysis.</p>
+</div>
+<div id="general-variables" class="section level1">
+<h1>General variables</h1>
+<table style="width:97%;">
+<colgroup>
+<col width="19%" />
+<col width="77%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ID</td>
+<td align="left">ID number</td>
+</tr>
+<tr class="even">
+<td align="left">in_cc</td>
+<td align="left">control or cc group (0 = control group, 1 = CC group)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXstartdate</td>
+<td align="left">Date + time of survey start</td>
+</tr>
+<tr class="even">
+<td align="left">mXenddate</td>
+<td align="left">Date + time of survey end</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="demographics" class="section level1">
+<h1>Demographics</h1>
+<p><strong>Description of Demographic Variables</strong><br />
+The mentor reported on a series of demographic questions pertaining to themselves. These items were administered at the pre-intervention survey (m0) only.</p>
+<p><strong>List of Demographic Variables</strong></p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="81%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mXmentor_eth</td>
+<td align="left">Mentor’s race/ethnicity (1=American Indian, 2=Asian, 3=Black, 4=Hispanic, 5=Hawaiian, 6=White, 7=Mixed)</td>
+</tr>
+<tr class="even">
+<td align="left">mXgender</td>
+<td align="left">What is your gender? (Male=1, Female=2, Transgender=3, Other = 4)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXgender_4_text</td>
+<td align="left">“Other” gender text</td>
+</tr>
+<tr class="even">
+<td align="left">mXyrborn</td>
+<td align="left">What year were you born?</td>
+</tr>
+<tr class="odd">
+<td align="left">mXhisp_1</td>
+<td align="left">Hispanic: (Mexican/Chicano = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXhisp_2</td>
+<td align="left">Hispanic: (Central American = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXhisp_3</td>
+<td align="left">Hispanic: (South American = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXhisp_4</td>
+<td align="left">Hispanic: (Cuban = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXhisp_5</td>
+<td align="left">Hispanic: (Peurto Rican = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXhisp_6</td>
+<td align="left">Hispanic: (Other Caribbean Island = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXhisp_7</td>
+<td align="left">Hispanic: (European = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXhisp_8</td>
+<td align="left">Hispanic: (Other = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXhisp_8_text</td>
+<td align="left">Hispanic: “Other” Text</td>
+</tr>
+<tr class="even">
+<td align="left">mXasian_1</td>
+<td align="left">Asian: (Asian Indian = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXasian_2</td>
+<td align="left">Asian: (Bangledeshi = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXasian_3</td>
+<td align="left">Asian: (Cambodian = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXasian_4</td>
+<td align="left">Asian: (Chinese = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXasian_5</td>
+<td align="left">Asian: (Filipino = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXasian_6</td>
+<td align="left">Asian: (Hmong = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXasian_7</td>
+<td align="left">Asian: (Indonesian = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXasian_8</td>
+<td align="left">Asian: (Japanese = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXasian_9</td>
+<td align="left">Asian: ((Korean = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXasian_10</td>
+<td align="left">Asian: (Laotian = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXasian_11</td>
+<td align="left">Asian: (Malaysian = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXasian_12</td>
+<td align="left">Asian: (Pakistani = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXasian_13</td>
+<td align="left">Asian: (Sri Lanken = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXasian_14</td>
+<td align="left">Asian: (Taiwanese = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXasian_15</td>
+<td align="left">Asian: (Thai = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXasian_16</td>
+<td align="left">Asian: (Viatnamese = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXasian_17</td>
+<td align="left">Asian: (Other = 1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXasian_17_text</td>
+<td align="left">Asian: (“Other” Text)</td>
+</tr>
+<tr class="even">
+<td align="left">mXyear</td>
+<td align="left">What year in school are you? (Freshman=1, Sophomore=2, Junior=3, Senior=4; 5 = Graduate Student)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXmajor_1</td>
+<td align="left">HDFS (Yes=1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXmajor_2</td>
+<td align="left">Psychology (Yes=1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXmajor_3</td>
+<td align="left">Health and Exercise Science (Yes=1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXmajor_4</td>
+<td align="left">Spanish (Yes=1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXmajor_5</td>
+<td align="left">Art (Yes=1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXmajor_6</td>
+<td align="left">Sociology (Yes=1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXmajor_7</td>
+<td align="left">Criminal Justice (Yes=1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXmajor_8</td>
+<td align="left">Family and Consumer Sciences (Yes=1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXmajor_9</td>
+<td align="left">Forest Sciences (Yes=1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXmajor_10</td>
+<td align="left">Journalism (Yes=1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXmajor_11</td>
+<td align="left">Social Work (Yes=1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXmajor_12</td>
+<td align="left">International Studies (Yes=1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXmajor_13</td>
+<td align="left">Nutrition (Yes=1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXmajor_14</td>
+<td align="left">Education (Yes=1)</td>
+</tr>
+<tr class="odd">
+<td align="left">mXmajor_15</td>
+<td align="left">Other (specify): (Yes=1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXmajor_15_text</td>
+<td align="left">Other (specify) - TEXT</td>
+</tr>
+<tr class="odd">
+<td align="left">mXft</td>
+<td align="left">What is your status at CSU? (Full-time=1, Part-time=2)</td>
+</tr>
+<tr class="even">
+<td align="left">mXfamses</td>
+<td align="left">What do you perceive your family’s economic status was while growing up? (High=1, Middle to High=2, Middle=3, Middle to Low=4, Low=5)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="instruments" class="section level1">
+<h1>Instruments</h1>
+<div id="depression" class="section level2">
+<h2>Depression</h2>
+<p><strong>Instrument Citation</strong></p>
+<p>Björgvinsson, T., Kertz, S.J., Bigda-Peyton, J.S., McCoy, K.L., Aderka, I.M. (2013). Psychometric properties of the CES-D-10 in a psychiatric sample. Assessment, 20, 429-436.</p>
+<p>Miller, W.C., Anton, H.A., Townson, A. F. (2008). Measurement properties of the CESD scale among individuals with spinal cord injury. Spinal Cord, 46, 287-292.</p>
+<p>Radloff, L. S. (1977). CES-D scale: A self report depression scale for research in the general populations. Applied Psychological Measurement,1, 385-401.</p>
+<p><strong>Description of Instrument</strong><br />
+This scale is a self-report measure of depression.</p>
+<p><strong>List of Items in Instrument</strong><br />
+Below is a list of some of the ways you may have felt or behaved.</p>
+<p>Please indicate how often you have felt this way during the past week by checking the appropriate box for each question.</p>
+<p>1 = Rarely or none of the time (less than 1 day),<br />
+2 = Some or a little of the time (1‐2 days,<br />
+3 = Occasionally or a moderate amount of time (3‐4 days),<br />
+4 = All of the time (5‐7 days)</p>
+<table style="width:97%;">
+<colgroup>
+<col width="18%" />
+<col width="79%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mXcesdr_1</td>
+<td align="left">I was bothered by things that usually don’t bother me.</td>
+</tr>
+<tr class="even">
+<td align="left">mXcesdr_2</td>
+<td align="left">I had trouble keeping my mind on what I was doing.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXcesdr_3</td>
+<td align="left">I felt depressed.</td>
+</tr>
+<tr class="even">
+<td align="left">mXcesdr_4</td>
+<td align="left">I felt that everything I did was an effort.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXcesdr_5R</td>
+<td align="left">I felt hopeful about the future.</td>
+</tr>
+<tr class="even">
+<td align="left">mXcesdr_6</td>
+<td align="left">I felt fearful.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXcesdr_7</td>
+<td align="left">My sleep was restless.</td>
+</tr>
+<tr class="even">
+<td align="left">mXcesdr_8R</td>
+<td align="left">I was happy.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXcesdr_9</td>
+<td align="left">I felt lonely.</td>
+</tr>
+<tr class="even">
+<td align="left">mXcesdr_10</td>
+<td align="left">I could not “get going.”</td>
+</tr>
+</tbody>
+</table>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.84), Week 11 (0.86)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0cesdr_1</td>
+<td align="left">275</td>
+<td align="left">1.66</td>
+<td align="left">0.72</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.55</td>
+<td align="left">0.83</td>
+</tr>
+<tr class="even">
+<td align="left">m0cesdr_2</td>
+<td align="left">275</td>
+<td align="left">2.07</td>
+<td align="left">0.85</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.56</td>
+<td align="left">0.82</td>
+</tr>
+<tr class="odd">
+<td align="left">m0cesdr_3</td>
+<td align="left">275</td>
+<td align="left">1.66</td>
+<td align="left">0.88</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.68</td>
+<td align="left">0.81</td>
+</tr>
+<tr class="even">
+<td align="left">m0cesdr_4</td>
+<td align="left">275</td>
+<td align="left">2.27</td>
+<td align="left">0.94</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.41</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="odd">
+<td align="left">m0cesdr_5R</td>
+<td align="left">275</td>
+<td align="left">1.92</td>
+<td align="left">0.77</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.38</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="even">
+<td align="left">m0cesdr_6</td>
+<td align="left">275</td>
+<td align="left">1.85</td>
+<td align="left">0.88</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.44</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="odd">
+<td align="left">m0cesdr_7</td>
+<td align="left">275</td>
+<td align="left">2.08</td>
+<td align="left">0.94</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.46</td>
+<td align="left">0.83</td>
+</tr>
+<tr class="even">
+<td align="left">m0cesdr_8R</td>
+<td align="left">275</td>
+<td align="left">1.85</td>
+<td align="left">0.76</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.63</td>
+<td align="left">0.82</td>
+</tr>
+<tr class="odd">
+<td align="left">m0cesdr_9</td>
+<td align="left">275</td>
+<td align="left">1.97</td>
+<td align="left">0.89</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.61</td>
+<td align="left">0.82</td>
+</tr>
+<tr class="even">
+<td align="left">m0cesdr_10</td>
+<td align="left">275</td>
+<td align="left">1.83</td>
+<td align="left">0.88</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.66</td>
+<td align="left">0.81</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1cesdr_1</td>
+<td align="left">271</td>
+<td align="left">1.87</td>
+<td align="left">0.82</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.54</td>
+<td align="left">0.85</td>
+</tr>
+<tr class="even">
+<td align="left">m1cesdr_2</td>
+<td align="left">271</td>
+<td align="left">2.21</td>
+<td align="left">0.94</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.62</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="odd">
+<td align="left">m1cesdr_3</td>
+<td align="left">271</td>
+<td align="left">1.79</td>
+<td align="left">0.94</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.74</td>
+<td align="left">0.83</td>
+</tr>
+<tr class="even">
+<td align="left">m1cesdr_4</td>
+<td align="left">271</td>
+<td align="left">2.24</td>
+<td align="left">0.95</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.51</td>
+<td align="left">0.85</td>
+</tr>
+<tr class="odd">
+<td align="left">m1cesdr_5R</td>
+<td align="left">271</td>
+<td align="left">2.13</td>
+<td align="left">0.85</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.34</td>
+<td align="left">0.86</td>
+</tr>
+<tr class="even">
+<td align="left">m1cesdr_6</td>
+<td align="left">271</td>
+<td align="left">1.87</td>
+<td align="left">0.88</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.45</td>
+<td align="left">0.86</td>
+</tr>
+<tr class="odd">
+<td align="left">m1cesdr_7</td>
+<td align="left">271</td>
+<td align="left">2.11</td>
+<td align="left">1.01</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.60</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="even">
+<td align="left">m1cesdr_8R</td>
+<td align="left">271</td>
+<td align="left">1.98</td>
+<td align="left">0.78</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.56</td>
+<td align="left">0.85</td>
+</tr>
+<tr class="odd">
+<td align="left">m1cesdr_9</td>
+<td align="left">271</td>
+<td align="left">2.11</td>
+<td align="left">0.97</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.65</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="even">
+<td align="left">m1cesdr_10</td>
+<td align="left">271</td>
+<td align="left">2.11</td>
+<td align="left">0.93</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.68</td>
+<td align="left">0.84</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="substance-use" class="section level2">
+<h2>Substance use</h2>
+<p><strong>Instrument Citation</strong><br />
+Knight JR, Shrier LA, Bravender TD, Farrell M, Vander Bilt J, Shaffer HJ. A new brief screen for adolescent substance abuse. Arch Pediatr Adolesc Med. 1999;153(6):591-596.</p>
+<p><strong>Description of Instrument</strong><br />
+The CRAFFT is an efficient and effective health screening tool designed to identify substance use, substance-related riding/driving risk, and substance use disorder among youth ages 12-21. It has been implemented as part of universal screening efforts in thousands of busy medical and community health settings, as it yields information that can serve as the basis for early intervention and patient-centered counseling.</p>
+<p>The CRAFFT is the most well-studied adolescent substance use screener available and has been shown to be valid for adolescents from diverse socioeconomic and racial/ethnic backgrounds. It is recommended by the American Academy of Pediatrics’ Bright Futures Guidelines for preventive care screenings and well-visits, the Center for Medicaid and CHIP Services’ Early and Periodic Screening, Diagnostic and Treatment (EPSDT) program, and the National Institute of Alcohol Abuse and Alcoholism (NIAAA) Youth Screening Guide.</p>
+<p>The current version of the tool, the CRAFFT 2.1, includes evidence-based revisions to increase the sensitivity and specificity of the tool and includes vaping as a method of administration for marijuana use.</p>
+<p><strong>List of Items in Instrument</strong></p>
+<p><em>freq items</em>: During the PAST 12 MONTHS, on how many days did you:</p>
+<p><em>beh items</em>: If you put “1” or higher in ANY of the boxes above, ANSWER QUESTIONS 5-10. (1 = Yes, 0 = No)</p>
+<table>
+<colgroup>
+<col width="21%" />
+<col width="78%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mXcrafftn_freq_1_1</td>
+<td align="left">Drink more than a few sips of beer, wine, or any drinkcontaining alcohol? Put “0” if none.</td>
+</tr>
+<tr class="even">
+<td align="left">mXcrafftn_freq_2_1</td>
+<td align="left">Use any marijuana (weed, oil, or hash by smoking, vaping,or in food) or “synthetic marijuana” (like “K2,” “Spice”)? Put“0” if none.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXcrafftn_freq_3_1</td>
+<td align="left">Use anything else to get high (like other illegal drugs,prescription or over-the-counter medications, and thingsthat you sniff, huff, or vape)? Put “0” if none.</td>
+</tr>
+<tr class="even">
+<td align="left">mXcrafftn_freq_4_1</td>
+<td align="left">Use any tobacco or nicotine products (for example,cigarettes, e-cigarettes, hookahs or smokeless tobacco)?</td>
+</tr>
+<tr class="odd">
+<td align="left">mXcrafftn_beh_1</td>
+<td align="left">Have you ever ridden in a CAR driven by someone (including yourself)who was “high” or had been using alcohol or drugs? (No = 0, Yes = 1)</td>
+</tr>
+<tr class="even">
+<td align="left">mXcrafftn_beh_2</td>
+<td align="left">Do you ever use alcohol or drugs to RELAX, feel better about yourself,or fit in?</td>
+</tr>
+<tr class="odd">
+<td align="left">mXcrafftn_beh_3</td>
+<td align="left">Do you ever use alcohol or drugs while you are by yourself, or ALONE?</td>
+</tr>
+<tr class="even">
+<td align="left">mXcrafftn_beh_4</td>
+<td align="left">Do you ever FORGET things you did while using alcohol or drugs?</td>
+</tr>
+<tr class="odd">
+<td align="left">mXcrafftn_beh_5</td>
+<td align="left">Do your FAMILY or FRIENDS ever tell you that you should cut down onyour drinking or drug use?</td>
+</tr>
+<tr class="even">
+<td align="left">mXcrafftn_beh_6</td>
+<td align="left">Have you ever gotten into TROUBLE while you were using alcohol ordrugs?</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="positive-psych" class="section level2">
+<h2>Positive psych</h2>
+<p><strong>Instrument Citation</strong><br />
+Kern, M. L., Benson, L., Steinberg, E. A., &amp; Steinberg, L. (2016). The EPOCH measure of adolescent well-being. Psychological assessment, 28(5), 586.</p>
+<p><strong>Description of Instrument</strong><br />
+A self-report measure of well-being. It is split into 5 subscales: Engagement, Perseverance, Optimism, Connectedness, and happiness.</p>
+<p><strong>List of Items in Instrument</strong><br />
+This is a survey about you! Please read each of the following statements. Circle how much each statement describes you. Please be honest - there are no right or wrong answers!</p>
+<p>1 = Almost Never<br />
+2 = Sometimes<br />
+3 = Often<br />
+4 = Very Often<br />
+5 = Almost Always</p>
+<table>
+<colgroup>
+<col width="14%" />
+<col width="85%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mXepoch_1</td>
+<td align="left">When something good happens to me, I have people who I like to share the good news with</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_2</td>
+<td align="left">I finish whatever I begin.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXepoch_3</td>
+<td align="left">I am optimistic about my future</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_4</td>
+<td align="left">I feel happy.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXepoch_5</td>
+<td align="left">When I do an activity, I enjoy it so much that I lose track of time.</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_6</td>
+<td align="left">I have a lot of fun.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXepoch_7</td>
+<td align="left">I get completely absorbed in what I am doing.</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_8</td>
+<td align="left">I love life.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXepoch_9</td>
+<td align="left">I keep at my schoolwork until I am done with it.</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_10</td>
+<td align="left">When I have a problem, I have someone who will be there for me.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXepoch_11</td>
+<td align="left">I get so involved in activities that I forget about everything else.</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_12</td>
+<td align="left">When I am learning something new, I lose track of how much time has passed.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXepoch_13</td>
+<td align="left">In uncertain times, I expect the best.</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_14</td>
+<td align="left">There are people in my life who really care about me.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXepoch_15</td>
+<td align="left">I think good things are going to happen to me.</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_16</td>
+<td align="left">I have friends that I really care about.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXepoch_17</td>
+<td align="left">Once I make a plan to get something done, I stick to it.</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_18</td>
+<td align="left">I believe that things will work out, no matter how difficult they seem.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXepoch_19</td>
+<td align="left">I am a hard worker.</td>
+</tr>
+<tr class="even">
+<td align="left">mXepoch_20</td>
+<td align="left">I am a cheerful person.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Psychometrics for subscales</strong></p>
+<div id="engagement" class="section level3">
+<h3>Engagement</h3>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.87), Week 11 (0.86)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0epoch_5</td>
+<td align="left">275</td>
+<td align="left">3.31</td>
+<td align="left">1.09</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.70</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_7</td>
+<td align="left">275</td>
+<td align="left">3.19</td>
+<td align="left">1.00</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.73</td>
+<td align="left">0.83</td>
+</tr>
+<tr class="odd">
+<td align="left">m0epoch_11</td>
+<td align="left">275</td>
+<td align="left">2.87</td>
+<td align="left">1.06</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.75</td>
+<td align="left">0.82</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_12</td>
+<td align="left">275</td>
+<td align="left">2.97</td>
+<td align="left">1.02</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.70</td>
+<td align="left">0.84</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1epoch_5</td>
+<td align="left">269</td>
+<td align="left">3.50</td>
+<td align="left">1.00</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.66</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_7</td>
+<td align="left">269</td>
+<td align="left">3.26</td>
+<td align="left">0.98</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.69</td>
+<td align="left">0.83</td>
+</tr>
+<tr class="odd">
+<td align="left">m1epoch_11</td>
+<td align="left">269</td>
+<td align="left">3.06</td>
+<td align="left">1.04</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.77</td>
+<td align="left">0.79</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_12</td>
+<td align="left">269</td>
+<td align="left">3.04</td>
+<td align="left">1.06</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.70</td>
+<td align="left">0.82</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="perseverance" class="section level3">
+<h3>Perseverance</h3>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.82), Week 11 (0.85)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0epoch_2</td>
+<td align="left">275</td>
+<td align="left">3.72</td>
+<td align="left">0.92</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.67</td>
+<td align="left">0.77</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_9</td>
+<td align="left">275</td>
+<td align="left">3.44</td>
+<td align="left">1.10</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.55</td>
+<td align="left">0.83</td>
+</tr>
+<tr class="odd">
+<td align="left">m0epoch_17</td>
+<td align="left">275</td>
+<td align="left">3.71</td>
+<td align="left">1.04</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.74</td>
+<td align="left">0.73</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_19</td>
+<td align="left">275</td>
+<td align="left">4.24</td>
+<td align="left">0.88</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.65</td>
+<td align="left">0.78</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1epoch_2</td>
+<td align="left">269</td>
+<td align="left">3.73</td>
+<td align="left">1.01</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.68</td>
+<td align="left">0.80</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_9</td>
+<td align="left">269</td>
+<td align="left">3.54</td>
+<td align="left">1.13</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.63</td>
+<td align="left">0.83</td>
+</tr>
+<tr class="odd">
+<td align="left">m1epoch_17</td>
+<td align="left">269</td>
+<td align="left">3.69</td>
+<td align="left">1.00</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.72</td>
+<td align="left">0.79</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_19</td>
+<td align="left">269</td>
+<td align="left">4.23</td>
+<td align="left">0.92</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.70</td>
+<td align="left">0.80</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="optimism" class="section level3">
+<h3>Optimism</h3>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.85), Week 11 (0.87)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0epoch_3</td>
+<td align="left">275</td>
+<td align="left">3.90</td>
+<td align="left">1.02</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.71</td>
+<td align="left">0.80</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_13</td>
+<td align="left">275</td>
+<td align="left">2.86</td>
+<td align="left">1.04</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.60</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="odd">
+<td align="left">m0epoch_15</td>
+<td align="left">275</td>
+<td align="left">3.89</td>
+<td align="left">1.05</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.72</td>
+<td align="left">0.80</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_18</td>
+<td align="left">275</td>
+<td align="left">3.68</td>
+<td align="left">1.11</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.73</td>
+<td align="left">0.79</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1epoch_3</td>
+<td align="left">269</td>
+<td align="left">3.86</td>
+<td align="left">1.01</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.74</td>
+<td align="left">0.82</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_13</td>
+<td align="left">269</td>
+<td align="left">3.07</td>
+<td align="left">1.06</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.62</td>
+<td align="left">0.87</td>
+</tr>
+<tr class="odd">
+<td align="left">m1epoch_15</td>
+<td align="left">269</td>
+<td align="left">3.87</td>
+<td align="left">1.07</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.74</td>
+<td align="left">0.82</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_18</td>
+<td align="left">269</td>
+<td align="left">3.79</td>
+<td align="left">1.10</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.78</td>
+<td align="left">0.80</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="connectedness" class="section level3">
+<h3>Connectedness</h3>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.86), Week 11 (0.88)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0epoch_1</td>
+<td align="left">275</td>
+<td align="left">4.38</td>
+<td align="left">0.89</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.70</td>
+<td align="left">0.82</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_10</td>
+<td align="left">275</td>
+<td align="left">4.32</td>
+<td align="left">0.90</td>
+<td align="left">2</td>
+<td align="left">5</td>
+<td align="left">0.77</td>
+<td align="left">0.79</td>
+</tr>
+<tr class="odd">
+<td align="left">m0epoch_14</td>
+<td align="left">275</td>
+<td align="left">4.46</td>
+<td align="left">0.85</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.74</td>
+<td align="left">0.80</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_16</td>
+<td align="left">275</td>
+<td align="left">4.39</td>
+<td align="left">0.91</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.61</td>
+<td align="left">0.86</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1epoch_1</td>
+<td align="left">269</td>
+<td align="left">4.31</td>
+<td align="left">0.90</td>
+<td align="left">2</td>
+<td align="left">5</td>
+<td align="left">0.74</td>
+<td align="left">0.85</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_10</td>
+<td align="left">269</td>
+<td align="left">4.20</td>
+<td align="left">0.98</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.76</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="odd">
+<td align="left">m1epoch_14</td>
+<td align="left">269</td>
+<td align="left">4.38</td>
+<td align="left">0.85</td>
+<td align="left">2</td>
+<td align="left">5</td>
+<td align="left">0.75</td>
+<td align="left">0.84</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_16</td>
+<td align="left">269</td>
+<td align="left">4.31</td>
+<td align="left">0.94</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.72</td>
+<td align="left">0.86</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="happiness" class="section level3">
+<h3>Happiness</h3>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.91), Week 11 (0.91)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0epoch_4</td>
+<td align="left">275</td>
+<td align="left">3.68</td>
+<td align="left">1.02</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.87</td>
+<td align="left">0.85</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_6</td>
+<td align="left">275</td>
+<td align="left">3.43</td>
+<td align="left">1.04</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.72</td>
+<td align="left">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">m0epoch_8</td>
+<td align="left">275</td>
+<td align="left">3.74</td>
+<td align="left">1.12</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.82</td>
+<td align="left">0.87</td>
+</tr>
+<tr class="even">
+<td align="left">m0epoch_20</td>
+<td align="left">275</td>
+<td align="left">3.89</td>
+<td align="left">1.01</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.74</td>
+<td align="left">0.89</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1epoch_4</td>
+<td align="left">269</td>
+<td align="left">3.68</td>
+<td align="left">1.00</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.84</td>
+<td align="left">0.86</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_6</td>
+<td align="left">269</td>
+<td align="left">3.50</td>
+<td align="left">1.06</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.73</td>
+<td align="left">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">m1epoch_8</td>
+<td align="left">269</td>
+<td align="left">3.69</td>
+<td align="left">1.08</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.83</td>
+<td align="left">0.87</td>
+</tr>
+<tr class="even">
+<td align="left">m1epoch_20</td>
+<td align="left">269</td>
+<td align="left">3.89</td>
+<td align="left">1.01</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.76</td>
+<td align="left">0.89</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="flourishing" class="section level2">
+<h2>Flourishing</h2>
+<p><strong>Instrument Citation</strong><br />
+©Copyright by Ed Diener and Robert Biswas-Diener, January 2009</p>
+<p><strong>Description of Instrument</strong><br />
+A self-report measure on flourishing.</p>
+<p><strong>List of Items in Instrument</strong><br />
+Below are 8 statements with which you may agree or disagree. Using the 1–7 scale below, indicate your agreement with each item by indicating that response for each statement.</p>
+<p>7 = Strongly agree<br />
+6 = Agree<br />
+5 = Slightly agree<br />
+4 = Neither agree nor disagree<br />
+3 = Slightly disagree<br />
+2 = Disagree<br />
+1 = Strongly disagree</p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mXflourishing_1</td>
+<td align="left">I lead a purposeful and meaningful life</td>
+</tr>
+<tr class="even">
+<td align="left">mXflourishing_2</td>
+<td align="left">My social relationships are supportive and rewarding</td>
+</tr>
+<tr class="odd">
+<td align="left">mXflourishing_3</td>
+<td align="left">I am engaged and interested in my daily activities</td>
+</tr>
+<tr class="even">
+<td align="left">mXflourishing_4</td>
+<td align="left">I actively contribute to the happiness and well-being of others</td>
+</tr>
+<tr class="odd">
+<td align="left">mXflourishing_5</td>
+<td align="left">I am competent and capable in the activities that are important to me</td>
+</tr>
+<tr class="even">
+<td align="left">mXflourishing_6</td>
+<td align="left">I am a good person and live a good life</td>
+</tr>
+<tr class="odd">
+<td align="left">mXflourishing_7</td>
+<td align="left">I am optimistic about my future</td>
+</tr>
+<tr class="even">
+<td align="left">mXflourishing_8</td>
+<td align="left">People respect me</td>
+</tr>
+</tbody>
+</table>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.93), Week 11 (0.94)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table style="width:100%;">
+<colgroup>
+<col width="21%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="17%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0flourishing_1</td>
+<td align="left">275</td>
+<td align="left">5.86</td>
+<td align="left">1.14</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.82</td>
+<td align="left">0.92</td>
+</tr>
+<tr class="even">
+<td align="left">m0flourishing_2</td>
+<td align="left">275</td>
+<td align="left">5.93</td>
+<td align="left">1.21</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.72</td>
+<td align="left">0.93</td>
+</tr>
+<tr class="odd">
+<td align="left">m0flourishing_3</td>
+<td align="left">275</td>
+<td align="left">5.65</td>
+<td align="left">1.15</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">0.80</td>
+<td align="left">0.92</td>
+</tr>
+<tr class="even">
+<td align="left">m0flourishing_4</td>
+<td align="left">275</td>
+<td align="left">6.09</td>
+<td align="left">0.96</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.74</td>
+<td align="left">0.93</td>
+</tr>
+<tr class="odd">
+<td align="left">m0flourishing_5</td>
+<td align="left">275</td>
+<td align="left">6.04</td>
+<td align="left">0.99</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">0.80</td>
+<td align="left">0.92</td>
+</tr>
+<tr class="even">
+<td align="left">m0flourishing_6</td>
+<td align="left">275</td>
+<td align="left">6.07</td>
+<td align="left">0.98</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">0.84</td>
+<td align="left">0.92</td>
+</tr>
+<tr class="odd">
+<td align="left">m0flourishing_7</td>
+<td align="left">275</td>
+<td align="left">5.88</td>
+<td align="left">1.26</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.76</td>
+<td align="left">0.93</td>
+</tr>
+<tr class="even">
+<td align="left">m0flourishing_8</td>
+<td align="left">275</td>
+<td align="left">5.89</td>
+<td align="left">1.04</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">0.72</td>
+<td align="left">0.93</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table style="width:100%;">
+<colgroup>
+<col width="21%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="17%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1flourishing_1</td>
+<td align="left">269</td>
+<td align="left">5.81</td>
+<td align="left">1.17</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.80</td>
+<td align="left">0.92</td>
+</tr>
+<tr class="even">
+<td align="left">m1flourishing_2</td>
+<td align="left">269</td>
+<td align="left">5.86</td>
+<td align="left">1.17</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.76</td>
+<td align="left">0.93</td>
+</tr>
+<tr class="odd">
+<td align="left">m1flourishing_3</td>
+<td align="left">269</td>
+<td align="left">5.47</td>
+<td align="left">1.28</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.75</td>
+<td align="left">0.93</td>
+</tr>
+<tr class="even">
+<td align="left">m1flourishing_4</td>
+<td align="left">269</td>
+<td align="left">5.88</td>
+<td align="left">1.07</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.78</td>
+<td align="left">0.93</td>
+</tr>
+<tr class="odd">
+<td align="left">m1flourishing_5</td>
+<td align="left">269</td>
+<td align="left">5.95</td>
+<td align="left">1.03</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.80</td>
+<td align="left">0.93</td>
+</tr>
+<tr class="even">
+<td align="left">m1flourishing_6</td>
+<td align="left">269</td>
+<td align="left">6.03</td>
+<td align="left">1.02</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">0.80</td>
+<td align="left">0.93</td>
+</tr>
+<tr class="odd">
+<td align="left">m1flourishing_7</td>
+<td align="left">269</td>
+<td align="left">5.85</td>
+<td align="left">1.23</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.82</td>
+<td align="left">0.92</td>
+</tr>
+<tr class="even">
+<td align="left">m1flourishing_8</td>
+<td align="left">269</td>
+<td align="left">5.77</td>
+<td align="left">1.15</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.71</td>
+<td align="left">0.93</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="generalized-anxiety" class="section level2">
+<h2>Generalized Anxiety</h2>
+<p><strong>Instrument Citation</strong><br />
+Spitzer RL, Kroenke K, Williams JBW, Lowe B. A brief measure for assessing generalized anxiety disorder. Arch Inern Med. 2006;166:1092-1097.</p>
+<p><strong>Description of Instrument</strong></p>
+<p><strong>List of Items in Instrument</strong><br />
+Over the last 2 weeks, how often have you been bothered by the following problems?</p>
+<p>1 = Not at all sure<br />
+2 = Several Days<br />
+3 = Over half the days<br />
+4 = Nearly every day</p>
+<p><em>mxgad_difficult</em> scoring:</p>
+<p>1 = Not difficult at all,<br />
+2 = Somewhat difficult,<br />
+3 = Very difficult,<br />
+4 = Extremely difficult</p>
+<table>
+<colgroup>
+<col width="19%" />
+<col width="80%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mXgad_1</td>
+<td align="left">Feeling nervous, anxious, or on edge</td>
+</tr>
+<tr class="even">
+<td align="left">mXgad_2</td>
+<td align="left">Not being able to stop or control worrying</td>
+</tr>
+<tr class="odd">
+<td align="left">mXgad_3</td>
+<td align="left">Worrying too much about different things</td>
+</tr>
+<tr class="even">
+<td align="left">mXgad_4</td>
+<td align="left">Trouble relaxing</td>
+</tr>
+<tr class="odd">
+<td align="left">mXgad_5</td>
+<td align="left">Being so restless that it’s hard to sit still</td>
+</tr>
+<tr class="even">
+<td align="left">mXgad_6</td>
+<td align="left">Becoming easily annoyed or irritable</td>
+</tr>
+<tr class="odd">
+<td align="left">mXgad_7</td>
+<td align="left">Feeling afraid as if something awful might happen</td>
+</tr>
+<tr class="even">
+<td align="left">mXgad_difficult</td>
+<td align="left">If you checked off any problems, how difficult have these made it for you to do your work, take care of things at home, or get along with other people?</td>
+</tr>
+</tbody>
+</table>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.92), Week 11 (0.91)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="7%" />
+<col width="9%" />
+<col width="9%" />
+<col width="7%" />
+<col width="7%" />
+<col width="19%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0gad_1</td>
+<td align="left">275</td>
+<td align="left">2.32</td>
+<td align="left">1.02</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.78</td>
+<td align="left">0.91</td>
+</tr>
+<tr class="even">
+<td align="left">m0gad_2</td>
+<td align="left">275</td>
+<td align="left">1.93</td>
+<td align="left">0.99</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.84</td>
+<td align="left">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">m0gad_3</td>
+<td align="left">275</td>
+<td align="left">2.07</td>
+<td align="left">1.01</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.84</td>
+<td align="left">0.90</td>
+</tr>
+<tr class="even">
+<td align="left">m0gad_4</td>
+<td align="left">275</td>
+<td align="left">1.97</td>
+<td align="left">0.99</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.84</td>
+<td align="left">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">m0gad_5</td>
+<td align="left">275</td>
+<td align="left">1.74</td>
+<td align="left">0.97</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.68</td>
+<td align="left">0.92</td>
+</tr>
+<tr class="even">
+<td align="left">m0gad_6</td>
+<td align="left">275</td>
+<td align="left">1.90</td>
+<td align="left">0.91</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.64</td>
+<td align="left">0.92</td>
+</tr>
+<tr class="odd">
+<td align="left">m0gad_7</td>
+<td align="left">275</td>
+<td align="left">1.65</td>
+<td align="left">0.92</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.68</td>
+<td align="left">0.92</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="7%" />
+<col width="9%" />
+<col width="9%" />
+<col width="7%" />
+<col width="7%" />
+<col width="19%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1gad_1</td>
+<td align="left">267</td>
+<td align="left">2.35</td>
+<td align="left">0.96</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.79</td>
+<td align="left">0.89</td>
+</tr>
+<tr class="even">
+<td align="left">m1gad_2</td>
+<td align="left">267</td>
+<td align="left">2.09</td>
+<td align="left">1.00</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.85</td>
+<td align="left">0.89</td>
+</tr>
+<tr class="odd">
+<td align="left">m1gad_3</td>
+<td align="left">267</td>
+<td align="left">2.26</td>
+<td align="left">0.98</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.79</td>
+<td align="left">0.90</td>
+</tr>
+<tr class="even">
+<td align="left">m1gad_4</td>
+<td align="left">267</td>
+<td align="left">2.09</td>
+<td align="left">0.95</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.75</td>
+<td align="left">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">m1gad_5</td>
+<td align="left">267</td>
+<td align="left">1.79</td>
+<td align="left">0.90</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.60</td>
+<td align="left">0.91</td>
+</tr>
+<tr class="even">
+<td align="left">m1gad_6</td>
+<td align="left">267</td>
+<td align="left">2.11</td>
+<td align="left">0.91</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.67</td>
+<td align="left">0.91</td>
+</tr>
+<tr class="odd">
+<td align="left">m1gad_7</td>
+<td align="left">267</td>
+<td align="left">1.77</td>
+<td align="left">0.95</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">0.70</td>
+<td align="left">0.90</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="gratitude" class="section level2">
+<h2>Gratitude</h2>
+<p><strong>Instrument Citation</strong><br />
+McCullough, M. E., Emmons, R. A., &amp; Tsang, J.-A. (2002). Gratitude Questionnaire-6 [Database record]. Retrieved from PsycTESTS. doi: <a href="http://dx.doi.org/10.1037/t01837-000" class="uri">http://dx.doi.org/10.1037/t01837-000</a></p>
+<p><strong>Description of Instrument</strong></p>
+<p><strong>List of Items in Instrument</strong><br />
+Using the scale below as a guide, write a number beside each statement to indicate how much you agree with it.</p>
+<p>1 = strongly disagree<br />
+2 = disagree<br />
+3 = slightly disagree<br />
+4 = neutral<br />
+5 = slightly agree<br />
+6 = agree<br />
+7 = strongly agree</p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="81%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mXgratitude_1</td>
+<td align="left">I have so much in life to be thankful for.</td>
+</tr>
+<tr class="even">
+<td align="left">mXgratitude_2</td>
+<td align="left">If I had to list everything that I felt grateful for, it would be a very long list.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXgratitude_3R</td>
+<td align="left">When I look at the world, I don’t see much to be grateful for.</td>
+</tr>
+<tr class="even">
+<td align="left">mXgratitude_4</td>
+<td align="left">I am grateful to a wide variety of people.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXgratitude_5</td>
+<td align="left">As I get older I find myself more able to appreciate the people, events, and situations that have been part of my life history.</td>
+</tr>
+<tr class="even">
+<td align="left">mXgratitude_6R</td>
+<td align="left">Long amounts of time can go by before I feel grateful to something or someone.</td>
+</tr>
+</tbody>
+</table>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.73), Week 11 (0.76)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0gratitude_1</td>
+<td align="left">275</td>
+<td align="left">6.49</td>
+<td align="left">0.77</td>
+<td align="left">3</td>
+<td align="left">7</td>
+<td align="left">0.69</td>
+<td align="left">0.67</td>
+</tr>
+<tr class="even">
+<td align="left">m0gratitude_2</td>
+<td align="left">275</td>
+<td align="left">6.37</td>
+<td align="left">0.91</td>
+<td align="left">3</td>
+<td align="left">7</td>
+<td align="left">0.71</td>
+<td align="left">0.65</td>
+</tr>
+<tr class="odd">
+<td align="left">m0gratitude_3R</td>
+<td align="left">275</td>
+<td align="left">6.08</td>
+<td align="left">1.38</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.48</td>
+<td align="left">0.69</td>
+</tr>
+<tr class="even">
+<td align="left">m0gratitude_4</td>
+<td align="left">275</td>
+<td align="left">6.17</td>
+<td align="left">0.95</td>
+<td align="left">3</td>
+<td align="left">7</td>
+<td align="left">0.57</td>
+<td align="left">0.67</td>
+</tr>
+<tr class="odd">
+<td align="left">m0gratitude_5</td>
+<td align="left">275</td>
+<td align="left">6.37</td>
+<td align="left">0.86</td>
+<td align="left">3</td>
+<td align="left">7</td>
+<td align="left">0.58</td>
+<td align="left">0.68</td>
+</tr>
+<tr class="even">
+<td align="left">m0gratitude_6R</td>
+<td align="left">275</td>
+<td align="left">4.63</td>
+<td align="left">2.08</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.29</td>
+<td align="left">0.83</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1gratitude_1</td>
+<td align="left">268</td>
+<td align="left">6.41</td>
+<td align="left">0.85</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">0.65</td>
+<td align="left">0.70</td>
+</tr>
+<tr class="even">
+<td align="left">m1gratitude_2</td>
+<td align="left">268</td>
+<td align="left">6.32</td>
+<td align="left">1.02</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">0.65</td>
+<td align="left">0.69</td>
+</tr>
+<tr class="odd">
+<td align="left">m1gratitude_3R</td>
+<td align="left">268</td>
+<td align="left">5.60</td>
+<td align="left">1.79</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.46</td>
+<td align="left">0.74</td>
+</tr>
+<tr class="even">
+<td align="left">m1gratitude_4</td>
+<td align="left">268</td>
+<td align="left">6.07</td>
+<td align="left">1.02</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">0.53</td>
+<td align="left">0.72</td>
+</tr>
+<tr class="odd">
+<td align="left">m1gratitude_5</td>
+<td align="left">268</td>
+<td align="left">6.24</td>
+<td align="left">0.97</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">0.55</td>
+<td align="left">0.72</td>
+</tr>
+<tr class="even">
+<td align="left">m1gratitude_6R</td>
+<td align="left">268</td>
+<td align="left">4.94</td>
+<td align="left">1.96</td>
+<td align="left">1</td>
+<td align="left">7</td>
+<td align="left">0.46</td>
+<td align="left">0.76</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="self-compassion" class="section level2">
+<h2>Self Compassion</h2>
+<p><strong>Instrument Citation</strong><br />
+Raes, F., Pommier, E., Neff, K. D., &amp; Van Gucht, D. (2011). Construction and factorial validation of a short form of the Self-Compassion Scale. Clinical Psychology &amp; Psychotherapy. 18, 250-255.</p>
+<p><strong>Description of Instrument</strong><br />
+This scale creates a total self-compassion score. It can be further split into 6 subscales:</p>
+<p>Coding Key:<br />
+Self-Kindness Items: 2, 6<br />
+Self-Judgment Items: 11, 12<br />
+Common Humanity Items: 5, 10<br />
+Isolation Items: 4, 8<br />
+Mindfulness Items: 3, 7<br />
+Over-identified Items: 1, 9</p>
+<p><strong>List of Items in Instrument</strong><br />
+Please read each statement carefully before answering. To the left of each item, indicate how often you behave in the stated manner, using the following scale:</p>
+<p>1 = Almost Never,<br />
+5 = Almost Always</p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="83%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mXself_c_1R</td>
+<td align="left">When I fail at something important to me I become consumed by feelings of inadequacy.</td>
+</tr>
+<tr class="even">
+<td align="left">mXself_c_2</td>
+<td align="left">I try to be understanding and patient towards those aspects of my personality I don’t like.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXself_c_3</td>
+<td align="left">When something painful happens I try to take a balanced view of the situation.</td>
+</tr>
+<tr class="even">
+<td align="left">mXself_c_4R</td>
+<td align="left">When I’m feeling down, I tend to feel like most other people are probably happier than I am.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXself_c_5</td>
+<td align="left">I try to see my failings as part of the human condition.</td>
+</tr>
+<tr class="even">
+<td align="left">mXself_c_6</td>
+<td align="left">When I’m going through a very hard time, I give myself the caring and tenderness I need.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXself_c_7</td>
+<td align="left">When something upsets me I try to keep my emotions in balance.</td>
+</tr>
+<tr class="even">
+<td align="left">mXself_c_8R</td>
+<td align="left">When I fail at something that’s important to me, I tend to feel alone in my failure</td>
+</tr>
+<tr class="odd">
+<td align="left">mXself_c_9R</td>
+<td align="left">When I’m feeling down I tend to obsess and fixate on everything that’s wrong.</td>
+</tr>
+<tr class="even">
+<td align="left">mXself_c_10</td>
+<td align="left">When I feel inadequate in some way, I try to remind myself that feelings of inadequacy are shared by most people.</td>
+</tr>
+<tr class="odd">
+<td align="left">mXself_c_11R</td>
+<td align="left">I’m disapproving and judgmental about my own flaws and inadequacies.</td>
+</tr>
+<tr class="even">
+<td align="left">mXself_c_12R</td>
+<td align="left">I’m intolerant and impatient towards those aspects of my personality I don’t like.</td>
+</tr>
+</tbody>
+</table>
+<p><em>Cronbach’s Alpha:</em> Pre-Intervention (0.89), Week 11 (0.89)</p>
+<p><em>Item Analysis at Pre-Intervention</em></p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m0self_c_1R</td>
+<td align="left">272</td>
+<td align="left">2.98</td>
+<td align="left">1.26</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.64</td>
+<td align="left">0.87</td>
+</tr>
+<tr class="even">
+<td align="left">m0self_c_2</td>
+<td align="left">272</td>
+<td align="left">3.50</td>
+<td align="left">0.95</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.53</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="odd">
+<td align="left">m0self_c_3</td>
+<td align="left">272</td>
+<td align="left">3.56</td>
+<td align="left">0.93</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.56</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="even">
+<td align="left">m0self_c_4R</td>
+<td align="left">272</td>
+<td align="left">3.16</td>
+<td align="left">1.19</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.62</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="odd">
+<td align="left">m0self_c_5</td>
+<td align="left">272</td>
+<td align="left">3.48</td>
+<td align="left">0.98</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.53</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="even">
+<td align="left">m0self_c_6</td>
+<td align="left">272</td>
+<td align="left">3.16</td>
+<td align="left">1.11</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.57</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="odd">
+<td align="left">m0self_c_7</td>
+<td align="left">272</td>
+<td align="left">3.60</td>
+<td align="left">0.93</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.52</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="even">
+<td align="left">m0self_c_8R</td>
+<td align="left">272</td>
+<td align="left">3.11</td>
+<td align="left">1.20</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.60</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="odd">
+<td align="left">m0self_c_9R</td>
+<td align="left">272</td>
+<td align="left">2.73</td>
+<td align="left">1.26</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.64</td>
+<td align="left">0.87</td>
+</tr>
+<tr class="even">
+<td align="left">m0self_c_10</td>
+<td align="left">272</td>
+<td align="left">3.26</td>
+<td align="left">1.00</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.42</td>
+<td align="left">0.89</td>
+</tr>
+<tr class="odd">
+<td align="left">m0self_c_11R</td>
+<td align="left">272</td>
+<td align="left">2.90</td>
+<td align="left">1.18</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.70</td>
+<td align="left">0.87</td>
+</tr>
+<tr class="even">
+<td align="left">m0self_c_12R</td>
+<td align="left">272</td>
+<td align="left">3.26</td>
+<td align="left">1.14</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.73</td>
+<td align="left">0.87</td>
+</tr>
+</tbody>
+</table>
+<p><em>Item Analysis at end of semester follow-up</em></p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="18%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Item</th>
+<th align="left">N</th>
+<th align="left">Mean</th>
+<th align="left">SD</th>
+<th align="left">Min</th>
+<th align="left">Max</th>
+<th align="left">R.With.Total</th>
+<th align="left">Alpha.If.Deleted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">m1self_c_1R</td>
+<td align="left">268</td>
+<td align="left">3.01</td>
+<td align="left">1.24</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.70</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="even">
+<td align="left">m1self_c_2</td>
+<td align="left">268</td>
+<td align="left">3.40</td>
+<td align="left">0.98</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.55</td>
+<td align="left">0.89</td>
+</tr>
+<tr class="odd">
+<td align="left">m1self_c_3</td>
+<td align="left">268</td>
+<td align="left">3.56</td>
+<td align="left">0.95</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.49</td>
+<td align="left">0.89</td>
+</tr>
+<tr class="even">
+<td align="left">m1self_c_4R</td>
+<td align="left">268</td>
+<td align="left">3.13</td>
+<td align="left">1.16</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.57</td>
+<td align="left">0.89</td>
+</tr>
+<tr class="odd">
+<td align="left">m1self_c_5</td>
+<td align="left">268</td>
+<td align="left">3.47</td>
+<td align="left">0.97</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.59</td>
+<td align="left">0.89</td>
+</tr>
+<tr class="even">
+<td align="left">m1self_c_6</td>
+<td align="left">268</td>
+<td align="left">3.24</td>
+<td align="left">1.00</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.61</td>
+<td align="left">0.89</td>
+</tr>
+<tr class="odd">
+<td align="left">m1self_c_7</td>
+<td align="left">268</td>
+<td align="left">3.53</td>
+<td align="left">0.91</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.57</td>
+<td align="left">0.89</td>
+</tr>
+<tr class="even">
+<td align="left">m1self_c_8R</td>
+<td align="left">268</td>
+<td align="left">3.10</td>
+<td align="left">1.13</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.68</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="odd">
+<td align="left">m1self_c_9R</td>
+<td align="left">268</td>
+<td align="left">2.79</td>
+<td align="left">1.22</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.71</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="even">
+<td align="left">m1self_c_10</td>
+<td align="left">268</td>
+<td align="left">3.25</td>
+<td align="left">0.99</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.31</td>
+<td align="left">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">m1self_c_11R</td>
+<td align="left">268</td>
+<td align="left">2.92</td>
+<td align="left">1.21</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.74</td>
+<td align="left">0.88</td>
+</tr>
+<tr class="even">
+<td align="left">m1self_c_12R</td>
+<td align="left">268</td>
+<td align="left">3.19</td>
+<td align="left">1.17</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">0.73</td>
+<td align="left">0.88</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,883 @@
+---
+title: "Codebook for Mentor Mental Health Study Data"
+output:
+  html_document:
+    fig_height: 8
+    fig_width: 8
+    self_contained: no
+    theme: readable
+    toc: yes
+  pdf_document:
+    fig_crop: no
+    fig_height: 10
+    fig_width: 7.5
+    latex_engine: lualatex
+    number_sections: yes
+    toc: yes
+---
+
+
+```{r, echo=FALSE}
+
+rm(list=ls()) 
+
+my_reliability <- function (items, itemal = TRUE, NA.Delete = TRUE) 
+{
+    if (!all(apply(items, c(1, 2), is.numeric))) {
+        items <- apply(items, c(1, 2), as.numeric)
+        warning("Data is not numeric. Data has been coerced to be numeric.")
+    }
+    if (NA.Delete == FALSE) {
+        items[is.na(items)] <- 0
+        warning("Missing values or NA values are converted to zeros.")
+    }
+    items <- na.omit(items)
+    s <- apply(items, 2, var)
+    N <- ncol(items)
+    X <- rowSums(items)
+    alpha <- (N/(N - 1)) * (1 - sum(s)/var(X))
+    if (itemal) {
+        alphad <- array(dim = N)
+        pbis <- array(dim = N)
+        for (i in 1:N) {
+            Xd <- rowSums(items[, -i])
+            Mean <- sapply(items, mean)
+            SD <- sapply(items, sd)
+            Min <- sapply(items, min)
+            Max <- sapply(items, max)
+            Nobs <- sapply(items, length)
+            alphad[i] <- ((N - 1)/(N - 2)) * (1 - sum(s[-i])/var(Xd))
+            pbis[i] <- cor(items[, i], Xd)
+            out <- list(nItem = N, nPerson = nrow(items), alpha = alpha, 
+                scaleMean = mean(X), scaleSD = sd(X), Alpha.If.Deleted = alphad, 
+                R.With.Total = pbis, Mean = Mean, SD = SD, Min = Min, Max = Max, Nobs=Nobs)
+        }
+    }
+    else out <- list(nItem = N, nPerson = nrow(items), alpha = alpha, 
+        scaleMean = mean(X), scaleSD = sd(X))
+    class(out) <- "my_reliability"
+    out
+}
+
+
+toofew <- function (items, itemal = FALSE, NA.Delete = TRUE) 
+{
+    if (!all(apply(items, c(1, 2), is.numeric))) {
+        items <- apply(items, c(1, 2), as.numeric)
+        warning("Data is not numeric. Data has been coerced to be numeric.")
+    }
+    if (NA.Delete == FALSE) {
+        items[is.na(items)] <- 0
+        warning("Missing values or NA values are converted to zeros.")
+    }
+    items <- na.omit(items)
+    s <- apply(items, 2, var)
+    N <- ncol(items)
+    X <- rowSums(items)
+    if (itemal) {
+        for (i in 1:N) {
+            Mean <- sapply(items, mean)
+            SD <- sapply(items, sd)
+            Min <- sapply(items, min)
+            Max <- sapply(items, max)
+            Nobs <- sapply(items, length)
+            out <- list(nItem = N, 
+                scaleMean = mean(X), scaleSD = sd(X), 
+                Mean = Mean, SD = SD, Min = Min, Max = Max, Nobs=Nobs)
+        }
+    }
+    else out <- list(nItem = N, nPerson = nrow(items),  
+        scaleMean = mean(X), scaleSD = sd(X), Mean = Mean, SD = SD, Min = Min, Max = Max, Nobs=Nobs)
+    class(out) <- "toofew"
+    out
+}
+
+
+```
+
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+
+library(GGally)
+library(ggplot2)
+library(lattice)
+library(gridExtra)
+library(reshape)
+library(pander)
+library(knitr)
+
+panderOptions('table.split.table', Inf)
+#panderOptions('digits', 3)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('keep.line.breaks', TRUE)
+set.alignment('left', row.names = 'right')
+
+setwd("R:/Post William T research/Mentor Mental Health Study/Data/MERGEALL")
+varlist <- read.csv("R:/Post William T research/Mentor Mental Health Study/Data/Codebooks/varlist.csv", header = TRUE) 
+THISDATA <- read.csv("final.csv", header = TRUE) 
+
+```
+
+# Introduction
+
+Mentors were invited to complete a survey on 2 occasions: prior to the start of Campus Connections (during the first week of mentor training, prefix for variables = m0) and week 11 (prefix = m1) of the program. The surveys were completed during prelab, and in some cases during postlab. The time stamp for each survey (e.g., m0start, m0end) gives the date and time that the respondent started and ended the survey.
+
+In this study, there was also a control group (variable in_cc = 0). In these instances, students at Colorado State University were recruited from Human Development & Family Studies, and Psychology courses. They were emailed a survey link and asked to complete the survey at there own convenience. 
+
+For tables labeled “List of Items in the Instrument”, substitute the X in the variable name for the survey number (e.g., 0, 1). Variables in the item analysis tables that end in a capital r (“R”) have been reverse coded for analysis.
+
+# General variables
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(varlist, Scale=="general")
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+
+# Demographics
+
+**Description of Demographic Variables**  
+The mentor reported on a series of demographic questions pertaining to themselves.  These items were administered at the pre-intervention survey (m0) only.  
+
+**List of Demographic Variables**
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(varlist, Scale=="demo")
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+
+
+
+# Instruments  
+## Depression
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0cesdr_1", "m0cesdr_2", "m0cesdr_3", "m0cesdr_4", "m0cesdr_5R", "m0cesdr_6", "m0cesdr_7", "m0cesdr_8R", "m0cesdr_9", "m0cesdr_10")
+variables1 <- c("m1cesdr_1", "m1cesdr_2", "m1cesdr_3", "m1cesdr_4", "m1cesdr_5R", "m1cesdr_6", "m1cesdr_7", "m1cesdr_8R", "m1cesdr_9", "m1cesdr_10")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+**Instrument Citation**    
+
+Björgvinsson, T., Kertz, S.J., Bigda-Peyton, J.S., McCoy, K.L., Aderka, I.M. (2013). Psychometric properties of the CES-D-10 in a psychiatric sample. Assessment, 20, 429-436.
+
+
+Miller, W.C., Anton, H.A., Townson, A. F. (2008). Measurement properties of the CESD scale among individuals with spinal cord injury. Spinal Cord, 46, 287-292.
+
+
+Radloff, L. S. (1977). CES-D scale: A self report depression scale for research in the general populations. Applied Psychological Measurement,1, 385-401.
+
+**Description of Instrument**  
+This scale is a self-report measure of depression.
+
+**List of Items in Instrument**   
+Below is a list of some of the ways you may have felt or behaved.
+
+Please indicate how often you have felt this way during the past week by checking the appropriate box for each question. 
+
+1 = Rarely or none of the time (less than 1 day),  
+2 = Some or a little of the time (1‐2 days,  
+3 = Occasionally or a moderate amount of time (3‐4 days),  
+4 = All of the time (5‐7 days)  
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(varlist, Scale=="cesdr")
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+  
+## Substance use
+**Instrument Citation**    
+Knight JR, Shrier LA, Bravender TD, Farrell M, Vander Bilt J, Shaffer HJ. A new brief screen for adolescent substance abuse. Arch Pediatr Adolesc Med. 1999;153(6):591-596.
+
+**Description of Instrument**  
+The CRAFFT is an efficient and effective health screening tool designed to identify substance use, substance-related riding/driving risk, and substance use disorder among youth ages 12-21. It has been implemented as part of universal screening efforts in thousands of busy medical and community health settings, as it yields information that can serve as the basis for early intervention and patient-centered counseling.
+
+The CRAFFT is the most well-studied adolescent substance use screener available and has been shown to be valid for adolescents from diverse socioeconomic and racial/ethnic backgrounds. It is recommended by the American Academy of Pediatrics’ Bright Futures Guidelines for preventive care screenings and well-visits, the Center for Medicaid and CHIP Services’ Early and Periodic Screening, Diagnostic and Treatment (EPSDT) program, and the National Institute of Alcohol Abuse and Alcoholism (NIAAA) Youth Screening Guide.
+
+The current version of the tool, the CRAFFT 2.1, includes evidence-based revisions to increase the sensitivity and specificity of the tool and includes vaping as a method of administration for marijuana use.
+
+**List of Items in Instrument** 
+
+*freq items*: During the PAST 12 MONTHS, on how many days did you:
+
+*beh items*: If you put “1” or higher in ANY of the boxes above, ANSWER QUESTIONS 5-10. (1 = Yes, 0 = No)
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(varlist, Scale=="crafftn")
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+## Positive psych
+
+**Instrument Citation**    
+Kern, M. L., Benson, L., Steinberg, E. A., & Steinberg, L. (2016). The EPOCH measure of adolescent well-being. Psychological assessment, 28(5), 586.
+
+**Description of Instrument**  
+A self-report measure of well-being. It is split into 5 subscales: Engagement, Perseverance, Optimism, Connectedness, and happiness.
+
+**List of Items in Instrument**   
+This is a survey about you! Please read each of the following statements. Circle how much each statement describes you. Please be honest - there are no right or wrong answers!
+
+1 = Almost Never  
+2 = Sometimes  
+3 = Often  
+4 = Very Often  
+5 = Almost Always  
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(varlist, Scale=="epoch")
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+**Psychometrics for subscales**
+
+
+### Engagement
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0epoch_5", "m0epoch_7", "m0epoch_11", "m0epoch_12")
+
+variables1 <- c("m1epoch_5", "m1epoch_7", "m1epoch_11", "m1epoch_12")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+### Perseverance
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0epoch_2", "m0epoch_9", "m0epoch_17", "m0epoch_19")
+
+variables1 <- c("m1epoch_2", "m1epoch_9", "m1epoch_17", "m1epoch_19")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+### Optimism
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0epoch_3", "m0epoch_13", "m0epoch_15", "m0epoch_18")
+
+variables1 <- c("m1epoch_3", "m1epoch_13", "m1epoch_15", "m1epoch_18")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+### Connectedness
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0epoch_1", "m0epoch_10", "m0epoch_14", "m0epoch_16")
+
+variables1 <- c("m1epoch_1", "m1epoch_10", "m1epoch_14", "m1epoch_16")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+
+### Happiness
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0epoch_4", "m0epoch_6", "m0epoch_8", "m0epoch_20")
+
+variables1 <- c("m1epoch_4", "m1epoch_6", "m1epoch_8", "m1epoch_20")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+
+
+## Flourishing
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0flourishing_1", "m0flourishing_2", "m0flourishing_3", "m0flourishing_4", "m0flourishing_5", "m0flourishing_6", "m0flourishing_7", "m0flourishing_8")
+
+variables1 <- c("m1flourishing_1", "m1flourishing_2", "m1flourishing_3", "m1flourishing_4", "m1flourishing_5", "m1flourishing_6", "m1flourishing_7", "m1flourishing_8")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+**Instrument Citation**    
+©Copyright by Ed Diener and Robert Biswas-Diener, January 2009
+
+**Description of Instrument**  
+A self-report measure on flourishing. 
+
+**List of Items in Instrument**   
+Below are 8 statements with which you may agree or disagree. Using the 1–7 scale below, indicate your agreement with each item by indicating that response for each statement.
+
+7 = Strongly agree  
+6 = Agree  
+5 = Slightly agree  
+4 = Neither agree nor disagree  
+3 = Slightly disagree  
+2 = Disagree  
+1 = Strongly disagree  
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(varlist, Scale=="flourish")
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+
+
+
+## Generalized Anxiety
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0gad_1", "m0gad_2", "m0gad_3", "m0gad_4", "m0gad_5", "m0gad_6", "m0gad_7")
+
+variables1 <- c("m1gad_1", "m1gad_2", "m1gad_3", "m1gad_4", "m1gad_5", "m1gad_6", "m1gad_7")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+**Instrument Citation**    
+Spitzer RL, Kroenke K, Williams JBW, Lowe B. A brief measure for assessing generalized anxiety disorder. Arch Inern Med. 2006;166:1092-1097. 
+
+**Description of Instrument**  
+
+
+**List of Items in Instrument**   
+Over the last 2 weeks, how often have you been bothered by the following problems? 
+
+1 = Not at all sure  
+2 = Several Days  
+3 = Over half the days  
+4 = Nearly every day  
+
+*mxgad_difficult* scoring: 
+
+1 = Not difficult at all,  
+2 = Somewhat difficult,  
+3 = Very difficult,  
+4 = Extremely difficult
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(varlist, Scale=="gad")
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+## Gratitude
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0gratitude_1", "m0gratitude_2", "m0gratitude_3R", "m0gratitude_4", "m0gratitude_5","m0gratitude_6R")
+
+variables1 <- c("m1gratitude_1", "m1gratitude_2", "m1gratitude_3R", "m1gratitude_4", "m1gratitude_5","m1gratitude_6R")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+**Instrument Citation**    
+McCullough, M. E., Emmons, R. A., & Tsang, J.-A. (2002). Gratitude Questionnaire-6 [Database record]. Retrieved from PsycTESTS. doi: http://dx.doi.org/10.1037/t01837-000
+
+**Description of Instrument**  
+  
+
+**List of Items in Instrument**   
+Using the scale below as a guide, write a number beside each statement to indicate how much you agree with it.
+
+1 = strongly disagree  
+2 = disagree  
+3 = slightly disagree  
+4 = neutral  
+5 = slightly agree  
+6 = agree  
+7 = strongly agree
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(varlist, Scale=="gratitude")
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+## Self Compassion
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+pipealpha0 <- NULL
+pipealpha1 <- NULL
+pipealpha2 <- NULL
+pipealpha3 <- NULL
+pipealpha4 <- NULL
+pipealpha5 <- NULL
+pipealpha6 <- NULL
+
+variables0 <- c("m0self_c_1R", "m0self_c_2", "m0self_c_3", "m0self_c_4R", "m0self_c_5", "m0self_c_6", "m0self_c_7", "m0self_c_8R", "m0self_c_9R", "m0self_c_10", "m0self_c_11R", "m0self_c_12R")
+
+variables1 <- c("m1self_c_1R", "m1self_c_2", "m1self_c_3", "m1self_c_4R", "m1self_c_5", "m1self_c_6", "m1self_c_7", "m1self_c_8R", "m1self_c_9R", "m1self_c_10", "m1self_c_11R", "m1self_c_12R")
+
+data0 <- THISDATA[c("ID", variables0)]
+data1 <-THISDATA[c("ID", variables1)]
+
+ca0 <- my_reliability(data0[,-1], itemal=TRUE, NA.Delete=TRUE) 
+ca1 <- my_reliability(data1[,-1], itemal=TRUE, NA.Delete=TRUE)
+
+pipealpha0 <- paste(formatC(round(ca0$alpha, digits=2), 2, format = "f"))
+pipealpha1 <- paste(formatC(round(ca1$alpha, digits=2), 2, format = "f"))
+    
+temp0 <- cbind.data.frame(variables0, ca0$Nobs, ca0$Mean, ca0$SD, ca0$Min, ca0$Max, ca0$R.With.Total, ca0$Alpha.If.Deleted)
+colnames(temp0) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp0) <- NULL
+
+temp1 <- cbind.data.frame(variables1, ca1$Nobs, ca1$Mean, ca1$SD, ca1$Min, ca1$Max, ca1$R.With.Total, ca1$Alpha.If.Deleted)
+colnames(temp1) <- c("Item", "N", "Mean", "SD", "Min", "Max", "R.With.Total", "Alpha.If.Deleted")
+rownames(temp1) <- NULL
+
+
+```
+
+**Instrument Citation**    
+Raes, F., Pommier, E., Neff, K. D., & Van Gucht, D. (2011). Construction
+and factorial validation of a short form of the Self-Compassion Scale.
+Clinical Psychology & Psychotherapy. 18, 250-255.
+
+**Description of Instrument**  
+This scale creates a total self-compassion score. It can be further split into 6 subscales: 
+
+Coding Key:  
+Self-Kindness Items: 2, 6  
+Self-Judgment Items: 11, 12  
+Common Humanity Items: 5, 10  
+Isolation Items: 4, 8  
+Mindfulness Items: 3, 7  
+Over-identified Items: 1, 9  
+
+**List of Items in Instrument**   
+Please read each statement carefully before answering. To the left of each item, indicate how often you behave in the stated manner, using the following scale: 
+
+1 = Almost Never,  
+5 = Almost Always
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+set.alignment('left', row.names = 'right')
+
+vl <- subset(varlist, Scale=="self_c")
+vl$Scale <- NULL
+row.names(vl) <- NULL
+
+pander(vl, split.cells = 75)
+```
+
+*Cronbach's Alpha:* Pre-Intervention (`r pipealpha0`), Week 11 (`r pipealpha1`)
+
+*Item Analysis at Pre-Intervention*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp0)
+```
+
+
+*Item Analysis at end of semester follow-up*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.alignment('left', row.names = 'right')
+pander(temp1)
+```
+
+
